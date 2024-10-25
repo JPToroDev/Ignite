@@ -14,7 +14,18 @@ public struct Environment<Value> {
     
     public var wrappedValue: Value {
         get {
-            EnvironmentState.shared.getValue(keyPath.key) ?? defaultValue
+            // Register the bridge for this environment value
+            EnvironmentState.shared.registerJavaScriptBridge(
+                key: keyPath.key,
+                eventName: keyPath.eventName
+            )
+            
+            // Get the build-time value or default
+            if let value: Value = EnvironmentState.shared.getValue(keyPath.key) {
+                return value
+            } else {
+                return defaultValue
+            }
         }
     }
     

@@ -15,4 +15,10 @@ public enum EnvironmentValues {
         case .colorScheme: return "colorScheme"
         }
     }
+    
+    var eventName: String {
+        switch self {
+        case .colorScheme: return "colorSchemeChange"
+        }
+    }
 }

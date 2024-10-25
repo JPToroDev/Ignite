@@ -24,15 +24,19 @@ public struct Body: PageElement, HTMLRootElement {
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
-        // Create the color scheme detector script
+        // Create the color scheme detector script with bridge
         let colorSchemeScript = Script(code: """
             function updateColorScheme() {
                 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.classList.toggle('dark', isDark);
+                const colorScheme = isDark ? 'dark' : 'light';
         
-                // Dispatch event for any components that need to react
+                // Update root element
+                document.documentElement.classList.toggle('dark', isDark);
+                document.documentElement.dataset.colorscheme = colorScheme;
+        
+                // Dispatch event for environment system
                 window.dispatchEvent(new CustomEvent('colorSchemeChange', { 
-                    detail: { colorScheme: isDark ? 'dark' : 'light' } 
+                    detail: { colorScheme: colorScheme } 
                 }));
             }
         
@@ -42,8 +46,11 @@ public struct Body: PageElement, HTMLRootElement {
             // Listen for system changes
             window.matchMedia('(prefers-color-scheme: dark)')
                 .addEventListener('change', updateColorScheme);
-        """).render(context: context)
         
+            // Add environment bridge handlers
+            \(EnvironmentState.shared.generateBridgeJavaScript())
+        """).render(context: context)
+            
         var output = Group {
             for item in items {
                 item
@@ -51,7 +58,7 @@ public struct Body: PageElement, HTMLRootElement {
         }
         .class("col-sm-\(context.site.pageWidth)", "mx-auto")
         .render(context: context)
-        
+            
         // Add our color scheme detector before any other scripts
         output = colorSchemeScript + output
         

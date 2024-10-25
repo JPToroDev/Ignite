@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ColorScheme {
+public enum ColorScheme: String {
     case light, dark
     
     // Helper to convert from JS boolean
