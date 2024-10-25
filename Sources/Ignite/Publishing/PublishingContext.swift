@@ -357,7 +357,27 @@ public class PublishingContext {
 extension PublishingContext {
     var environmentScripts: String {
         let baseScript = EnvironmentState.shared.generateRuntimeScript()
+        let initScript = """
+            document.addEventListener('DOMContentLoaded', function() {
+                window.igniteEnvironment.initialize();
+            });
+        """
         let detectionScripts = [EnvironmentValues.colorScheme.detectionScript]
-        return ([baseScript] + detectionScripts).joined(separator: "\n\n")
+        return ([baseScript, initScript] + detectionScripts).joined(separator: "\n\n")
+    }
+    
+    /// Processes any environment values in the element being rendered
+    func processEnvironmentValues(_ element: any PageElement) -> any PageElement {
+        var element = element
+        
+        // Get registered environment values
+        let values = EnvironmentState.shared.registeredValues
+        
+        // Add environment-specific attributes and classes
+        for value in values {
+            element = element.addEnvironmentAttributes(for: value)
+        }
+        
+        return element
     }
 }

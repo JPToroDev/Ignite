@@ -14,6 +14,24 @@ public protocol PageElement: BaseElement {
 }
 
 extension PageElement {
+    /// Adds environment-specific attributes and classes to the element
+    /// - Parameter key: The environment value key to process
+    /// - Returns: A copy of the element with environment attributes added
+    func addEnvironmentAttributes(for key: String) -> Self {
+        var copy = self
+        
+        // Add data attribute for environment tracking
+        copy = copy.addCustomAttribute(
+            name: "data-ignite-env-\(key.lowercased())",
+            value: "{}"
+        )
+        
+        // Add class for initial state
+        copy = copy.class("env-\(key.lowercased())")
+        
+        return copy
+    }
+
     /// Adds new classes to this element.
     /// - Parameter newClasses: One or more classes to add to this
     /// element. Specifying nil ignores the class, which is helpful for ternary

@@ -71,19 +71,35 @@ extension ElementBuilder {
         
         let conditionKey = String(describing: type(of: condition))
             .replacingOccurrences(of: "Value", with: "")
+            .lowercased()
         
-        let conditions = [String(describing: condition): true]
+        // Create a map of all possible values to their visibility state
+        var conditions: [String: Bool] = [:]
         
-        // Create group properly based on Ignite's Group implementation
+        // For color scheme, we need both light and dark states
+        if conditionKey == "colorscheme" {
+            conditions = [
+                "light": String(describing: condition) == "light",
+                "dark": String(describing: condition) == "dark"
+            ]
+        } else {
+            conditions = [String(describing: condition): true]
+        }
+        
+        // Create group to wrap the element with environment conditions
         let group = Group {
             element
         }
         
-        // Add the environment attribute
-        let groupWithAttr = group.addCustomAttribute(
-            name: "data-ignite-env-\(conditionKey.lowercased())",
+        // Add data attributes for environment state
+        var groupWithAttr = group.addCustomAttribute(
+            name: "data-ignite-env-\(conditionKey)",
             value: conditions.json ?? "{}"
         )
+        
+        // Add initial visibility class based on default value
+        let initialClass = conditions.first { $0.value == true }?.key ?? ""
+        groupWithAttr = groupWithAttr.class("env-\(conditionKey)-\(initialClass)")
         
         return [groupWithAttr as! Element]
     }
