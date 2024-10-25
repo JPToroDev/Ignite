@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ColorScheme: String {
+public enum ColorScheme: String {
     case light = "light"
     case dark = "dark"
 }
