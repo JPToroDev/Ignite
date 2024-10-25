@@ -35,4 +35,8 @@ extension PageElement {
         copy.addEvent(name: "onmouseout", actions: actions(false))
         return copy
     }
+  
+    public func onAppear(@ElementBuilder<any Action> actions: () -> [Action]) -> Self {
+        self.addingEvent(name: "onload", actions: actions())
+    }
 }
