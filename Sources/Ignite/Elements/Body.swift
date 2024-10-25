@@ -12,6 +12,28 @@ public struct Body: PageElement, HTMLRootElement {
     public var attributes = CoreAttributes()
     var items: [BaseElement]
     
+    private var baseEnvironmentScript: String {
+        """
+        // Generic environment value handler
+        function updateEnvironmentValue(key, value) {
+            document.documentElement.dataset[key.toLowerCase()] = value;
+            document.querySelectorAll('[data-environment-condition-' + key + ']').forEach(element => {
+                const condition = element.dataset['environmentCondition' + key];
+                element.style.display = condition === value ? '' : 'none';
+            });
+        }
+        
+        // Dispatch environment change event
+        function dispatchEnvironmentChange(key, value) {
+            const detail = {};
+            detail[key.toLowerCase()] = value;
+            document.dispatchEvent(new CustomEvent('environment-' + key.toLowerCase() + '-change', { 
+                detail: detail 
+            }));
+        }
+        """
+    }
+        
     public init(@ElementBuilder<BaseElement> _ items: () -> [BaseElement]) {
         self.items = items()
     }
@@ -23,33 +45,18 @@ public struct Body: PageElement, HTMLRootElement {
     /// Renders this element using publishing context passed in.
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
+    
     public func render(context: PublishingContext) -> String {
-        // Create the color scheme detector script with bridge
-        let colorSchemeScript = Script(code: """
-            function updateColorScheme() {
-                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const colorScheme = isDark ? 'dark' : 'light';
-        
-                // Update root element
-                document.documentElement.classList.toggle('dark', isDark);
-                document.documentElement.dataset.colorscheme = colorScheme;
-        
-                // Dispatch event for environment system
-                window.dispatchEvent(new CustomEvent('colorSchemeChange', { 
-                    detail: { colorScheme: colorScheme } 
-                }));
-            }
-        
-            // Set initial state
-            updateColorScheme();
-        
-            // Listen for system changes
-            window.matchMedia('(prefers-color-scheme: dark)')
-                .addEventListener('change', updateColorScheme);
-        
-            // Add environment bridge handlers
-            \(EnvironmentState.shared.generateBridgeJavaScript())
-        """).render(context: context)
+        // Collect all registered environment values
+        let environmentValues: [any EnvironmentValue] = [
+            EnvironmentValues.colorScheme
+            // Add more here as they're added to EnvironmentValues
+        ]
+            
+        let scripts = [baseEnvironmentScript] + environmentValues.map(\.detectionScript)
+            
+        let environmentScript = Script(code: scripts.joined(separator: "\n\n"))
+            .render(context: context)
             
         var output = Group {
             for item in items {
@@ -59,8 +66,7 @@ public struct Body: PageElement, HTMLRootElement {
         .class("col-sm-\(context.site.pageWidth)", "mx-auto")
         .render(context: context)
             
-        // Add our color scheme detector before any other scripts
-        output = colorSchemeScript + output
+        output = environmentScript + output
         
         if context.site.useDefaultBootstrapURLs == .localBootstrap {
             output += Script(file: "/js/bootstrap.bundle.min.js").render(context: context)

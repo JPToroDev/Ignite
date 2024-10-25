@@ -9,27 +9,16 @@ import Foundation
 
 @propertyWrapper
 public struct Environment<Value> {
-    private let keyPath: EnvironmentValues
+    private let keyPath: any EnvironmentValue
     private let defaultValue: Value
     
     public var wrappedValue: Value {
         get {
-            // Register the bridge for this environment value
-            EnvironmentState.shared.registerJavaScriptBridge(
-                key: keyPath.key,
-                eventName: keyPath.eventName
-            )
-            
-            // Get the build-time value or default
-            if let value: Value = EnvironmentState.shared.getValue(keyPath.key) {
-                return value
-            } else {
-                return defaultValue
-            }
+            defaultValue
         }
     }
     
-    public init(_ keyPath: EnvironmentValues, default: Value) {
+    public init(_ keyPath: any EnvironmentValue, default: Value) {
         self.keyPath = keyPath
         self.defaultValue = `default`
     }
