@@ -9,71 +9,50 @@ import Foundation
 
 public class EnvironmentState {
     public static let shared = EnvironmentState()
-    private(set) var values: [String: Any] = [:]
-    private var defaultValues: [String: Any] = [:]
-    private var javascriptBridge: [String: String] = [:]
+    private var registeredValues: Set<String> = []
     private var scriptCache: String?
     
     private init() {}
     
-    func setValue(_ value: Any, forKey key: String) {
-        values[key] = value
+    func register(_ environmentValue: any EnvironmentValue) {
+        registeredValues.insert(environmentValue.key)
     }
     
-    func getValue<T>(_ key: String) -> T? {
-        return values[key] as? T
-    }
-    
-    // Register JavaScript bridge
-    func registerJavaScriptBridge(key: String, eventName: String) {
-        javascriptBridge[key] = eventName
-    }
-    
-    // Generate JavaScript for all registered bridges
-    func generateBridgeJavaScript() -> String {
+    func generateRuntimeScript() -> String {
         if let cached = scriptCache {
             return cached
         }
         
-        var script = ""
-        for (key, eventName) in javascriptBridge {
-            script += """
-                window.addEventListener('\(eventName)', function(event) {
-                    document.documentElement.dataset.\(key.lowercased()) = event.detail.\(key.lowercased());
-                    document.dispatchEvent(new CustomEvent('environment-\(key.lowercased())-change', {
-                        detail: event.detail
-                    }));
+        let script = """
+        window.igniteEnvironment = {
+            observers: new Set(),
+            
+            setValue(key, value) {
+                document.documentElement.dataset[key.toLowerCase()] = value;
+                this.updateConditionalElements(key, value);
+            },
+            
+            updateConditionalElements(key, value) {
+                document.querySelectorAll(`[data-ignite-env-${key.toLowerCase()}]`).forEach(element => {
+                    const conditions = JSON.parse(element.dataset[`igniteEnv${key}`] || '{}');
+                    const show = conditions[value] === true;
+                    element.style.display = show ? '' : 'none';
                 });
-                
-            """
-        }
-        
-        // Add runtime value getters
-        script += """
-            function getEnvironmentValue(key) {
-                return document.documentElement.dataset[key.toLowerCase()];
+            },
+            
+            observe(key, callback) {
+                this.observers.add({ key, callback });
+            },
+            
+            notifyObservers(key, value) {
+                this.observers.forEach(observer => {
+                    if (observer.key === key) observer.callback(value);
+                });
             }
+        };
         """
         
         scriptCache = script
         return script
-    }
-    
-    // Get the initialization script for a specific key
-    func generateInitScript(for key: String) -> String {
-        """
-        <script>
-            (function() {
-                const value = document.documentElement.dataset.\(key.lowercased());
-                if (value) {
-                    const detail = {};
-                    detail.\(key.lowercased()) = value;
-                    document.dispatchEvent(new CustomEvent('environment-\(key.lowercased())-change', {
-                        detail: detail
-                    }));
-                }
-            })();
-        </script>
-        """
     }
 }

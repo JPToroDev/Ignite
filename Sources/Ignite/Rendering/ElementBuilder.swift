@@ -64,3 +64,45 @@ public struct ElementBuilder<T> {
         component
     }
 }
+
+extension ElementBuilder {
+    static func buildExpression<Element: BaseElement, Value>(_ expression: (Element, Value)) -> [Element] where Value: Equatable {
+        let (element, condition) = expression
+        
+        let conditionKey = String(describing: type(of: condition))
+            .replacingOccurrences(of: "Value", with: "")
+        
+        let conditions = [String(describing: condition): true]
+        
+        // Create group properly based on Ignite's Group implementation
+        let group = Group {
+            element
+        }
+        
+        // Add the environment attribute
+        let groupWithAttr = group.addCustomAttribute(
+            name: "data-ignite-env-\(conditionKey.lowercased())",
+            value: conditions.json ?? "{}"
+        )
+        
+        return [groupWithAttr as! Element]
+    }
+    
+    static func buildEither(first component: Component) -> Component {
+        component
+    }
+    
+    static func buildEither(second component: Component) -> Component {
+        component
+    }
+}
+
+private extension Dictionary where Key == String, Value == Bool {
+    var json: String? {
+        guard let data = try? JSONSerialization.data(withJSONObject: self),
+              let string = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        return string
+    }
+}

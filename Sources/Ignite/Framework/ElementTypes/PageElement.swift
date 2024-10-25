@@ -144,16 +144,16 @@ extension PageElement {
     }
 }
 
-// Extension to PageElement for environment support
-extension PageElement {
-    internal func processEnvironmentConditions(context: PublishingContext) -> Self {
-        var copy = self
-        
-        // Process any active environment values
-        for (key, value) in context.currentEnvironmentValues {
-            copy = copy.data("environment-condition-\(key)", value)
-        }
-        
-        return copy
-    }
-}
+//// Extension to PageElement for environment support
+//extension PageElement {
+//    internal func processEnvironmentConditions(context: PublishingContext) -> Self {
+//        var copy = self
+//        
+//        // Process any active environment values
+//        for (key, value) in context.currentEnvironmentValues {
+//            copy = copy.data("environment-condition-\(key)", value)
+//        }
+//        
+//        return copy
+//    }
+//}

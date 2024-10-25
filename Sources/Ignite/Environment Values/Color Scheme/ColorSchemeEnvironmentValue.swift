@@ -8,8 +8,10 @@
 import Foundation
 
 public struct ColorSchemeEnvironmentValue: EnvironmentValue {
-    public enum Value {
+    public enum Value: String {
         case light, dark
+        
+        public var description: String { rawValue }
     }
     
     public var key: String { "colorScheme" }
@@ -17,17 +19,18 @@ public struct ColorSchemeEnvironmentValue: EnvironmentValue {
     
     public var detectionScript: String {
         """
-        function updateColorScheme() {
+        function detectColorScheme() {
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const colorScheme = isDark ? 'dark' : 'light';
-            updateEnvironmentValue('colorScheme', colorScheme);
-            dispatchEnvironmentChange('colorScheme', colorScheme);
+            const value = isDark ? 'dark' : 'light';
+            
+            window.igniteEnvironment.setValue('colorScheme', value);
             document.documentElement.classList.toggle('dark', isDark);
         }
         
-        updateColorScheme();
+        detectColorScheme();
+        
         window.matchMedia('(prefers-color-scheme: dark)')
-            .addEventListener('change', updateColorScheme);
+            .addEventListener('change', detectColorScheme);
         """
     }
 }

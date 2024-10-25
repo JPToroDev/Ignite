@@ -47,17 +47,6 @@ public struct Body: PageElement, HTMLRootElement {
     /// - Returns: The HTML for this element.
     
     public func render(context: PublishingContext) -> String {
-        // Collect all registered environment values
-        let environmentValues: [any EnvironmentValue] = [
-            EnvironmentValues.colorScheme
-            // Add more here as they're added to EnvironmentValues
-        ]
-            
-        let scripts = [baseEnvironmentScript] + environmentValues.map(\.detectionScript)
-            
-        let environmentScript = Script(code: scripts.joined(separator: "\n\n"))
-            .render(context: context)
-            
         var output = Group {
             for item in items {
                 item
@@ -65,8 +54,10 @@ public struct Body: PageElement, HTMLRootElement {
         }
         .class("col-sm-\(context.site.pageWidth)", "mx-auto")
         .render(context: context)
-            
-        output = environmentScript + output
+        
+        // Insert environment scripts
+        let envScripts = Script(code: context.environmentScripts).render(context: context)
+        output = envScripts + output
         
         if context.site.useDefaultBootstrapURLs == .localBootstrap {
             output += Script(file: "/js/bootstrap.bundle.min.js").render(context: context)

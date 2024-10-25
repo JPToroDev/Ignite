@@ -354,24 +354,10 @@ public class PublishingContext {
     }
 }
 
-// Update PublishingContext to handle any environment value
 extension PublishingContext {
-    private static let environmentValuesKey = "currentEnvironmentValues"
-    
-    var currentEnvironmentValues: [String: String] {
-        get {
-            objc_getAssociatedObject(self, Self.environmentValuesKey) as? [String: String] ?? [:]
-        }
-        set {
-            objc_setAssociatedObject(self, Self.environmentValuesKey, newValue, .OBJC_ASSOCIATION_RETAIN)
-        }
-    }
-    
-    func withEnvironmentValue<T>(_ key: String, _ value: T, perform: () -> String) -> String {
-        let previous = currentEnvironmentValues
-        currentEnvironmentValues[key] = "\(value)"
-        let result = perform()
-        currentEnvironmentValues = previous
-        return result
+    var environmentScripts: String {
+        let baseScript = EnvironmentState.shared.generateRuntimeScript()
+        let detectionScripts = [EnvironmentValues.colorScheme.detectionScript]
+        return ([baseScript] + detectionScripts).joined(separator: "\n\n")
     }
 }

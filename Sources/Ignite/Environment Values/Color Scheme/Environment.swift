@@ -21,5 +21,6 @@ public struct Environment<Value> {
     public init(_ keyPath: any EnvironmentValue, default: Value) {
         self.keyPath = keyPath
         self.defaultValue = `default`
+        EnvironmentState.shared.register(keyPath)
     }
 }
