@@ -15,6 +15,6 @@ public struct EnvironmentValue {
     }
 }
 
-extension EnvironmentValue {
+public extension EnvironmentValue {
     static let colorScheme = EnvironmentValue("colorScheme")
 }
