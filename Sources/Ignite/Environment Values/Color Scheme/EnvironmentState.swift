@@ -1,3 +1,4 @@
+
 //
 // EnvironmentState.swift
 // Ignite
@@ -14,7 +15,7 @@ public class EnvironmentState {
     
     private init() {}
     
-    func register(_ environmentValue: any EnvironmentValue) {
+    func register(_ environmentValue: EnvironmentValue) {
         registeredValues.insert(environmentValue.key)
     }
     
@@ -123,7 +124,7 @@ public class EnvironmentState {
                 });
             }
         };
-"""
+        """
         
         scriptCache = script
         return script

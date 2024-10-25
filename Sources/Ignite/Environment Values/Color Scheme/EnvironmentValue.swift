@@ -7,9 +7,14 @@
 
 import Foundation
 
-public protocol EnvironmentValue {
-    associatedtype Value
-    var key: String { get }
-    var eventName: String { get }
-    var detectionScript: String { get }
+public struct EnvironmentValue {
+    let key: String
+    
+    init(_ key: String) {
+        self.key = key
+    }
+}
+
+extension EnvironmentValue {
+    static let colorScheme = EnvironmentValue("colorScheme")
 }

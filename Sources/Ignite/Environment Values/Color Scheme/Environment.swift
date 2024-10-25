@@ -1,3 +1,4 @@
+
 //
 // Environment.swift
 // Ignite
@@ -9,7 +10,7 @@ import Foundation
 
 @propertyWrapper
 public struct Environment<Value> {
-    private let keyPath: any EnvironmentValue
+    private let keyPath: EnvironmentValue
     private let defaultValue: Value
     
     public var wrappedValue: Value {
@@ -18,7 +19,7 @@ public struct Environment<Value> {
         }
     }
     
-    public init(_ keyPath: any EnvironmentValue, default: Value) {
+    public init(_ keyPath: EnvironmentValue, default: Value) {
         self.keyPath = keyPath
         self.defaultValue = `default`
         EnvironmentState.shared.register(keyPath)

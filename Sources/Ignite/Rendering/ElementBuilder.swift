@@ -104,12 +104,8 @@ extension ElementBuilder {
         return [groupWithAttr as! Element]
     }
     
-    static func buildEither(first component: Component) -> Component {
-        component
-    }
-    
-    static func buildEither(second component: Component) -> Component {
-        component
+    static func buildExpression<Element: BaseElement>(_ expression: Element) -> [Element] {
+        [expression]
     }
 }
 
