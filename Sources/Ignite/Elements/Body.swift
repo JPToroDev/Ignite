@@ -10,21 +10,40 @@ import Foundation
 /// The main, user-visible contents of your page.
 public struct Body: PageElement, HTMLRootElement {
     public var attributes = CoreAttributes()
-
     var items: [BaseElement]
-
+    
     public init(@ElementBuilder<BaseElement> _ items: () -> [BaseElement]) {
         self.items = items()
     }
-
+    
     public init(for page: Page) {
         self.items = [page.body]
     }
-
+    
     /// Renders this element using publishing context passed in.
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
     public func render(context: PublishingContext) -> String {
+        // Create the color scheme detector script
+        let colorSchemeScript = Script(code: """
+            function updateColorScheme() {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', isDark);
+        
+                // Dispatch event for any components that need to react
+                window.dispatchEvent(new CustomEvent('colorSchemeChange', { 
+                    detail: { colorScheme: isDark ? 'dark' : 'light' } 
+                }));
+            }
+        
+            // Set initial state
+            updateColorScheme();
+        
+            // Listen for system changes
+            window.matchMedia('(prefers-color-scheme: dark)')
+                .addEventListener('change', updateColorScheme);
+        """).render(context: context)
+        
         var output = Group {
             for item in items {
                 item
@@ -32,7 +51,10 @@ public struct Body: PageElement, HTMLRootElement {
         }
         .class("col-sm-\(context.site.pageWidth)", "mx-auto")
         .render(context: context)
-
+        
+        // Add our color scheme detector before any other scripts
+        output = colorSchemeScript + output
+        
         if context.site.useDefaultBootstrapURLs == .localBootstrap {
             output += Script(file: "/js/bootstrap.bundle.min.js").render(context: context)
         } else if context.site.useDefaultBootstrapURLs == .remoteBootstrap {
@@ -41,15 +63,16 @@ public struct Body: PageElement, HTMLRootElement {
             )
             .addCustomAttribute(
                 name: "integrity",
-                value: "sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy")
+                value: "sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+            )
             .addCustomAttribute(name: "crossorigin", value: "anonymous")
             .render(context: context)
         }
-
+        
         if context.site.syntaxHighlighters.isEmpty == false {
             output += Script(file: "/js/syntax-highlighting.js").render(context: context)
         }
-
+        
         // Activate tooltips if there are any.
         if output.contains(#"data-bs-toggle="tooltip""#) {
             output += Script(code: """
@@ -57,7 +80,7 @@ public struct Body: PageElement, HTMLRootElement {
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
             """).render(context: context)
         }
-
+        
         return "<body\(attributes.description)>\(output)</body>"
     }
 }
