@@ -12,31 +12,31 @@ import Foundation
 public struct CoreAttributes: Sendable {
     /// A unique identifier. Can be empty.
     var id = ""
-
+    
     /// ARIA attributes that add accessibility information.
     /// See https://www.w3.org/TR/html-aria/
     var aria = [AttributeValue]()
-
+    
     /// CSS classes.
     var classes = [String]()
-
+    
     /// Inline CSS styles.
     var styles = [AttributeValue]()
-
+    
     /// data- attributes.
     var data = [AttributeValue]()
-
+    
     /// JavaScript events, such as onclick.
     var events = [Event]()
-
+    
     /// Custom attributes not covered by the above, e.g. loading="lazy"
     var customAttributes = [AttributeValue]()
-
+    
     /// All core attributes collapsed down to a single string for easy application.
     var description: String {
         "\(idString)\(customAttributeString)\(classString)\(styleString)\(dataString)\(ariaString)\(eventString)"
     }
-
+    
     /// The ID of this element, if set.
     var idString: String {
         if id.isEmpty {
@@ -45,23 +45,23 @@ public struct CoreAttributes: Sendable {
             " id=\"\(id)\""
         }
     }
-
+    
     /// All aria attributes for this element collapsed down to a string.
     var ariaString: String {
         if aria.isEmpty {
             return ""
         } else {
             var output = ""
-
+            
             // Arium? Look, just give me this one…
             for arium in aria {
                 output += " aria-\(arium.name)=\"\(arium.value)\""
             }
-
+            
             return output
         }
     }
-
+    
     /// All CSS classes for this element collapsed down to a string.
     var classString: String {
         if classes.isEmpty {
@@ -70,7 +70,7 @@ public struct CoreAttributes: Sendable {
             return " class=\"\(classes.joined(separator: " "))\""
         }
     }
-
+    
     /// All inline CSS styles for this element collapsed down to a string.
     var styleString: String {
         if styles.isEmpty {
@@ -80,56 +80,46 @@ public struct CoreAttributes: Sendable {
             return " style=\"\(stringified)\""
         }
     }
-
+    
     /// All data attributes for this element collapsed down to a string.
     var dataString: String {
         if data.isEmpty {
             return ""
         } else {
             var output = ""
-
+            
             for datum in data {
                 output += " data-\(datum.name)=\"\(datum.value)\""
             }
-
+            
             return output
         }
     }
-
+    
     /// All events for this element, collapsed to down to a string.
     var eventString: String {
         var result = ""
-
+        
         for event in events where event.actions.isEmpty == false {
             let actions = event.actions.map { $0.compile() }.joined(separator: "; ")
-
+            
             result += " \(event.name)=\"\(actions)\""
         }
-
+        
         return result
     }
-
+    
     /// All custom attributes for this element collapsed down to a string.
     var customAttributeString: String {
-        if customAttributes.isEmpty {
-            return ""
-        } else {
-            var output = ""
-
-            for attribute in customAttributes {
-                output += " \(attribute.name)=\"\(attribute.value)\""
-            }
-
-            return output
-        }
+        customAttributes.map { " \($0.name)=\"\($0.value)\"" }.joined()
     }
-
+    
     /// Appends an array of CSS classes to the current element.
     /// - Parameter classes: The CSS classes to append.
     mutating func append(classes: [String]) {
         self.classes.append(contentsOf: classes)
     }
-
+    
     /// Returns a new set of attributes with extra CSS classes appended.
     /// - Parameter classes: The CSS classes to append.
     /// - Returns: A copy of the previous `CoreAttributes` object with
@@ -139,7 +129,7 @@ public struct CoreAttributes: Sendable {
         copy.classes.append(contentsOf: classes)
         return copy
     }
-
+    
     /// Returns a new set of attributs with an extra aria appended
     /// - Parameter aria: The aria to append
     /// - Returns: A copy of the previous `CoreAttributes` object with
@@ -152,28 +142,17 @@ public struct CoreAttributes: Sendable {
         copy.aria.append(aria)
         return copy
     }
-
+    
     /// Appends multiple extra inline CSS styles.
     /// - Parameter classes: The inline CSS styles to append.
     mutating func append(styles: AttributeValue...) {
         self.styles.append(contentsOf: styles)
     }
-
+    
     /// Appends a single extra inline CSS style.
     ///  - Parameter style: The style name, e.g. background-color
     ///  - Parameter value: The style value, e.g. steelblue
     mutating func append(style: String, value: String) {
         self.styles.append(AttributeValue(name: style, value: value))
-    }
-}
-
-extension CoreAttributes {
-    // Add environment awareness to all styles
-    mutating func addEnvironmentAwareness(_ key: String, value: String) {
-        // Add data attribute for runtime handling
-        data.append(AttributeValue(name: "env-\(key)", value: value))
-        
-        // Add class for initial state
-        classes.append("env-\(key)-\(value)")
     }
 }
