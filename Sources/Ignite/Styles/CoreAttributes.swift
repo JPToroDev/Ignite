@@ -166,3 +166,14 @@ public struct CoreAttributes: Sendable {
         self.styles.append(AttributeValue(name: style, value: value))
     }
 }
+
+extension CoreAttributes {
+    // Add environment awareness to all styles
+    mutating func addEnvironmentAwareness(_ key: String, value: String) {
+        // Add data attribute for runtime handling
+        data.append(AttributeValue(name: "env-\(key)", value: value))
+        
+        // Add class for initial state
+        classes.append("env-\(key)-\(value)")
+    }
+}

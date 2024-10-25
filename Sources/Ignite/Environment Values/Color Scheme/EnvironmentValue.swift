@@ -7,14 +7,8 @@
 
 import Foundation
 
-public struct EnvironmentValue {
-    let key: String
-    
-    init(_ key: String) {
-        self.key = key
-    }
-}
-
-public extension EnvironmentValue {
-    static let colorScheme = EnvironmentValue("colorScheme")
-}
+//public struct EnvironmentKey {
+//    let name: String
+//    
+//    public static let colorScheme = EnvironmentKey(name: "colorScheme")
+//}

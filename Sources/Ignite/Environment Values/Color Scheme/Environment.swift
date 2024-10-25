@@ -8,20 +8,19 @@
 
 import Foundation
 
-@propertyWrapper
-public struct Environment<Value> {
-    private let keyPath: EnvironmentValue
-    private let defaultValue: Value
-    
-    public var wrappedValue: Value {
-        get {
-            defaultValue
-        }
-    }
-    
-    public init(_ keyPath: EnvironmentValue, default: Value) {
-        self.keyPath = keyPath
-        self.defaultValue = `default`
-        EnvironmentState.shared.register(keyPath)
-    }
-}
+//@propertyWrapper
+//public struct Environment<Value> {
+//    let key: EnvironmentKey
+//    let defaultValue: Value
+//    
+//    public var wrappedValue: Value {
+//        defaultValue
+//    }
+//    
+//    public init(_ key: EnvironmentKey, default: Value) {
+//        self.key = key
+//        self.defaultValue = `default`
+//        // Register for runtime handling
+//        EnvironmentState.shared.register(key.name)
+//    }
+//}

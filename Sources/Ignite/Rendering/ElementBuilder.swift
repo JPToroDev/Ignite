@@ -109,7 +109,7 @@ extension ElementBuilder {
     }
 }
 
-private extension Dictionary where Key == String, Value == Bool {
+public extension Dictionary where Key == String, Value == Bool {
     var json: String? {
         guard let data = try? JSONSerialization.data(withJSONObject: self),
               let string = String(data: data, encoding: .utf8) else {
