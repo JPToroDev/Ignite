@@ -15,20 +15,19 @@ public enum ColorScheme: String {
 // The condition that gets generated when comparing environment values
 public struct EnvironmentCondition {
     let key: String
-    let value: String
-    let trueValue: String
-    let falseValue: String
+    let matchValue: String
     let property: String
+    let whenTrue: String
+    let whenFalse: String
 }
 
-// Simple equality operator that creates the condition
 public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
     EnvironmentCondition(
         key: "colorscheme",
-        value: rhs.rawValue,
-        trueValue: "none",
-        falseValue: "block",
-        property: "display"
+        matchValue: rhs.rawValue,
+        property: "display",
+        whenTrue: "none",   // When condition matches, hide
+        whenFalse: "block"  // When condition doesn't match, show
     )
 }
 
@@ -37,10 +36,20 @@ extension PageElement {
     public func hidden(_ condition: EnvironmentCondition) -> Self {
         var copy = self
         
-        let values = [
-            condition.value: condition.trueValue,
-            "default": condition.falseValue
-        ]
+        // Create conditional styles that will show the element
+        // only when the environment value DOESN'T match
+        let values: [String: String]
+        if condition.matchValue == "light" {
+            values = [
+                "light": condition.whenTrue,
+                "dark": condition.whenFalse
+            ]
+        } else {
+            values = [
+                "dark": condition.whenTrue,
+                "light": condition.whenFalse
+            ]
+        }
         
         let jsonData = try! JSONEncoder().encode([condition.property: values])
         let jsonString = String(data: jsonData, encoding: .utf8)!
