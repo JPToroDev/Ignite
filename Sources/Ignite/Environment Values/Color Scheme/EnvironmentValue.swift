@@ -116,33 +116,29 @@ public extension PageElement {
 //    }
 //}
 
-// Represents available environment values
 public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == String {
-    // Helper to get the key string for CSS classes
     var key: String { get }
-    // Get value from context based on key
     func getValue(from context: PublishingContext) -> String?
 }
 
 public struct EnvironmentRelativeGroup: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
     private let content: [BlockElement]
-    private let value: any EnvironmentValue
-    private let expectedValue: String
+    private let key: any EnvironmentValue
+    private let expectedValue: any EnvironmentValue
     public var attributes: CoreAttributes = CoreAttributes()
     
-    public init(_ environment: any EnvironmentValue, equals value: String, @BlockElementBuilder content: () -> [BlockElement]) {
+    public init<Value: EnvironmentValue>(_ key: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
         self.content = content()
-        self.value = environment
+        // Create an instance of the key type to use for getting values
+        self.key = value
         self.expectedValue = value
     }
     
     public func render(context: PublishingContext) -> String {
         var copy = self
-        if let currentValue = value.getValue(from: context),
-           currentValue.description != expectedValue.description {
-            copy.attributes.classes.append("env-\(value.key)-\(expectedValue.description)-hidden")
-        }
+        // Always add the hiding class when we're not the expected value
+        copy.attributes.classes.append("env-\(key.key)-\(expectedValue.rawValue)-hidden")
         
         let group = Group(items: content, context: context)
         return group.attributes(copy.attributes).render(context: context)
