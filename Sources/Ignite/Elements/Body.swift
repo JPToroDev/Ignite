@@ -24,6 +24,56 @@ public struct Body: PageElement, HTMLRootElement {
     /// Renders this element using publishing context passed in.
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
+//    public func render(context: PublishingContext) -> String {
+//        var output = Group {
+//            for item in items {
+//                item
+//            }
+//        }
+//        .class("col-sm-\(context.site.pageWidth)", "mx-auto")
+//        .render(context: context)
+//
+//        if context.site.useDefaultBootstrapURLs == .localBootstrap {
+//            output += Script(file: "/js/bootstrap.bundle.min.js").render(context: context)
+//        } else if context.site.useDefaultBootstrapURLs == .remoteBootstrap {
+//            output += Script(
+//                file: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+//            )
+//            .addCustomAttribute(
+//                name: "integrity",
+//                value: "sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy")
+//            .addCustomAttribute(name: "crossorigin", value: "anonymous")
+//            .render(context: context)
+//        }
+//
+//        if context.site.syntaxHighlighters.isEmpty == false {
+//            output += Script(file: "/js/syntax-highlighting.js").render(context: context)
+//        }
+//
+//        // Activate tooltips if there are any.
+//        if output.contains(#"data-bs-toggle="tooltip""#) {
+//            output += Script(code: """
+//            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+//            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+//            """).render(context: context)
+//        }
+//
+//        return "<body\(attributes.description)>\(output)</body>"
+//    }
+}
+
+extension Body {
+    func addThemeScript(context: PublishingContext) -> String {
+        Script(code: """
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        function updateTheme(e) {
+            document.documentElement.dataset.bsTheme = e.matches ? 'dark' : 'light';
+        }
+        updateTheme(darkQuery);
+        darkQuery.addEventListener('change', updateTheme);
+        """).render(context: context)
+    }
+    
     public func render(context: PublishingContext) -> String {
         var output = Group {
             for item in items {
@@ -32,7 +82,8 @@ public struct Body: PageElement, HTMLRootElement {
         }
         .class("col-sm-\(context.site.pageWidth)", "mx-auto")
         .render(context: context)
-
+        
+        // Add existing scripts
         if context.site.useDefaultBootstrapURLs == .localBootstrap {
             output += Script(file: "/js/bootstrap.bundle.min.js").render(context: context)
         } else if context.site.useDefaultBootstrapURLs == .remoteBootstrap {
@@ -45,19 +96,25 @@ public struct Body: PageElement, HTMLRootElement {
             .addCustomAttribute(name: "crossorigin", value: "anonymous")
             .render(context: context)
         }
-
+        
+        // Add syntax highlighting if needed
         if context.site.syntaxHighlighters.isEmpty == false {
             output += Script(file: "/js/syntax-highlighting.js").render(context: context)
         }
-
-        // Activate tooltips if there are any.
+        
+        // Activate tooltips if there are any
         if output.contains(#"data-bs-toggle="tooltip""#) {
             output += Script(code: """
-            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-            """).render(context: context)
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+                """).render(context: context)
         }
-
+        
+        // Add theme script if site has both themes
+        if context.site.theme.id != context.site.darkTheme.id {
+            output += addThemeScript(context: context)
+        }
+        
         return "<body\(attributes.description)>\(output)</body>"
     }
 }

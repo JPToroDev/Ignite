@@ -9,6 +9,7 @@ import Foundation
 
 /// Themes allow you to have complete control over the HTML used to generate
 /// your pages.
-public protocol Theme {
+public protocol Theme: Identifiable {
+    var id: UUID { get }
     func render(page: Page, context: PublishingContext) async -> HTML
 }
