@@ -7,6 +7,8 @@
 
 // EnvironmentValue.swift
 
+// EnvironmentValue.swift
+
 import Foundation
 
 public enum ColorScheme: String {
@@ -26,18 +28,17 @@ public struct EnvironmentCondition {
     }
 }
 
+// Changed operator to hide when the schemes DON'T match
 public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
-    EnvironmentCondition(key: "colorscheme", value: rhs.rawValue)
+    EnvironmentCondition(key: "colorscheme", value: rhs == .light ? "dark" : "light")
 }
 
 extension PublishingContext {
     public var colorScheme: ColorScheme { .light }
     
     func environmentStyles() -> String {
-        // Collection of all environment styles
         let styles = [
             generateColorSchemeStyles()
-            // Add other environment styles here as needed
         ].joined(separator: "\n\n")
         
         return """
