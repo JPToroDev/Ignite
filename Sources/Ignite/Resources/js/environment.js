@@ -5,7 +5,6 @@
 // See LICENSE for license information.
 //
 
-// environment.js
 class EnvironmentSystem {
     constructor() {
         this.values = new Map();
@@ -31,31 +30,19 @@ class EnvironmentSystem {
     }
 
     updateElements(key, value) {
-        const elements = document.querySelectorAll(`[data-ignite-env-${key}]`);
+        const elements = document.querySelectorAll('[data-ignite-env="true"]');
         elements.forEach(element => {
-            const envCondition = element.getAttribute(`data-ignite-env-${key}`);
-            const matches = envCondition === value;
-            
-            if (matches) {
-                element.style.removeProperty('display');
-            } else {
-                element.style.display = 'none';
+            const children = element.children;
+            for (let child of children) {
+                const condition = child.getAttribute('data-ignite-env-condition');
+                const shouldShow = (value === 'dark' && condition === 'false') ||
+                                 (value === 'light' && condition === 'true');
+                child.style.display = shouldShow ? '' : 'none';
             }
-            
-            // Dispatch custom event for other handlers
-            element.dispatchEvent(new CustomEvent('igniteEnvChange', {
-                detail: { key, value, matches },
-                bubbles: true
-            }));
         });
-    }
-
-    getValue(key) {
-        return this.values.get(key);
     }
 }
 
-// Initialize once DOM is ready
 window.addEventListener('DOMContentLoaded', () => {
     window.igniteEnv = new EnvironmentSystem();
 });

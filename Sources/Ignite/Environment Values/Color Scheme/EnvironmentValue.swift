@@ -7,55 +7,80 @@
 
 import Foundation
 
-public struct EnvironmentKey {
-    let name: String
-    
-    public static let colorScheme = EnvironmentKey(name: "colorScheme")
+public enum ColorScheme: String {
+    case light
+    case dark
 }
 
-// Environment.swift
-@propertyWrapper
-public struct Environment<Value: Equatable> {
-    let key: EnvironmentKey
-    let defaultValue: Value
-    
-    public init(_ key: EnvironmentKey, default defaultValue: Value) {
-        self.key = key
-        self.defaultValue = defaultValue
-    }
-    
-    public var wrappedValue: Value {
-        defaultValue
-    }
+// The condition that gets generated when comparing environment values
+public struct EnvironmentCondition {
+    let key: String
+    let value: String
+    let trueValue: String
+    let falseValue: String
+    let property: String
 }
 
-// ElementBuilder.swift extension
-extension ElementBuilder {
-    static func buildExpression<Element: BaseElement, Value>(_ expression: (Element, Value)) -> [Element] where Value: Equatable {
-        let (element, condition) = expression
+// Simple equality operator that creates the condition
+public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
+    EnvironmentCondition(
+        key: "colorscheme",
+        value: rhs.rawValue,
+        trueValue: "none",
+        falseValue: "block",
+        property: "display"
+    )
+}
+
+// Extension to add environment-aware modifiers
+extension PageElement {
+    public func hidden(_ condition: EnvironmentCondition) -> Self {
+        var copy = self
         
-        // Normalize the environment key
-        let conditionKey = String(describing: type(of: condition))
-            .replacingOccurrences(of: "Value", with: "")
-            .lowercased()
+        let values = [
+            condition.value: condition.trueValue,
+            "default": condition.falseValue
+        ]
         
-        // Create the current value string
-        let currentValue = String(describing: condition)
+        let jsonData = try! JSONEncoder().encode([condition.property: values])
+        let jsonString = String(data: jsonData, encoding: .utf8)!
         
-        // Create group to wrap the element
-        let group = Group {
-            element
-        }
-        
-        // Add environment attribute
-        var groupWithAttr = group.addCustomAttribute(
-            name: "data-ignite-env-\(conditionKey)",
-            value: currentValue
+        copy.attributes.customAttributes.append(
+            AttributeValue(name: "data-env-\(condition.key)", value: jsonString)
         )
         
-        // Add visibility class
-        groupWithAttr = groupWithAttr.class("env-\(conditionKey)")
-        
-        return [groupWithAttr as! Element]
+        return copy
+    }
+}
+
+// Extension to add environment values to PublishingContext
+extension PublishingContext {
+    public var colorScheme: ColorScheme { .light }
+    
+    func environmentScript() -> String {
+        """
+        <script>
+        const igniteEnv = {
+            init() {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                this.setColorScheme(prefersDark.matches);
+                prefersDark.addListener(e => this.setColorScheme(e.matches));
+            },
+            
+            setColorScheme(isDark) {
+                const value = isDark ? 'dark' : 'light';
+                
+                document.querySelectorAll('[data-env-colorscheme]').forEach(el => {
+                    const conditions = JSON.parse(el.dataset.envColorscheme);
+                    Object.entries(conditions).forEach(([prop, values]) => {
+                        el.style[prop] = values[value] || values['default'];
+                    });
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => igniteEnv.init());
+        </script>
+        """
     }
 }
