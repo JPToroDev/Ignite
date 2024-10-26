@@ -12,11 +12,8 @@
 import Foundation
 
 public enum ColorScheme: String, EnvironmentValue {
-    public func getValue(from context: PublishingContext) -> String? {
-        return context.colorScheme.rawValue
-    }
-    
     case light, dark
+    public var keyPath: KeyPath<PublishingContext, ColorScheme> { \PublishingContext.colorScheme }
     public var key : String { "colorscheme" }
 }
 
@@ -39,31 +36,31 @@ public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
 
 extension PublishingContext {
     public var colorScheme: ColorScheme { .light }
-    
-    func environmentStyles() -> String {
-        let styles = [
-            generateColorSchemeStyles()
-        ].joined(separator: "\n\n")
-        
-        return """
-        <style>
-        \(styles)
-        </style>
-        """
+//    
+//    func environmentStyles() -> String {
+//        let styles = [
+//            generateColorSchemeStyles()
+//        ].joined(separator: "\n\n")
+//        
+//        return """
+//        <style>
+//        \(styles)
+//        </style>
+//        """
+//    }
+//    
+//    private func generateColorSchemeStyles() -> String {
+//        """
+//        @media (prefers-color-scheme: light) {
+//            .env-colorscheme-light-hidden { display: none !important; }
+//        }
+//        
+//        @media (prefers-color-scheme: dark) {
+//            .env-colorscheme-dark-hidden { display: none !important; }
+//        }
+//        """
     }
-    
-    private func generateColorSchemeStyles() -> String {
-        """
-        @media (prefers-color-scheme: light) {
-            .env-colorscheme-light-hidden { display: none !important; }
-        }
-        
-        @media (prefers-color-scheme: dark) {
-            .env-colorscheme-dark-hidden { display: none !important; }
-        }
-        """
-    }
-}
+//}
 
 extension HTML {
     public func render(context: PublishingContext) -> String {
@@ -107,7 +104,7 @@ public extension PageElement {
 //        @media (prefers-color-scheme: light) {
 //            .env-colorscheme-light-hidden { display: none !important; }
 //        }
-//        
+//
 //        @media (prefers-color-scheme: dark) {
 //            .env-colorscheme-dark-hidden { display: none !important; }
 //        }
@@ -116,36 +113,50 @@ public extension PageElement {
 //    }
 //}
 
-public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == String {
+public protocol EnvironmentValue: Equatable, RawRepresentable where RawValue == String {
+    associatedtype Value: EnvironmentValue
     var key: String { get }
-    func getValue(from context: PublishingContext) -> String?
+    var keyPath: KeyPath<PublishingContext, Value> { get }
 }
 
-public struct EnvironmentRelativeGroup: BlockElement {
+public struct EnvironmentRelativeGroup<T: EnvironmentValue>: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
     private let content: [BlockElement]
-    private let expectedValue: any EnvironmentValue
+    private let expectedValue: T
     public var attributes: CoreAttributes = CoreAttributes()
     
-    public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
+    public init(_ type: T.Type, equals value: T, @BlockElementBuilder content: () -> [BlockElement]) {
         self.content = content()
         self.expectedValue = value
     }
     
     public func render(context: PublishingContext) -> String {
         var output = "<div"
-        
-        // Instead of checking specifically for ColorScheme,
-        // use the EnvironmentValue protocol methods
-        if let currentValue = expectedValue.getValue(from: context),
-           currentValue != expectedValue.rawValue {
-            output += " class=\"env-\(expectedValue.key)-\(currentValue)-hidden\""
-        }
-        
+        // Simply show when we match this value
+        output += " class=\"env-\(expectedValue.key)-\(expectedValue.rawValue)-show\""
         output += ">"
         output += content.map { $0.render(context: context) }.joined()
         output += "</div>"
-        
         return output
+    }
+}
+
+extension PublishingContext {
+    func environmentStyles() -> String {
+        """
+        <style>
+        /* Hide by default */
+        [class*='env-colorscheme'] { display: none; }
+        
+        /* Show when media query matches */
+        @media (prefers-color-scheme: light) {
+            .env-colorscheme-light-show { display: block; }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .env-colorscheme-dark-show { display: block; }
+        }
+        </style>
+        """
     }
 }
