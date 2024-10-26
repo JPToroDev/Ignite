@@ -128,29 +128,24 @@ public struct EnvironmentRelativeGroup: BlockElement {
     public var attributes: CoreAttributes = CoreAttributes()
     
     public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
-            self.content = content()
-            self.expectedValue = value
+        self.content = content()
+        self.expectedValue = value
+    }
+    
+    public func render(context: PublishingContext) -> String {
+        var output = "<div"
+        
+        // Instead of checking specifically for ColorScheme,
+        // use the EnvironmentValue protocol methods
+        if let currentValue = expectedValue.getValue(from: context),
+           currentValue != expectedValue.rawValue {
+            output += " class=\"env-\(expectedValue.key)-\(currentValue)-hidden\""
         }
         
-        public func render(context: PublishingContext) -> String {
-            // Start with <div>
-            var output = "<div"
-            
-            // Add the visibility class using same logic as working code
-            if let colorScheme = expectedValue as? ColorScheme {
-                let condition = (context.colorScheme == colorScheme)
-                output += " class=\"env-\(condition.key)-\(condition.value)-hidden\""
-            }
-            
-            // Close opening tag
-            output += ">"
-            
-            // Add content
-            output += content.map { $0.render(context: context) }.joined()
-            
-            // Close div
-            output += "</div>"
-            
-            return output
-        }
+        output += ">"
+        output += content.map { $0.render(context: context) }.joined()
+        output += "</div>"
+        
+        return output
+    }
 }
