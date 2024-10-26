@@ -21,14 +21,6 @@ public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
     EnvironmentCondition(key: "colorscheme", value: rhs.rawValue)
 }
 
-extension PageElement {
-    public func hidden(_ condition: EnvironmentCondition) -> Self {
-        var copy = self
-        copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
-        return copy
-    }
-}
-
 extension PublishingContext {
     public var colorScheme: ColorScheme { .light }
     
