@@ -11,58 +11,42 @@
 
 import Foundation
 
-public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == String {
-    static var key: String { get }
-    static var query: String { get }
-}
-
-public enum ColorScheme: String, EnvironmentValue {
-    case light, dark
-    public static let key: String = "colorScheme"
-    public static let query: String = "prefers-color-scheme"
+public enum ColorScheme: String {
+    case light
+    case dark
 }
 
 public struct EnvironmentCondition {
     let key: String
     let value: String
+    let query: String
     
-    init(key: String, value: String) {
+    init(key: String, value: String, query: String = "prefers-color-scheme") {
         self.key = key
         self.value = value
+        self.query = query
     }
 }
 
-// Overload '==' to return EnvironmentCondition
-public func ==<T: EnvironmentValue>(lhs: T, rhs: T) -> EnvironmentCondition {
-    EnvironmentCondition(key: T.key, value: rhs.rawValue)
-}
-
-// Provide a method to compare for equality when Bool is needed
-public extension EnvironmentValue where Self.RawValue: Equatable {
-    func equals(_ other: Self) -> Bool {
-        return self.rawValue == other.rawValue
-    }
-}
-
-// Overload '===' to return Bool
-public func ===<T: EnvironmentValue>(lhs: T, rhs: T) -> Bool where T.RawValue: Equatable {
-    return lhs.rawValue == rhs.rawValue
+// Changed operator to hide when the schemes DON'T match
+public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
+    EnvironmentCondition(key: "colorscheme", value: rhs == .light ? "dark" : "light")
 }
 
 extension PublishingContext {
     public var colorScheme: ColorScheme { .light }
     
-    func environmentStyles() -> String {
-        let styles = [
-            generateColorSchemeStyles()
-        ].joined(separator: "\n\n")
-        
-        return """
-        <style>
-        \(styles)
-        </style>
-        """
-    }
+//    func environmentStyles() -> String {
+//        let styles = [
+//            generateColorSchemeStyles()
+//        ].joined(separator: "\n\n")
+//        
+//        return """
+//        <style>
+//        \(styles)
+//        </style>
+//        """
+//    }
     
     private func generateColorSchemeStyles() -> String {
         """
@@ -90,9 +74,54 @@ extension HTML {
 }
 
 public extension PageElement {
+    
     func hidden(_ condition: EnvironmentCondition) -> Self {
         var copy = self
         copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
         return copy
+    }
+}
+
+//public enum ColorScheme: String {
+//    case light
+//    case dark
+//}
+
+//public enum ColorScheme: String {
+//    case light
+//    case dark
+//}
+
+public struct EnvironmentRelativeGroup: BlockElement {
+    public var columnWidth: ColumnWidth = .automatic
+    
+    private let content: [BlockElement]
+    public var attributes: CoreAttributes = CoreAttributes()
+    
+    public init(_ type: ColorScheme.Type, equals value: ColorScheme, @BlockElementBuilder content: () -> [BlockElement]) {
+        self.content = content()
+        // Hide element when in the opposite color scheme
+        self.attributes.classes.append("env-colorscheme-\(value == .light ? "dark" : "light")-hidden")
+    }
+    
+    public func render(context: PublishingContext) -> String {
+        let group = Group(items: content, context: context)
+        return group.attributes(attributes).render(context: context)
+    }
+}
+
+extension PublishingContext {
+    func environmentStyles() -> String {
+        """
+        <style>
+        @media (prefers-color-scheme: light) {
+            .env-colorscheme-light-hidden { display: none !important; }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .env-colorscheme-dark-hidden { display: none !important; }
+        }
+        </style>
+        """
     }
 }
