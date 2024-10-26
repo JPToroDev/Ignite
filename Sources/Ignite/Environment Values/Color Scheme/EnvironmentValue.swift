@@ -11,26 +11,42 @@
 
 import Foundation
 
-public enum ColorScheme: String {
-    case light
-    case dark
+public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == String {
+    static var key: String { get }
+    static var query: String { get }
+}
+
+public enum ColorScheme: String, EnvironmentValue {
+    case light, dark
+    public static let key: String = "colorScheme"
+    public static let query: String = "prefers-color-scheme"
 }
 
 public struct EnvironmentCondition {
     let key: String
     let value: String
-    let query: String
     
-    init(key: String, value: String, query: String = "prefers-color-scheme") {
+    init(key: String, value: String) {
         self.key = key
         self.value = value
-        self.query = query
     }
 }
 
-// Changed operator to hide when the schemes DON'T match
-public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
-    EnvironmentCondition(key: "colorscheme", value: rhs == .light ? "dark" : "light")
+// Overload '==' to return EnvironmentCondition
+public func ==<T: EnvironmentValue>(lhs: T, rhs: T) -> EnvironmentCondition {
+    EnvironmentCondition(key: T.key, value: rhs.rawValue)
+}
+
+// Provide a method to compare for equality when Bool is needed
+public extension EnvironmentValue where Self.RawValue: Equatable {
+    func equals(_ other: Self) -> Bool {
+        return self.rawValue == other.rawValue
+    }
+}
+
+// Overload '===' to return Bool
+public func ===<T: EnvironmentValue>(lhs: T, rhs: T) -> Bool where T.RawValue: Equatable {
+    return lhs.rawValue == rhs.rawValue
 }
 
 extension PublishingContext {
@@ -74,7 +90,6 @@ extension HTML {
 }
 
 public extension PageElement {
-    
     func hidden(_ condition: EnvironmentCondition) -> Self {
         var copy = self
         copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
