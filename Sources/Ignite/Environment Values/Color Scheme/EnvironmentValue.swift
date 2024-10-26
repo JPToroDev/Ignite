@@ -128,19 +128,29 @@ public struct EnvironmentRelativeGroup: BlockElement {
     public var attributes: CoreAttributes = CoreAttributes()
     
     public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
-        self.content = content()
-        self.expectedValue = value
-    }
-    
-    public func render(context: PublishingContext) -> String {
-        // Create the group first
-        let group = Group(items: content, context: context)
-        
-        // Then hide the entire group using the same logic as .hidden()
-        if let colorScheme = expectedValue as? ColorScheme {
-            return group.hidden(context.colorScheme == colorScheme).render(context: context)
+            self.content = content()
+            self.expectedValue = value
         }
         
-        return group.render(context: context)
-    }
+        public func render(context: PublishingContext) -> String {
+            // Start with <div>
+            var output = "<div"
+            
+            // Add the visibility class using same logic as working code
+            if let colorScheme = expectedValue as? ColorScheme {
+                let condition = (context.colorScheme == colorScheme)
+                output += " class=\"env-\(condition.key)-\(condition.value)-hidden\""
+            }
+            
+            // Close opening tag
+            output += ">"
+            
+            // Add content
+            output += content.map { $0.render(context: context) }.joined()
+            
+            // Close div
+            output += "</div>"
+            
+            return output
+        }
 }
