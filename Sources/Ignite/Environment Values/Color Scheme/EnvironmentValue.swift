@@ -62,18 +62,6 @@ extension PublishingContext {
     }
 //}
 
-extension HTML {
-    public func render(context: PublishingContext) -> String {
-        var output = "<!doctype html>"
-        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
-        output += head?.render(context: context) ?? ""
-        output += context.environmentStyles()
-        output += body?.render(context: context) ?? ""
-        output += "</html>"
-        return output
-    }
-}
-
 public extension PageElement {
     
     func hidden(_ condition: EnvironmentCondition) -> Self {
@@ -158,5 +146,30 @@ extension PublishingContext {
         }
         </style>
         """
+    }
+}
+
+//extension HTML {
+//    public func render(context: PublishingContext) -> String {
+//        var output = "<!doctype html>"
+//        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
+//        output += head?.render(context: context) ?? ""
+//        output += context.environmentStyles()
+//        output += body?.render(context: context) ?? ""
+//        output += "</html>"
+//        return output
+//    }
+//}
+
+extension HTML {
+    public func render(context: PublishingContext) -> String {
+        var output = "<!doctype html>"
+        // Use a class to control theme instead of data-bs-theme attribute
+        output += "<html lang=\"\(context.site.language.rawValue)\" class=\"theme-light\"\(attributes.description)>"
+        output += head?.render(context: context) ?? ""
+        output += context.environmentStyles()
+        output += body?.render(context: context) ?? ""
+        output += "</html>"
+        return output
     }
 }
