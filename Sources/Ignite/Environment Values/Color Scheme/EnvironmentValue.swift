@@ -133,39 +133,28 @@ extension PublishingContext {
     func environmentStyles() -> String {
         """
         <style>
-        /* Hide by default */
+        /* Content visibility */
         [class*='env-colorscheme'] { display: none; }
         
-        /* Show when media query matches */
         @media (prefers-color-scheme: light) {
             .env-colorscheme-light-show { display: block; }
+            html[data-bs-theme] { data-bs-theme: light; }
         }
         
         @media (prefers-color-scheme: dark) {
             .env-colorscheme-dark-show { display: block; }
+            html[data-bs-theme] { data-bs-theme: dark; }
         }
         </style>
         """
     }
 }
 
-//extension HTML {
-//    public func render(context: PublishingContext) -> String {
-//        var output = "<!doctype html>"
-//        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
-//        output += head?.render(context: context) ?? ""
-//        output += context.environmentStyles()
-//        output += body?.render(context: context) ?? ""
-//        output += "</html>"
-//        return output
-//    }
-//}
-
 extension HTML {
     public func render(context: PublishingContext) -> String {
         var output = "<!doctype html>"
-        // Use a class to control theme instead of data-bs-theme attribute
-        output += "<html lang=\"\(context.site.language.rawValue)\" class=\"theme-light\"\(attributes.description)>"
+        // Add the attribute but don't set a value - let CSS control it
+        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme\(attributes.description)>"
         output += head?.render(context: context) ?? ""
         output += context.environmentStyles()
         output += body?.render(context: context) ?? ""
