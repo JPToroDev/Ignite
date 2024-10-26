@@ -66,10 +66,20 @@ extension Body {
     func addThemeScript(context: PublishingContext) -> String {
         Script(code: """
         const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        // Store current preference to detect actual changes
+        let currentTheme = darkQuery.matches ? 'dark' : 'light';
+        
+        // Update theme and reload if it changed
         function updateTheme(e) {
-            document.documentElement.dataset.bsTheme = e.matches ? 'dark' : 'light';
+            const newTheme = e.matches ? 'dark' : 'light';
+            if (currentTheme !== newTheme) {
+                currentTheme = newTheme;
+                window.location.reload();
+            }
         }
-        updateTheme(darkQuery);
+        
+        // Listen for changes
         darkQuery.addEventListener('change', updateTheme);
         """).render(context: context)
     }
@@ -83,7 +93,7 @@ extension Body {
         .class("col-sm-\(context.site.pageWidth)", "mx-auto")
         .render(context: context)
         
-        // Add existing scripts
+        // Add existing scripts...
         if context.site.useDefaultBootstrapURLs == .localBootstrap {
             output += Script(file: "/js/bootstrap.bundle.min.js").render(context: context)
         } else if context.site.useDefaultBootstrapURLs == .remoteBootstrap {
@@ -97,12 +107,10 @@ extension Body {
             .render(context: context)
         }
         
-        // Add syntax highlighting if needed
         if context.site.syntaxHighlighters.isEmpty == false {
             output += Script(file: "/js/syntax-highlighting.js").render(context: context)
         }
         
-        // Activate tooltips if there are any
         if output.contains(#"data-bs-toggle="tooltip""#) {
             output += Script(code: """
                 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -110,7 +118,7 @@ extension Body {
                 """).render(context: context)
         }
         
-        // Add theme script if site has both themes
+        // Add theme script if site has distinct themes
         if context.site.theme.id != context.site.darkTheme.id {
             output += addThemeScript(context: context)
         }
