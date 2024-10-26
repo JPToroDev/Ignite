@@ -22,7 +22,8 @@ let package = Package(
         .target(
             name: "Ignite",
             dependencies: [
-                .product(name: "Markdown", package: "swift-markdown")
+                .product(name: "Markdown", package: "swift-markdown"),
+                .product(name: "EnvironmentMacros", package: "EnvironmentMacros")
             ],
             resources: [
                 .copy("Resources")
