@@ -124,22 +124,24 @@ public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == 
 public struct EnvironmentRelativeGroup: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
     private let content: [BlockElement]
+    private let expectedValue: any EnvironmentValue
     public var attributes: CoreAttributes = CoreAttributes()
     
     public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
         self.content = content()
-        
-        // Use the EXACT same path as the working code
-        if let colorScheme = value as? ColorScheme {
-            // 1. Create condition using == operator
-            let condition: EnvironmentCondition = value as! ColorScheme == colorScheme
-            // 2. Add class exactly like .hidden() does
-            self.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
-        }
+        self.expectedValue = value
     }
     
     public func render(context: PublishingContext) -> String {
+        var copy = self
+        
+        // Use the EXACT same logic as the working .hidden() code
+        if let colorScheme = expectedValue as? ColorScheme {
+            let condition = (context.colorScheme == colorScheme)
+            copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
+        }
+        
         let group = Group(items: content, context: context)
-        return group.attributes(attributes).render(context: context)
+        return group.attributes(copy.attributes).render(context: context)
     }
 }
