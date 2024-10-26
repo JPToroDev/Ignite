@@ -11,9 +11,13 @@
 
 import Foundation
 
-public enum ColorScheme: String {
-    case light
-    case dark
+public enum ColorScheme: String, EnvironmentValue {
+    public func getValue(from context: PublishingContext) -> String? {
+        return context.colorScheme.rawValue
+    }
+    
+    case light, dark
+    public var key : String { "colorScheme" }
 }
 
 public struct EnvironmentCondition {
@@ -36,17 +40,17 @@ public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
 extension PublishingContext {
     public var colorScheme: ColorScheme { .light }
     
-//    func environmentStyles() -> String {
-//        let styles = [
-//            generateColorSchemeStyles()
-//        ].joined(separator: "\n\n")
-//        
-//        return """
-//        <style>
-//        \(styles)
-//        </style>
-//        """
-//    }
+    func environmentStyles() -> String {
+        let styles = [
+            generateColorSchemeStyles()
+        ].joined(separator: "\n\n")
+        
+        return """
+        <style>
+        \(styles)
+        </style>
+        """
+    }
     
     private func generateColorSchemeStyles() -> String {
         """
@@ -92,36 +96,55 @@ public extension PageElement {
 //    case dark
 //}
 
+//public enum EnvironmentValue {
+//    case colorScheme
+//}
+
+//extension PublishingContext {
+//    func environmentStyles() -> String {
+//        """
+//        <style>
+//        @media (prefers-color-scheme: light) {
+//            .env-colorscheme-light-hidden { display: none !important; }
+//        }
+//        
+//        @media (prefers-color-scheme: dark) {
+//            .env-colorscheme-dark-hidden { display: none !important; }
+//        }
+//        </style>
+//        """
+//    }
+//}
+
+// Represents available environment values
+public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == String {
+    // Helper to get the key string for CSS classes
+    var key: String { get }
+    // Get value from context based on key
+    func getValue(from context: PublishingContext) -> String?
+}
+
 public struct EnvironmentRelativeGroup: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
-    
     private let content: [BlockElement]
+    private let value: any EnvironmentValue
+    private let expectedValue: String
     public var attributes: CoreAttributes = CoreAttributes()
     
-    public init(_ type: ColorScheme.Type, equals value: ColorScheme, @BlockElementBuilder content: () -> [BlockElement]) {
+    public init(_ environment: any EnvironmentValue, equals value: String, @BlockElementBuilder content: () -> [BlockElement]) {
         self.content = content()
-        // Hide element when in the opposite color scheme
-        self.attributes.classes.append("env-colorscheme-\(value == .light ? "dark" : "light")-hidden")
+        self.value = environment
+        self.expectedValue = value
     }
     
     public func render(context: PublishingContext) -> String {
-        let group = Group(items: content, context: context)
-        return group.attributes(attributes).render(context: context)
-    }
-}
-
-extension PublishingContext {
-    func environmentStyles() -> String {
-        """
-        <style>
-        @media (prefers-color-scheme: light) {
-            .env-colorscheme-light-hidden { display: none !important; }
+        var copy = self
+        if let currentValue = value.getValue(from: context),
+           currentValue.description != expectedValue.description {
+            copy.attributes.classes.append("env-\(value.key)-\(expectedValue.description)-hidden")
         }
         
-        @media (prefers-color-scheme: dark) {
-            .env-colorscheme-dark-hidden { display: none !important; }
-        }
-        </style>
-        """
+        let group = Group(items: content, context: context)
+        return group.attributes(copy.attributes).render(context: context)
     }
 }
