@@ -7,7 +7,7 @@
 
 import Foundation
 
-//public enum ColorScheme: String {
-//    case light
-//    case dark
-//}
+public enum ColorScheme: String, Environment.MediaQueryValue {
+    case light, dark
+    public var key: String { "colorscheme" }
+}

@@ -35,13 +35,13 @@ public struct HTML: PageElement {
     /// Renders this element using publishing context passed in.
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
-//    public func render(context: PublishingContext) -> String {
-//        var output = "<!doctype html>"
-//        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
-//        output += head?.render(context: context) ?? ""
-//        output += body?.render(context: context) ?? ""
-//        output += "</html>"
-//
-//        return output
-//    }
+    public func render(context: PublishingContext) -> String {
+        var output = "<!doctype html>"
+        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
+        output += head?.render(context: context) ?? ""
+        output += body?.render(context: context) ?? ""
+        output += "</html>"
+
+        return output
+    }
 }
