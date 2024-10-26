@@ -17,47 +17,47 @@ public struct Environment {
         var key: String { get }
         var cssClass: String { get }
     }
-    
-    public enum ColorScheme: String, MediaQueryValue {
-        case light, dark
-        public var key: String { "colorscheme" }
-    }
-    
-    public enum DisplayMode: String, MediaQueryValue {
-        case fullscreen, standalone, minimalUI, browser
-        public var key: String { "displaymode" }
-    }
-    
-    public enum Orientation: String, MediaQueryValue {
-        case landscape, portrait
-        public var key: String { "orientation" }
-    }
-    
-    public enum Motion: String, MediaQueryValue {
-        case reduced, normal
-        public var key: String { "motion" }
-    }
-    
-    public enum Transparency: String, MediaQueryValue {
-        case reduced, normal
-        public var key: String { "transparency" }
-    }
-    
-    public enum Contrast: String, MediaQueryValue {
-        case more, less, normal
-        public var key: String { "contrast" }
-    }
-    
-    public enum ColorInversion: String, MediaQueryValue {
-        case inverted, normal
-        public var key: String { "colors" }
-    }
 }
 
 extension Environment.MediaQueryValue {
    public var cssClass: String {
        "\(key)-\(rawValue)"
    }
+}
+
+public enum ColorScheme: String, Environment.MediaQueryValue {
+    case light, dark
+    public var key: String { "colorscheme" }
+}
+
+public enum DisplayMode: String, Environment.MediaQueryValue {
+    case fullscreen, standalone, minimalUI, browser
+    public var key: String { "displaymode" }
+}
+
+public enum Orientation: String, Environment.MediaQueryValue {
+    case landscape, portrait
+    public var key: String { "orientation" }
+}
+
+public enum Motion: String, Environment.MediaQueryValue {
+    case reduced, normal
+    public var key: String { "motion" }
+}
+
+public enum Transparency: String, Environment.MediaQueryValue {
+    case reduced, normal
+    public var key: String { "transparency" }
+}
+
+public enum Contrast: String, Environment.MediaQueryValue {
+    case more, less, normal
+    public var key: String { "contrast" }
+}
+
+public enum ColorInversion: String, Environment.MediaQueryValue {
+    case inverted, normal
+    public var key: String { "colors" }
 }
 
 public struct EnvironmentRelativeGroup<T: Environment.MediaQueryValue>: BlockElement {
