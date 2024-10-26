@@ -124,21 +124,24 @@ public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == 
 public struct EnvironmentRelativeGroup: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
     private let content: [BlockElement]
-    private let key: any EnvironmentValue
+    private let type: any EnvironmentValue.Type
     private let expectedValue: any EnvironmentValue
     public var attributes: CoreAttributes = CoreAttributes()
     
-    public init<Value: EnvironmentValue>(_ key: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
+    public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
         self.content = content()
-        // Create an instance of the key type to use for getting values
-        self.key = value
+        self.type = type
         self.expectedValue = value
     }
     
     public func render(context: PublishingContext) -> String {
         var copy = self
-        // Always add the hiding class when we're not the expected value
-        copy.attributes.classes.append("env-\(key.key)-\(expectedValue.rawValue)-hidden")
+        
+        if let currentValue = expectedValue.getValue(from: context),
+           currentValue != expectedValue.rawValue {
+            // Hide when current environment value doesn't match expected
+            copy.attributes.classes.append("env-\(expectedValue.key)-\(currentValue)-hidden")
+        }
         
         let group = Group(items: content, context: context)
         return group.attributes(copy.attributes).render(context: context)
