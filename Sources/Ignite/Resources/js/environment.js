@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
+// environment.js
 class EnvironmentSystem {
     constructor() {
         this.values = new Map();
@@ -14,13 +15,13 @@ class EnvironmentSystem {
 
     setupDefaults() {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.setValue('colorScheme', prefersDark ? 'dark' : 'light');
+        this.setValue('colorscheme', prefersDark ? 'dark' : 'light');
     }
 
     setupListeners() {
         const colorSchemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
         colorSchemeMedia.addEventListener('change', e => {
-            this.setValue('colorScheme', e.matches ? 'dark' : 'light');
+            this.setValue('colorscheme', e.matches ? 'dark' : 'light');
         });
     }
 
@@ -32,12 +33,29 @@ class EnvironmentSystem {
     updateElements(key, value) {
         const elements = document.querySelectorAll(`[data-ignite-env-${key}]`);
         elements.forEach(element => {
-            const envValue = element.getAttribute(`data-ignite-env-${key}`);
-            element.style.display = (envValue === value) ? '' : 'none';
+            const envCondition = element.getAttribute(`data-ignite-env-${key}`);
+            const matches = envCondition === value;
+            
+            if (matches) {
+                element.style.removeProperty('display');
+            } else {
+                element.style.display = 'none';
+            }
+            
+            // Dispatch custom event for other handlers
+            element.dispatchEvent(new CustomEvent('igniteEnvChange', {
+                detail: { key, value, matches },
+                bubbles: true
+            }));
         });
+    }
+
+    getValue(key) {
+        return this.values.get(key);
     }
 }
 
+// Initialize once DOM is ready
 window.addEventListener('DOMContentLoaded', () => {
     window.igniteEnv = new EnvironmentSystem();
 });

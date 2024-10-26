@@ -65,49 +65,49 @@ public struct ElementBuilder<T> {
     }
 }
 
-extension ElementBuilder {
-    static func buildExpression<Element: BaseElement, Value>(_ expression: (Element, Value)) -> [Element] where Value: Equatable {
-        let (element, condition) = expression
-        
-        let conditionKey = String(describing: type(of: condition))
-            .replacingOccurrences(of: "Value", with: "")
-            .lowercased()
-        
-        // Create a map of all possible values to their visibility state
-        var conditions: [String: Bool] = [:]
-        
-        // For color scheme, we need both light and dark states
-        if conditionKey == "colorscheme" {
-            conditions = [
-                "light": String(describing: condition) == "light",
-                "dark": String(describing: condition) == "dark"
-            ]
-        } else {
-            conditions = [String(describing: condition): true]
-        }
-        
-        // Create group to wrap the element with environment conditions
-        let group = Group {
-            element
-        }
-        
-        // Add data attributes for environment state
-        var groupWithAttr = group.addCustomAttribute(
-            name: "data-ignite-env-\(conditionKey)",
-            value: conditions.json ?? "{}"
-        )
-        
-        // Add initial visibility class based on default value
-        let initialClass = conditions.first { $0.value == true }?.key ?? ""
-        groupWithAttr = groupWithAttr.class("env-\(conditionKey)-\(initialClass)")
-        
-        return [groupWithAttr as! Element]
-    }
-    
-    static func buildExpression<Element: BaseElement>(_ expression: Element) -> [Element] {
-        [expression]
-    }
-}
+//extension ElementBuilder {
+//    static func buildExpression<Element: BaseElement, Value>(_ expression: (Element, Value)) -> [Element] where Value: Equatable {
+//        let (element, condition) = expression
+//        
+//        let conditionKey = String(describing: type(of: condition))
+//            .replacingOccurrences(of: "Value", with: "")
+//            .lowercased()
+//        
+//        // Create a map of all possible values to their visibility state
+//        var conditions: [String: Bool] = [:]
+//        
+//        // For color scheme, we need both light and dark states
+//        if conditionKey == "colorscheme" {
+//            conditions = [
+//                "light": String(describing: condition) == "light",
+//                "dark": String(describing: condition) == "dark"
+//            ]
+//        } else {
+//            conditions = [String(describing: condition): true]
+//        }
+//        
+//        // Create group to wrap the element with environment conditions
+//        let group = Group {
+//            element
+//        }
+//        
+//        // Add data attributes for environment state
+//        var groupWithAttr = group.addCustomAttribute(
+//            name: "data-ignite-env-\(conditionKey)",
+//            value: conditions.json ?? "{}"
+//        )
+//        
+//        // Add initial visibility class based on default value
+//        let initialClass = conditions.first { $0.value == true }?.key ?? ""
+//        groupWithAttr = groupWithAttr.class("env-\(conditionKey)-\(initialClass)")
+//        
+//        return [groupWithAttr as! Element]
+//    }
+//    
+//    static func buildExpression<Element: BaseElement>(_ expression: Element) -> [Element] {
+//        [expression]
+//    }
+//}
 
 public extension Dictionary where Key == String, Value == Bool {
     var json: String? {
