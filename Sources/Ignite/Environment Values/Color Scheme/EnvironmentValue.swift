@@ -123,7 +123,7 @@ public protocol EnvironmentValue: RawRepresentable, Equatable where RawValue == 
 
 public struct EnvironmentRelativeGroup: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
-    private let content: [BlockElement]
+    private let content: [BaseElement]
     private let expectedValue: any EnvironmentValue
     public var attributes: CoreAttributes = CoreAttributes()
     
@@ -133,9 +133,7 @@ public struct EnvironmentRelativeGroup: BlockElement {
         
         // Use the same logic as the working == operator:
         // If we expect light mode, hide in dark mode and vice versa
-        print("initialized")
         if let colorScheme = value as? ColorScheme {
-            print("is color scheme")
             let condition = EnvironmentCondition(
                 key: "colorscheme",
                 value: colorScheme == .light ? "dark" : "light"
