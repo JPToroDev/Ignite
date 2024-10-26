@@ -15,10 +15,4 @@ public extension PageElement {
         self
             .class(isHidden ? "d-none" : nil)
     }
-    
-    func hidden(_ condition: EnvironmentCondition) -> Self {
-        var copy = self
-        copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
-        return copy
-    }
 }
