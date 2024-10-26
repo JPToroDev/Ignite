@@ -11,103 +11,56 @@
 
 import Foundation
 
-public enum ColorScheme: String, EnvironmentValue {
-    case light, dark
-    public var keyPath: KeyPath<PublishingContext, ColorScheme> { \PublishingContext.colorScheme }
-    public var key : String { "colorscheme" }
-}
-
-public struct EnvironmentCondition {
-    let key: String
-    let value: String
-    let query: String
+public struct Environment {
     
-    init(key: String, value: String, query: String = "prefers-color-scheme") {
-        self.key = key
-        self.value = value
-        self.query = query
+    public protocol MediaQueryValue: Equatable, RawRepresentable where RawValue == String {
+        var key: String { get }
+        var cssClass: String { get }
     }
-}
-
-// Changed operator to hide when the schemes DON'T match
-public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
-    EnvironmentCondition(key: "colorscheme", value: rhs == .light ? "dark" : "light")
-}
-
-extension PublishingContext {
-    public var colorScheme: ColorScheme { .light }
-//    
-//    func environmentStyles() -> String {
-//        let styles = [
-//            generateColorSchemeStyles()
-//        ].joined(separator: "\n\n")
-//        
-//        return """
-//        <style>
-//        \(styles)
-//        </style>
-//        """
-//    }
-//    
-//    private func generateColorSchemeStyles() -> String {
-//        """
-//        @media (prefers-color-scheme: light) {
-//            .env-colorscheme-light-hidden { display: none !important; }
-//        }
-//        
-//        @media (prefers-color-scheme: dark) {
-//            .env-colorscheme-dark-hidden { display: none !important; }
-//        }
-//        """
-    }
-//}
-
-public extension PageElement {
     
-    func hidden(_ condition: EnvironmentCondition) -> Self {
-        var copy = self
-        copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
-        return copy
+    public enum ColorScheme: String, MediaQueryValue {
+        case light, dark
+        public var key: String { "colorscheme" }
+    }
+    
+    public enum DisplayMode: String, MediaQueryValue {
+        case fullscreen, standalone, minimalUI, browser
+        public var key: String { "displaymode" }
+    }
+    
+    public enum Orientation: String, MediaQueryValue {
+        case landscape, portrait
+        public var key: String { "orientation" }
+    }
+    
+    public enum Motion: String, MediaQueryValue {
+        case reduced, normal
+        public var key: String { "motion" }
+    }
+    
+    public enum Transparency: String, MediaQueryValue {
+        case reduced, normal
+        public var key: String { "transparency" }
+    }
+    
+    public enum Contrast: String, MediaQueryValue {
+        case more, less, normal
+        public var key: String { "contrast" }
+    }
+    
+    public enum ColorInversion: String, MediaQueryValue {
+        case inverted, normal
+        public var key: String { "colors" }
     }
 }
 
-//public enum ColorScheme: String {
-//    case light
-//    case dark
-//}
-
-//public enum ColorScheme: String {
-//    case light
-//    case dark
-//}
-
-//public enum EnvironmentValue {
-//    case colorScheme
-//}
-
-//extension PublishingContext {
-//    func environmentStyles() -> String {
-//        """
-//        <style>
-//        @media (prefers-color-scheme: light) {
-//            .env-colorscheme-light-hidden { display: none !important; }
-//        }
-//
-//        @media (prefers-color-scheme: dark) {
-//            .env-colorscheme-dark-hidden { display: none !important; }
-//        }
-//        </style>
-//        """
-//    }
-//}
-
-public protocol EnvironmentValue: Equatable, RawRepresentable where RawValue == String {
-    associatedtype Value: EnvironmentValue
-    var key: String { get }
-    var keyPath: KeyPath<PublishingContext, Value> { get }
+extension Environment.MediaQueryValue {
+   public var cssClass: String {
+       "\(key)-\(rawValue)"
+   }
 }
 
-public struct EnvironmentRelativeGroup<T: EnvironmentValue>: BlockElement {
+public struct EnvironmentRelativeGroup<T: Environment.MediaQueryValue>: BlockElement {
     public var columnWidth: ColumnWidth = .automatic
     private let content: [BlockElement]
     private let expectedValue: T
@@ -119,56 +72,18 @@ public struct EnvironmentRelativeGroup<T: EnvironmentValue>: BlockElement {
     }
     
     public func render(context: PublishingContext) -> String {
-        var output = "<div"
-        // Simply show when we match this value
-        output += " class=\"env-\(expectedValue.key)-\(expectedValue.rawValue)-show\""
-        output += ">"
+        var output = "<div class=\"\(expectedValue.cssClass)\">"
         output += content.map { $0.render(context: context) }.joined()
         output += "</div>"
         return output
     }
 }
 
-extension PublishingContext {
-    func environmentStyles() -> String {
-        """
-        <style>
-        /* Content visibility */
-        [class*='env-colorscheme'] { display: none; }
-        
-        /* Light mode */
-        @media (prefers-color-scheme: light) {
-            .env-colorscheme-light-show { display: block; }
-            html { 
-                --bs-theme: light;
-            }
-        }
-        
-        /* Dark mode */
-        @media (prefers-color-scheme: dark) {
-            .env-colorscheme-dark-show { display: block; }
-            html {
-                --bs-theme: dark;
-            }
-        }
-        
-        /* Apply theme */
-        html {
-            data-bs-theme: var(--bs-theme);
-        }
-        </style>
-        """
-    }
-}
-
 extension HTML {
     public func render(context: PublishingContext) -> String {
         var output = "<!doctype html>"
-        // Let the CSS handle the theme value
-        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
-//        output += "<html lang=\"\(context.site.language.rawValue)\"\(attributes.description)>"
+        output += "<html lang=\"\(context.site.language.rawValue)\"\(attributes.description)>"
         output += head?.render(context: context) ?? ""
-        output += context.environmentStyles()
         output += body?.render(context: context) ?? ""
         output += "</html>"
         return output

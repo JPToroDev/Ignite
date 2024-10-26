@@ -52,9 +52,4 @@ public extension PageElement {
     func foregroundStyle(_ color: String) -> Self {
         self.style("color: \(color)")
     }
-    func foregroundStyle(_ condition: EnvironmentCondition) -> Self {
-        var copy = self
-        copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
-        return copy
-    }
 }

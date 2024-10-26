@@ -1,0 +1,8 @@
+//
+// media-query-classes.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
+[class*='color-scheme-'],[class*='-mode-'],[class*='-orientation-'],[class*='-motion-'],[class*='-transparency-'],[class*='-contrast-'],[class*='-colors-']{display:none}@media (prefers-color-scheme:light){.color-scheme-light{display:block}html{--bs-theme:light;data-bs-theme:var(--bs-theme)}}@media (prefers-color-scheme:dark){.color-scheme-dark{display:block}html{--bs-theme:dark;data-bs-theme:var(--bs-theme)}}@media (display-mode:fullscreen){.display-mode-fullscreen{display:block}}@media (display-mode:standalone){.display-mode-standalone{display:block}}@media (display-mode:minimal-ui){.display-mode-minimal-ui{display:block}}@media (display-mode:browser){.display-mode-browser{display:block}}@media (orientation:landscape){.orientation-landscape{display:block}}@media (orientation:portrait){.orientation-portrait{display:block}}@media (prefers-reduced-motion:reduce){.motion-reduced{display:block}}@media (prefers-reduced-motion:no-preference){.motion-normal{display:block}}@media (prefers-reduced-transparency:reduce){.transparency-reduced{display:block}}@media (prefers-reduced-transparency:no-preference){.transparency-normal{display:block}}@media (prefers-contrast:more){.contrast-more{display:block}}@media (prefers-contrast:less){.contrast-less{display:block}}@media (prefers-contrast:no-preference){.contrast-normal{display:block}}@media (inverted-colors:inverted){.colors-inverted{display:block}}@media (inverted-colors:none){.colors-normal{display:block}}

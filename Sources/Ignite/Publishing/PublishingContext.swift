@@ -227,15 +227,15 @@ public class PublishingContext {
     }
 
     /// Renders one page using the correct theme, which is taken either from the
-    /// provided them or from the main site theme.
+    /// provided theme, from the main site theme, or from the dark theme based on color scheme.
     func render(_ page: Page, using theme: any Theme) async -> String {
-        var theme = theme
+        var effectiveTheme: any Theme = site.theme
 
         if theme is MissingTheme {
-            theme = colorScheme == .light ? site.theme : site.darkTheme
+            effectiveTheme = theme
         }
 
-        return await theme.render(page: page, context: self).render(context: self)
+        return await effectiveTheme.render(page: page, context: self).render(context: self)
     }
 
     /// Renders a static page.
