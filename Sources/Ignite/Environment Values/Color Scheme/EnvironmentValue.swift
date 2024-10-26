@@ -139,22 +139,11 @@ extension PublishingContext {
         /* Light mode */
         @media (prefers-color-scheme: light) {
             .env-colorscheme-light-show { display: block; }
-            html { 
-                --bs-theme: light;
-            }
         }
         
         /* Dark mode */
         @media (prefers-color-scheme: dark) {
             .env-colorscheme-dark-show { display: block; }
-            html {
-                --bs-theme: dark;
-            }
-        }
-        
-        /* Apply theme */
-        html {
-            data-bs-theme: var(--bs-theme);
         }
         </style>
         """
