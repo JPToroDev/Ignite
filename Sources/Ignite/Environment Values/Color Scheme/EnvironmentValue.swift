@@ -143,7 +143,12 @@ public struct EnvironmentRelativeGroup: BlockElement {
     }
     
     public func render(context: PublishingContext) -> String {
-        let group = Group(items: content, context: context)
-        return group.attributes(attributes).render(context: context)
+        var group = Group(items: content, context: context)
+        let condition = EnvironmentCondition(
+            key: "colorscheme",
+            value: context.colorScheme == .light ? "dark" : "light"
+        )
+        group.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
+        return group.render(context: context)
     }
 }
