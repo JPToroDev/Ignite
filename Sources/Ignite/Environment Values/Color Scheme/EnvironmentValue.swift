@@ -165,7 +165,7 @@ extension HTML {
     public func render(context: PublishingContext) -> String {
         var output = "<!doctype html>"
         // Let the CSS handle the theme value
-        output += "<html lang=\"\(context.site.language.rawValue)\"\(attributes.description)>"
+        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
         output += head?.render(context: context) ?? ""
         output += context.environmentStyles()
         output += body?.render(context: context) ?? ""
