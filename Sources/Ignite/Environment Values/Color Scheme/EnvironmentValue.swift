@@ -5,67 +5,58 @@
 // See LICENSE for license information.
 //
 
-import Foundation
-
 // EnvironmentValue.swift
 
 import Foundation
 
-// Protocol for environment values that can be used in conditions
-public protocol EnvironmentValueType: RawRepresentable where RawValue == String {
-    static var environmentKey: String { get }
-    static func generateRule(for value: Self) -> EnvironmentRule
+public enum ColorScheme: String {
+    case light
+    case dark
 }
 
-// Structure to represent a CSS rule for an environment value
-public struct EnvironmentRule {
-    let selector: String
-    let value: String
-    
-    public init(selector: String, value: String) {
-        self.selector = selector
-        self.value = value
-    }
-}
-
-// Environment condition that will be used for generating CSS classes
 public struct EnvironmentCondition {
     let key: String
     let value: String
-}
-
-// Generic operator for environment value types
-public func ==<T: EnvironmentValueType>(lhs: T, rhs: T) -> EnvironmentCondition {
-    EnvironmentCondition(key: T.environmentKey, value: rhs.rawValue)
-}
-
-// ColorScheme implementation
-public enum ColorScheme: String, CaseIterable, EnvironmentValueType {
-    case light
-    case dark
+    let query: String
     
-    public static var environmentKey: String { "colorscheme" }
-    
-    public static func generateRule(for value: ColorScheme) -> EnvironmentRule {
-        EnvironmentRule(
-            selector: "@media (prefers-color-scheme: \(value.rawValue))",
-            value: value.rawValue
-        )
+    init(key: String, value: String, query: String = "prefers-color-scheme") {
+        self.key = key
+        self.value = value
+        self.query = query
     }
 }
 
-// Example of ReduceMotion implementation
-public enum ReduceMotion: String, CaseIterable, EnvironmentValueType {
-    case reduce
-    case noPreference
+public func ==(lhs: ColorScheme, rhs: ColorScheme) -> EnvironmentCondition {
+    EnvironmentCondition(key: "colorscheme", value: rhs.rawValue)
+}
+
+extension PublishingContext {
+    public var colorScheme: ColorScheme { .light }
     
-    public static var environmentKey: String { "reducemotion" }
+    func environmentStyles() -> String {
+        // Collection of all environment styles
+        let styles = [
+            generateColorSchemeStyles()
+            // Add other environment styles here as needed
+        ].joined(separator: "\n\n")
+        
+        return """
+        <style>
+        \(styles)
+        </style>
+        """
+    }
     
-    public static func generateRule(for value: ReduceMotion) -> EnvironmentRule {
-        EnvironmentRule(
-            selector: "@media (prefers-reduced-motion: \(value == .reduce ? "reduce" : "no-preference"))",
-            value: value.rawValue
-        )
+    private func generateColorSchemeStyles() -> String {
+        """
+        @media (prefers-color-scheme: light) {
+            .env-colorscheme-light-hidden { display: none !important; }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .env-colorscheme-dark-hidden { display: none !important; }
+        }
+        """
     }
 }
 
@@ -81,38 +72,8 @@ extension HTML {
     }
 }
 
-// Extension for PublishingContext to support environment values
-public extension PublishingContext {
-    var colorScheme: ColorScheme { .light }
-    var reduceMotion: ReduceMotion { .noPreference }
-    
-    func environmentStyles() -> String {
-        let styles = [
-            generateEnvironmentStyle(for: ColorScheme.self),
-            generateEnvironmentStyle(for: ReduceMotion.self)
-        ].joined(separator: "\n\n")
-        
-        return """
-        <style>
-        \(styles)
-        </style>
-        """
-    }
-    
-    private func generateEnvironmentStyle<T: EnvironmentValueType & CaseIterable>(for type: T.Type) -> String {
-        T.allCases.map { value in
-            let rule = T.generateRule(for: value)
-            return """
-            \(rule.selector) {
-                .env-\(T.environmentKey)-\(rule.value)-hidden { display: none !important; }
-            }
-            """
-        }.joined(separator: "\n\n")
-    }
-}
-
-// Extension for PageElement to support hiding based on environment conditions
 public extension PageElement {
+    
     func hidden(_ condition: EnvironmentCondition) -> Self {
         var copy = self
         copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
