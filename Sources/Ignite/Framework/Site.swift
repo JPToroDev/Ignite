@@ -18,6 +18,9 @@ public protocol Site {
 
     /// The theme for your site. Required.
     associatedtype ThemeType: Theme
+    
+    /// The theme for your site. Required.
+    associatedtype DarkThemeType: Theme
 
     /// The Markdown parser to use for Content pages.
     associatedtype MarkdownRendererType: MarkdownRenderer
@@ -89,6 +92,9 @@ public protocol Site {
     /// The theme to apply to your site. This is used to render all pages that don't
     /// explicitly override the theme with something custom.
     var theme: ThemeType { get }
+    
+    /// Default to using light theme for dark mode
+    var darkTheme: DarkThemeType { get }
 
     /// The path to the favicon
     var favicon: URL? { get }

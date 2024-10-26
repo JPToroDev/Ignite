@@ -232,7 +232,7 @@ public class PublishingContext {
         var theme = theme
 
         if theme is MissingTheme {
-            theme = site.theme
+            theme = colorScheme == .light ? site.theme : site.darkTheme
         }
 
         return await theme.render(page: page, context: self).render(context: self)
