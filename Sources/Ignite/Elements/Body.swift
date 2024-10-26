@@ -72,13 +72,9 @@ extension Body {
             function updateTheme(e) {
                 const newTheme = e.matches ? 'dark' : 'light';
                 if (currentTheme !== newTheme) {
-                    document.documentElement.dataset.bsTheme = newTheme;
-                    window.location.reload();
+                   window.location.reload();
                 }
             }
-            
-            // Set initial theme
-            document.documentElement.dataset.bsTheme = currentTheme;
             
             // Listen for changes
             darkQuery.addEventListener('change', updateTheme);
