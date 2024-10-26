@@ -136,14 +136,25 @@ extension PublishingContext {
         /* Content visibility */
         [class*='env-colorscheme'] { display: none; }
         
+        /* Light mode */
         @media (prefers-color-scheme: light) {
             .env-colorscheme-light-show { display: block; }
-            html[data-bs-theme] { data-bs-theme: light; }
+            html { 
+                --bs-theme: light;
+            }
         }
         
+        /* Dark mode */
         @media (prefers-color-scheme: dark) {
             .env-colorscheme-dark-show { display: block; }
-            html[data-bs-theme] { data-bs-theme: dark; }
+            html {
+                --bs-theme: dark;
+            }
+        }
+        
+        /* Apply theme */
+        html {
+            data-bs-theme: var(--bs-theme);
         }
         </style>
         """
@@ -153,8 +164,8 @@ extension PublishingContext {
 extension HTML {
     public func render(context: PublishingContext) -> String {
         var output = "<!doctype html>"
-        // Add the attribute but don't set a value - let CSS control it
-        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme\(attributes.description)>"
+        // Let the CSS handle the theme value
+        output += "<html lang=\"\(context.site.language.rawValue)\"\(attributes.description)>"
         output += head?.render(context: context) ?? ""
         output += context.environmentStyles()
         output += body?.render(context: context) ?? ""
