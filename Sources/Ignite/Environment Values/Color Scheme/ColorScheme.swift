@@ -7,9 +7,7 @@
 
 import Foundation
 
-//public enum ColorScheme: String {
-//    case light
-//    case dark
-//}
-
-// EnvironmentValues.swift
+public enum ColorScheme: String {
+    case light
+    case dark
+}

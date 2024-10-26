@@ -7,11 +7,11 @@
 
 import Foundation
 
-//public struct EnvironmentKey {
-//    let name: String
-//    
-//    public static let colorScheme = EnvironmentKey(name: "colorScheme")
-//}
+public struct EnvironmentKey {
+    let name: String
+    
+    public static let colorScheme = EnvironmentKey(name: "colorScheme")
+}
 
 @propertyWrapper
 public struct Environment<Value: Equatable> {
