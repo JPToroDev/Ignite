@@ -139,11 +139,22 @@ extension PublishingContext {
         /* Light mode */
         @media (prefers-color-scheme: light) {
             .env-colorscheme-light-show { display: block; }
+            html { 
+                --bs-theme: light;
+            }
         }
         
         /* Dark mode */
         @media (prefers-color-scheme: dark) {
             .env-colorscheme-dark-show { display: block; }
+            html {
+                --bs-theme: dark;
+            }
+        }
+        
+        /* Apply theme */
+        html {
+            data-bs-theme: var(--bs-theme);
         }
         </style>
         """
@@ -155,6 +166,7 @@ extension HTML {
         var output = "<!doctype html>"
         // Let the CSS handle the theme value
         output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
+//        output += "<html lang=\"\(context.site.language.rawValue)\"\(attributes.description)>"
         output += head?.render(context: context) ?? ""
         output += context.environmentStyles()
         output += body?.render(context: context) ?? ""

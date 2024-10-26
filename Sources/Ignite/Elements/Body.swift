@@ -64,25 +64,16 @@ public struct Body: PageElement, HTMLRootElement {
 
 extension Body {
     func addThemeScript(context: PublishingContext) -> String {
-            Script(code: """
-            const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            let currentTheme = darkQuery.matches ? 'dark' : 'light';
-            
-            // Update theme and reload page
-            function updateTheme(e) {
-                const newTheme = e.matches ? 'dark' : 'light';
-                if (currentTheme !== newTheme) {
-                   window.location.reload();
-                }
-            }
-            
-            // Set initial theme
-            document.documentElement.dataset.bsTheme = currentTheme;
-            
-            // Listen for changes
-            darkQuery.addEventListener('change', updateTheme);
-            """).render(context: context)
+        Script(code: """
+        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        function handleColorSchemeChange(e) {
+            window.location.reload();
         }
+        
+        darkModeQuery.addEventListener('change', handleColorSchemeChange);
+        """).render(context: context)
+    }
     
     public func render(context: PublishingContext) -> String {
         var output = Group {
@@ -93,9 +84,9 @@ extension Body {
             .class("col-sm-\(context.site.pageWidth)", "mx-auto")
             .render(context: context)
         
-        // Add theme script first to minimize flash
+        // Add theme script if site has different dark theme
         if context.site.theme.id != context.site.darkTheme.id {
-            output = addThemeScript(context: context) + output
+            output += addThemeScript(context: context)
         }
         
         // Add existing scripts...
