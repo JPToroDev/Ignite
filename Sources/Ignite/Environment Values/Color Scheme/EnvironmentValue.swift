@@ -66,29 +66,76 @@ extension PageElement {
 extension PublishingContext {
     public var colorScheme: ColorScheme { .light }
     
+//    func environmentScript() -> String {
+//        """
+//        <script>
+//        const igniteEnv = {
+//            init() {
+//                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+//                this.setColorScheme(prefersDark.matches);
+//                prefersDark.addListener(e => this.setColorScheme(e.matches));
+//            },
+//            
+//            setColorScheme(isDark) {
+//                const value = isDark ? 'dark' : 'light';
+//                
+//                document.querySelectorAll('[data-env-colorscheme]').forEach(el => {
+//                    const conditions = JSON.parse(el.dataset.envColorscheme);
+//                    Object.entries(conditions).forEach(([prop, values]) => {
+//                        el.style[prop] = values[value] || values['default'];
+//                    });
+//                });
+//            }
+//        };
+//
+//        document.addEventListener('DOMContentLoaded', () => igniteEnv.init());
+//        </script>
+//        """
+//    }
+}
+
+extension HTML {
+    public func render(context: PublishingContext) -> String {
+        var output = "<!doctype html>"
+        output += "<html lang=\"\(context.site.language.rawValue)\" data-bs-theme=\"light\"\(attributes.description)>"
+        output += head?.render(context: context) ?? ""
+        output += context.environmentScript()  // Add the script here
+        output += body?.render(context: context) ?? ""
+        output += "</html>"
+        return output
+    }
+}
+
+extension PublishingContext {
     func environmentScript() -> String {
         """
         <script>
         const igniteEnv = {
             init() {
+                // Set up initial state
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
                 this.setColorScheme(prefersDark.matches);
-                prefersDark.addListener(e => this.setColorScheme(e.matches));
+                
+                // Listen for changes
+                prefersDark.addEventListener('change', e => this.setColorScheme(e.matches));
             },
             
             setColorScheme(isDark) {
                 const value = isDark ? 'dark' : 'light';
+                document.documentElement.dataset.scheme = value;
                 
+                // Update all elements with color scheme conditions
                 document.querySelectorAll('[data-env-colorscheme]').forEach(el => {
-                    const conditions = JSON.parse(el.dataset.envColorscheme);
-                    Object.entries(conditions).forEach(([prop, values]) => {
-                        el.style[prop] = values[value] || values['default'];
-                    });
+                    const settings = JSON.parse(el.dataset.envColorscheme);
+                    if (settings.display) {
+                        el.style.display = settings.display[value];
+                    }
                 });
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => igniteEnv.init());
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => igniteEnv.init());
         </script>
         """
     }
