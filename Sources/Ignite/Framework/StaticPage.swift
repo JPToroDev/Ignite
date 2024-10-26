@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import EnvironmentMacros
 
 /// One static page in your site, where the content is entirely standalone rather
 /// than being produced in conjunction with an external Markdown file.
