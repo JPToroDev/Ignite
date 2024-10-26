@@ -127,7 +127,7 @@ public struct EnvironmentRelativeGroup: BlockElement {
     private let expectedValue: any EnvironmentValue
     public var attributes: CoreAttributes = CoreAttributes()
     
-    public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @BlockElementBuilder content: () -> [BlockElement]) {
+    public init<Value: EnvironmentValue>(_ type: Value.Type, equals value: Value, @ElementBuilder<BaseElement> _ content: () -> [BaseElement])  {
         self.content = content()
         self.expectedValue = value
         
