@@ -133,15 +133,14 @@ public struct EnvironmentRelativeGroup: BlockElement {
     }
     
     public func render(context: PublishingContext) -> String {
-        var copy = self
+        // Create the group first
+        let group = Group(items: content, context: context)
         
-        // Use the EXACT same logic as the working .hidden() code
+        // Then hide the entire group using the same logic as .hidden()
         if let colorScheme = expectedValue as? ColorScheme {
-            let condition = (context.colorScheme == colorScheme)
-            copy.attributes.classes.append("env-\(condition.key)-\(condition.value)-hidden")
+            return group.hidden(context.colorScheme == colorScheme).render(context: context)
         }
         
-        let group = Group(items: content, context: context)
-        return group.attributes(copy.attributes).render(context: context)
+        return group.render(context: context)
     }
 }
