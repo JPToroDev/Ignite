@@ -92,10 +92,18 @@ public struct Section: BlockHTML {
             sectionAttributes.append(classes: "g-\(systemSpacing.rawValue)")
         }
 
-        return Group {
+        return GroupBox {
             ForEach(items) { item in
-                if let item = item as? any BlockHTML {
-                    Group(item)
+                if let modified = item as? ModifiedHTML, let group = modified.content as? Group {
+                    ForEach(group.items) { item in
+                        if let item = item as? any BlockHTML {
+                            GroupBox(item)
+                                .class(className(for: item))
+                                .attributes(modified.attributes)
+                        }
+                    }
+                } else if let item = item as? any BlockHTML {
+                    GroupBox(item)
                         .class(className(for: item))
                 } else {
                     item
