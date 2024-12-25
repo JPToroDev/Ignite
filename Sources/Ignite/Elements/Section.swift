@@ -96,7 +96,7 @@ public struct Section: BlockHTML {
             ForEach(items) { item in
                 if let item = item as? any BlockHTML {
                     Group(item)
-                        .class(item.columnWidth.className)
+                        .class(className(for: item))
                 } else {
                     item
                 }
@@ -104,5 +104,20 @@ public struct Section: BlockHTML {
         }
         .attributes(sectionAttributes)
         .render(context: context)
+    }
+
+    /// Calculates the appropriate Bootstrap column class name for a block element.
+    /// - Parameter item: The block element to calculate the class name for.
+    /// - Returns: A Bootstrap class name that represents the element's width, scaled according to the section's column count if needed.
+    private func className(for item: any BlockHTML) -> String {
+        let className: String
+        if let columnCount, case .count(let width) = item.columnWidth {
+            // Scale the width to be relative to the new column count
+            let scaledWidth = width * 12 / columnCount
+            return ColumnWidth.count(scaledWidth).className
+        } else {
+            className = item.columnWidth.className
+        }
+        return className
     }
 }
