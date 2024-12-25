@@ -29,14 +29,35 @@ public struct Section: BlockHTML {
     /// How many columns this should be divided into
     var columnCount: Int?
 
+    /// The vertical space between elements in pixels.
+    private var customSpacing: Int?
+
+    /// The vertical space between elements by utility class.
+    private var systemSpacing: SpacingAmount?
+
     /// The items to display in this section.
     private var items: [any HTML]
 
     /// Creates a new `Section` object using a block element builder
     /// that returns an array of items to use in this section.
-    /// - Parameter items: The items to use in this section.
-    public init(@HTMLBuilder items: () -> some HTML) {
+    /// - Parameters:
+    ///   - spacing: The number of pixels between each element. Default is nil.
+    ///   - items: The items to use in this section.
+    public init(spacing: Int? = nil, @HTMLBuilder items: () -> some HTML) {
         self.items = flatUnwrap(items())
+        self.customSpacing = spacing
+        self.systemSpacing = nil
+    }
+
+    /// Creates a new `Section` object using a block element builder
+    /// that returns an array of items to use in this section.
+    /// - Parameters:
+    ///   - spacing: The predefined size between each element.
+    ///   - items: The items to use in this section.
+    public init(spacing: SpacingAmount, @HTMLBuilder items: () -> some HTML) {
+        self.items = flatUnwrap(items())
+        self.systemSpacing = spacing
+        self.customSpacing = nil
     }
 
     /// Adjusts the number of columns that can be fitted into this section.
@@ -63,6 +84,12 @@ public struct Section: BlockHTML {
                 "row-cols-1",
                 "row-cols-md-\(columnCount)"
             ])
+        }
+
+        if let customSpacing {
+            sectionAttributes.append(styles: .init(name: .gap, value: "\(customSpacing)px"))
+        } else if let systemSpacing {
+            sectionAttributes.append(classes: "g-\(systemSpacing.rawValue)")
         }
 
         return Group {
