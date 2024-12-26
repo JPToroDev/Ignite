@@ -35,6 +35,16 @@ public enum HorizontalAlignment: String {
     }
 }
 
+extension HorizontalAlignment: Responsive {
+    public func responsiveClass(for breakpoint: String?) -> String {
+        let alignmentClass = rawValue.dropFirst(5) // Remove "text-" prefix
+        if let breakpoint {
+            return "text-\(breakpoint)-\(alignmentClass)"
+        }
+        return "text-\(alignmentClass)"
+    }
+}
+
 /// Determines which elements can have horizontal alignment attached,
 public protocol HorizontalAligning: HTML { }
 
@@ -56,7 +66,7 @@ struct HorizontalAlignmentModifier: HTMLModifier {
     /// - Returns: The modified HTML with alignment applied
     func body(content: some HTML) -> any HTML {
         let classes = alignments
-            .map(\.bootstrapClass)
+            .map(\.breakpointClass)
             .joined(separator: " ")
         return content.class(classes)
     }
