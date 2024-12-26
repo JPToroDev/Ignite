@@ -98,7 +98,7 @@ public struct Section: BlockHTML {
                     ForEach(group.items) { item in
                         if let item = item as? any BlockHTML {
                             GroupBox(item)
-                                .class(className(for: item))
+                                .class(className(for: group))
                                 .attributes(modified.attributes)
                         }
                     }
