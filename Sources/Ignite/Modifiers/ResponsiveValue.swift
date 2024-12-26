@@ -24,7 +24,7 @@ public protocol Responsive {
 ///     // Padding adjusts responsively
 ///     .padding(.small(8), .medium(16), .large(24))
 /// ```
-public enum ResponsiveValue<Value> {
+public enum ResponsiveValue<Value>: Hashable, Equatable, Sendable where Value: Equatable & Hashable & Sendable {
     /// Applies value at the small breakpoint (≤576px)
     case small(Value)
 
@@ -40,9 +40,6 @@ public enum ResponsiveValue<Value> {
     /// Applies value at the extra extra large breakpoint (≥1400px)
     case extraExtraLarge(Value)
 
-    /// Applies value without a breakpoint
-    case base(Value)
-
     /// Returns the breakpoint and value for this responsive value
     var resolved: (breakpoint: String?, value: Value) {
         switch self {
@@ -51,7 +48,6 @@ public enum ResponsiveValue<Value> {
         case .large(let value): ("lg", value)
         case .extraLarge(let value): ("xl", value)
         case .extraExtraLarge(let value): ("xxl", value)
-        case .base(let value): (nil, value)
         }
     }
 }
@@ -66,3 +62,6 @@ extension ResponsiveValue where Value: Responsive {
 
 /// Defines horizontal alignment behavior across different screen sizes
 public typealias ResponsiveAlignment = ResponsiveValue<HorizontalAlignment>
+
+/// Defines font size behavior across different screen sizes
+public typealias ResponsiveFontSize = ResponsiveValue<LengthUnit>

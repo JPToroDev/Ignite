@@ -6,7 +6,7 @@
 //
 
 /// Controls how elements are horizontally positioned inside their container.
-public enum HorizontalAlignment: String {
+public enum HorizontalAlignment: String, Sendable {
     /// Elements are positioned at the start of their container.
     case leading = "text-start"
 
@@ -54,7 +54,7 @@ struct HorizontalAlignmentModifier: HTMLModifier {
     let alignments: [ResponsiveAlignment]
 
     init(alignment: HorizontalAlignment) {
-        self.alignments = [.base(alignment)]
+        self.alignments = [.small(alignment)]
     }
 
     init(alignments: [ResponsiveAlignment]) {
