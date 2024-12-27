@@ -37,7 +37,7 @@ final class CSSManager {
 
         // Process all pending registrations
         for registration in pendingRegistrations {
-            _ = register(
+            register(
                 registration.queries,
                 properties: registration.properties,
                 className: registration.className
@@ -114,16 +114,6 @@ final class CSSManager {
         if queries.isEmpty {
             let baseRule = generateBaseRule(className: className, properties: properties)
             rules.append(baseRule)
-
-            // Generate themed base rules
-            for theme in themes {
-                let themedBaseRule = """
-                [data-bs-theme="\(theme.id)"] .\(className) {
-                    \(properties.map { "\($0.0): \($0.1);" }.joined(separator: " "))
-                }
-                """
-                rules.append(themedBaseRule)
-            }
         } else {
             // Generate media query rules for each theme
             for theme in themes {
