@@ -134,7 +134,7 @@ extension PublishingContext {
     func generateMediaQueryCSS() throws {
         // Combine CSS from both managers
         let mediaQueryCSS = CSSManager.default.allRules
-        print("Generating CSS for custom styles. This may take a while...")
+        print("Generating CSS for custom styles. This may take a moment...")
         let stylesCSS = StyleManager.default.generateAllCSS(themes: site.allThemes)
         let combinedCSS = [mediaQueryCSS, stylesCSS]
             .filter { !$0.isEmpty }
