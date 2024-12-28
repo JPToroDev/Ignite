@@ -80,35 +80,69 @@ final class StyleManager {
         let collector = StyledHTML()
         var tempMap: [EnvironmentConditions: [AttributeValue]] = [:]
 
+        // Get all possible conditions
         let allConditions = generateAllPossibleEnvironmentConditions(themes: themes)
 
         // First pass: collect all styles
-        for condition in allConditions {
-            let styledHTML = style.style(content: collector, environment: condition)
-            tempMap[condition] = Array(styledHTML.attributes.styles)
+        for environment in allConditions {
+            let styledHTML = style.style(content: collector, environment: environment)
+            tempMap[environment] = Array(styledHTML.attributes.styles)
         }
 
-        // Find the default style (most common combination)
-        let defaultStyle = tempMap.values
-            .max { a, b in
-                tempMap.values.filter { $0 == a }.count <
-                tempMap.values.filter { $0 == b }.count
-            } ?? []
+        // Find the default style (when all conditions are nil)
+        let defaultEnvironment = EnvironmentConditions()
+        let defaultHTML = style.style(content: collector, environment: defaultEnvironment)
+        let defaultStyle = Array(defaultHTML.attributes.styles)
 
         // Second pass: only keep conditions that produce different styles from default
         var uniqueConditions: [EnvironmentConditions: [AttributeValue]] = [:]
-        for (condition, styles) in tempMap {
+        for (environment, styles) in tempMap {
             if styles != defaultStyle {
-                // Check if we already have this style combination
-                if let existingCondition = uniqueConditions.first(where: { $0.value == styles })?.key {
-                    // If we already have this style, keep the condition with more nil properties
-                    if condition.conditionCount < existingCondition.conditionCount {
-                        uniqueConditions.removeValue(forKey: existingCondition)
-                        uniqueConditions[condition] = styles
+                // Handle conditions with multiple properties
+                if environment.conditionCount > 1 {
+                    // Test each property independently to find OR conditions
+                    var foundSimpleCondition = false
+
+                    // Test each property in isolation
+                    for property in environment.toMediaQueries() {
+                        var testCondition = EnvironmentConditions()
+
+                        switch property {
+                        case .colorScheme(let value): testCondition.colorScheme = value
+                        case .orientation(let value): testCondition.orientation = value
+                        case .transparency(let value): testCondition.transparency = value
+                        case .displayMode(let value): testCondition.displayMode = value
+                        case .motion(let value): testCondition.motion = value
+                        case .contrast(let value): testCondition.contrast = value
+                        case .theme(let value): testCondition.theme = value
+                        }
+
+                        let testResult = style.style(content: collector, environment: testCondition)
+                        if Array(testResult.attributes.styles) == styles {
+                            uniqueConditions[testCondition] = styles
+                            foundSimpleCondition = true
+                        }
+                    }
+
+                    // If no single property matched, this might be an AND condition
+                    if !foundSimpleCondition {
+                        // Test if this is a valid AND condition by checking if it produces unique styles
+                        let testResult = style.style(content: collector, environment: environment)
+                        if Array(testResult.attributes.styles) == styles {
+                            // Check if we already have a simpler condition for these styles
+                            if let existingCondition = uniqueConditions.first(where: { $0.value == styles })?.key {
+                                if environment.conditionCount < existingCondition.conditionCount {
+                                    uniqueConditions.removeValue(forKey: existingCondition)
+                                    uniqueConditions[environment] = styles
+                                }
+                            } else {
+                                uniqueConditions[environment] = styles
+                            }
+                        }
                     }
                 } else {
-                    // First time seeing this style combination
-                    uniqueConditions[condition] = styles
+                    // Single property condition
+                    uniqueConditions[environment] = styles
                 }
             }
         }
