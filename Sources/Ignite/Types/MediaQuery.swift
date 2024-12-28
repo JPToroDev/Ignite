@@ -87,7 +87,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     }
 
     /// The CSS media query string for this condition.
-    var query: String {
+    var queryString: String {
         switch self {
         case .colorScheme(let scheme):
             switch scheme {

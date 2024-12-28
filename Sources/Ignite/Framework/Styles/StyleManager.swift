@@ -24,6 +24,16 @@ final class StyleManager {
     /// Dictionary of registered styles keyed by their type names
     private var registeredStyles: [String: any Style] = [:]
 
+    /// A structure that holds the default style and all unique style variations for a given `Style`.
+    struct StyleMapResult {
+        /// The default style attributes that apply when no conditions are met.
+        let defaultStyle: [AttributeValue]
+
+        /// A mapping of environment conditions to their corresponding style attributes,
+        /// containing only the minimal conditions needed for each unique style variation.
+        let uniqueConditions: [EnvironmentConditions: [AttributeValue]]
+    }
+
     /// Gets or generates a CSS class name for a style
     /// - Parameter style: The style to get a class name for
     /// - Returns: The CSS class name for this style
@@ -61,137 +71,163 @@ final class StyleManager {
         return cssRulesCache.values.joined(separator: "\n\n")
     }
 
+    /// Generates a map of all unique style variations and their minimal required conditions.
+    /// - Parameters:
+    ///   - style: The style to analyze
+    ///   - themes: Available themes to consider when generating variations
+    /// - Returns: A `StyleMapResult` containing the default style and unique style variations
+    private func generateStylesMap(for style: any Style, themes: [Theme]) -> StyleMapResult {
+        let collector = StyledHTML()
+        var tempMap: [EnvironmentConditions: [AttributeValue]] = [:]
+
+        let allConditions = generateAllPossibleEnvironmentConditions(themes: themes)
+
+        // First pass: collect all styles
+        for condition in allConditions {
+            let styledHTML = style.style(content: collector, environment: condition)
+            tempMap[condition] = Array(styledHTML.attributes.styles)
+        }
+
+        // Find the default style (most common combination)
+        let defaultStyle = tempMap.values
+            .max { a, b in
+                tempMap.values.filter { $0 == a }.count <
+                tempMap.values.filter { $0 == b }.count
+            } ?? []
+
+        // Second pass: only keep conditions that produce different styles from default
+        var uniqueConditions: [EnvironmentConditions: [AttributeValue]] = [:]
+        for (condition, styles) in tempMap {
+            if styles != defaultStyle {
+                // Check if we already have this style combination
+                if let existingCondition = uniqueConditions.first(where: { $0.value == styles })?.key {
+                    // If we already have this style, keep the condition with more nil properties
+                    if condition.conditionCount < existingCondition.conditionCount {
+                        uniqueConditions.removeValue(forKey: existingCondition)
+                        uniqueConditions[condition] = styles
+                    }
+                } else {
+                    // First time seeing this style combination
+                    uniqueConditions[condition] = styles
+                }
+            }
+        }
+
+        return StyleMapResult(
+            defaultStyle: defaultStyle,
+            uniqueConditions: uniqueConditions
+        )
+    }
+
     /// Generates and caches CSS rules for a style
     /// - Parameters:
     ///   - style: The style to generate CSS for
     ///   - themes: Array of themes to generate theme-specific styles for
-    private func generateCSS(for style: any Style, themes: [Theme]) {
+    private func generateCSS(for style: any Style, themes: [Theme]) -> String {
         let typeName = String(describing: type(of: style))
-        let collector = StyledHTML()
-        var cssRules: [String] = []
+        var cssRules: Set<String> = []
 
-        let conditions = generateEnvironmentConditions(themes: themes)
-        var stylesByCondition: [MediaQuery: CoreAttributes] = [:]
+        // Get all styles for all possible conditions
+        let stylesMap = generateStylesMap(for: style, themes: themes)
 
-        // Collect all styles for each condition and track which themes were explicitly handled
-        var explicitlyHandledThemes = Set<String>()
+        // Generate the default rule
+        let rule = """
+        .\(className(for: style)) {
+            \(stylesMap.defaultStyle.map { "\($0.name): \($0.value)" }.joined(separator: "; "))
+        }
+        """
+        cssRules.insert(rule)
 
-        for condition in conditions {
-            let styledHTML = style.style(content: collector, environmentConditions: condition)
-            if !styledHTML.attributes.styles.isEmpty {
-                // Convert condition to media queries for CSS generation
+        // Generate specific rules for unique conditions
+        for (condition, styles) in stylesMap.uniqueConditions {
+            let stylesString = styles.map { "\($0.name): \($0.value)" }.joined(separator: ";\n        ")
+
+            if condition.theme != nil && condition.conditionCount > 1 {
+                // Combined theme and media query rule
+                let mediaQueries = condition.toMediaQueries().filter {
+                    if case .theme = $0 { return false }
+                    return true
+                }
+                let mediaConditions = mediaQueries.map { "(\($0.queryString))" }.joined(separator: " and ")
+
+                let combinedRule = """
+                @media \(mediaConditions) {
+                    [data-theme-state="\(condition.theme!.kebabCased())"] .\(className(for: style)) {
+                        \(stylesString)
+                    }
+                }
+                """
+                cssRules.insert(combinedRule)
+            } else if condition.theme != nil {
+                // Theme-only rule
+                let themeRule = """
+                [data-theme-state="\(condition.theme!.kebabCased())"] .\(className(for: style)) {
+                    \(stylesString)
+                }
+                """
+                cssRules.insert(themeRule)
+            } else {
+                // Media query-only rule
                 let mediaQueries = condition.toMediaQueries()
-                for query in mediaQueries {
-                    stylesByCondition[query] = styledHTML.attributes
-                    if case .theme(let id) = query {
-                        explicitlyHandledThemes.insert(id)
+                let mediaConditions = mediaQueries.map { "(\($0.queryString))" }.joined(separator: " and ")
+
+                let mediaRule = """
+                @media \(mediaConditions) {
+                    .\(className(for: style)) {
+                        \(stylesString)
                     }
                 }
+                """
+                cssRules.insert(mediaRule)
             }
         }
 
-        // Find the style that appears most frequently across all media queries.
-        // Since styles typically only vary for a few specific cases,
-        // the most common style comes from the "else" clause and becomes our default.
-        let defaultStyle = stylesByCondition.values
-            .max { a, b in
-                stylesByCondition.values.filter { $0.styles == a.styles }.count <
-                stylesByCondition.values.filter { $0.styles == b.styles }.count
-            }
-
-        if let defaultStyle = defaultStyle {
-            // Generate the default rule
-            let rule = """
-            .\(className(for: style)) {
-                \(defaultStyle.styles.map { "\($0.name): \($0.value)" }.joined(separator: "; "))
-            }
-            """
-            cssRules.append(rule)
-
-            // Only generate media queries for styles that differ from default
-            for (condition, attributes) in stylesByCondition {
-                if case .theme(let id) = condition {
-                    // Only generate theme rule if it was explicitly handled in the style function
-                    if explicitlyHandledThemes.contains(id) && attributes.styles != defaultStyle.styles {
-                        let rule = generateCSSRule(
-                            className: className(for: style),
-                            attributes: attributes,
-                            query: condition
-                        )
-                        cssRules.append(rule)
-                    }
-                } else if attributes.styles != defaultStyle.styles {
-                    let rule = generateCSSRule(
-                        className: className(for: style),
-                        attributes: attributes,
-                        query: condition
-                    )
-                    cssRules.append(rule)
-                }
-            }
-        }
-
-        let css = cssRules.joined(separator: "\n\n")
-        cssRulesCache[typeName] = css
+        cssRulesCache[typeName] = cssRules.joined(separator: "\n\n")
+        return cssRulesCache[typeName]!
     }
 
     /// Generates an array of all possible media queries that styles should be tested against.
     /// - Parameter themes: Array of themes to generate theme-specific queries for.
     /// - Returns: An array of all possible `EnvironmentConditions` instances.
-    private func generateEnvironmentConditions(themes: [Theme]) -> [EnvironmentConditions] {
-        // Get all possible values for each condition type
-        let colorSchemes = MediaQuery.ColorScheme.allCases
-        let motions = MediaQuery.Motion.allCases
-        let contrasts = MediaQuery.Contrast.allCases
-        let transparencies = MediaQuery.Transparency.allCases
-        let orientations = MediaQuery.Orientation.allCases
-        let displayModes = MediaQuery.DisplayMode.allCases
+    private func generateAllPossibleEnvironmentConditions(themes: [Theme]) -> [EnvironmentConditions] {
+        // Define all possible values for each property
+        let colorSchemes: [MediaQuery.ColorScheme?] = [nil] + MediaQuery.ColorScheme.allCases.map { Optional($0) }
+        let orientations: [MediaQuery.Orientation?] = [nil] + MediaQuery.Orientation.allCases.map { Optional($0) }
+        let transparencies: [MediaQuery.Transparency?] = [nil] + MediaQuery.Transparency.allCases.map { Optional($0) }
+        let displayModes: [MediaQuery.DisplayMode?] = [nil] + MediaQuery.DisplayMode.allCases.map { Optional($0) }
+        let motions: [MediaQuery.Motion?] = [nil] + MediaQuery.Motion.allCases.map { Optional($0) }
+        let contrasts: [MediaQuery.Contrast?] = [nil] + MediaQuery.Contrast.allCases.map { Optional($0) }
+        let themeIds: [String?] = [nil] + themes.map { $0.id }
 
-        // Start with base condition (no specific settings)
-        var conditions = [EnvironmentConditions()]
+        var allConditions: [EnvironmentConditions] = []
 
-        // Helper function to generate all combinations with a new condition type
-        func addCombinations<T>(values: [T], setter: (T, inout EnvironmentConditions) -> Void) {
-            let existingConditions = conditions
-            for value in values {
-                for existing in existingConditions {
-                    var new = existing
-                    setter(value, &new)
-                    conditions.append(new)
+        // Generate every possible combination
+        for colorScheme in colorSchemes {
+            for orientation in orientations {
+                for transparency in transparencies {
+                    for displayMode in displayModes {
+                        for motion in motions {
+                            for contrast in contrasts {
+                                for themeId in themeIds {
+                                    var condition = EnvironmentConditions()
+                                    condition.colorScheme = colorScheme
+                                    condition.orientation = orientation
+                                    condition.transparency = transparency
+                                    condition.displayMode = displayMode
+                                    condition.motion = motion
+                                    condition.contrast = contrast
+                                    condition.theme = themeId
+
+                                    allConditions.append(condition)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        // Generate all possible combinations by progressively adding each condition type
-        addCombinations(values: themes) { theme, condition in
-            condition.theme = theme.id
-        }
-
-        addCombinations(values: colorSchemes) { scheme, condition in
-            condition.colorScheme = scheme
-        }
-
-        addCombinations(values: motions) { motion, condition in
-            condition.motion = motion
-        }
-
-        addCombinations(values: contrasts) { contrast, condition in
-            condition.contrast = contrast
-        }
-
-        addCombinations(values: transparencies) { transparency, condition in
-            condition.transparency = transparency
-        }
-
-        addCombinations(values: orientations) { orientation, condition in
-            condition.orientation = orientation
-        }
-
-        addCombinations(values: displayModes) { mode, condition in
-            condition.displayMode = mode
-        }
-
-        return conditions
+        return allConditions
     }
 
     /// Generates a CSS rule for a specific style and media query
@@ -220,7 +256,7 @@ final class StyleManager {
 
         // Handle media query cases
         return """
-        @media (\(query.query)) {
+        @media (\(query.queryString)) {
             \(selector) {
                 \(stylesString)
             }

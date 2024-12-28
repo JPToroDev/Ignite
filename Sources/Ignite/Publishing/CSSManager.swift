@@ -56,7 +56,7 @@ final class CSSManager {
             if case .theme(let id) = query {
                 result.0.insert(id.kebabCased())
             } else {
-                result.1.append(query.query)
+                result.1.append(query.queryString)
             }
         }
 

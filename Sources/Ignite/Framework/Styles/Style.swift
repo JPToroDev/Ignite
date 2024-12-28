@@ -29,7 +29,7 @@ public protocol Style: Hashable, Sendable {
     ///   - content: An HTML element to apply styles to
     ///   - environmentConditions: The current media query condition to resolve against
     /// - Returns: A modified HTML element with the appropriate styles applied
-    func style(content: StyledHTML, environmentConditions: EnvironmentConditions) -> StyledHTML
+    func style(content: StyledHTML, environment: EnvironmentConditions) -> StyledHTML
 }
 
 //

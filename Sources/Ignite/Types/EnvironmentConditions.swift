@@ -82,4 +82,16 @@ public struct EnvironmentConditions: Equatable, Hashable, Sendable {
         if let theme { queries.append(.theme(theme)) }
         return queries
     }
+
+    var conditionCount: Int {
+        var count = 0
+        if colorScheme != nil { count += 1 }
+        if orientation != nil { count += 1 }
+        if transparency != nil { count += 1 }
+        if displayMode != nil { count += 1 }
+        if motion != nil { count += 1 }
+        if contrast != nil { count += 1 }
+        if theme != nil { count += 1 }
+        return count
+    }
 }
