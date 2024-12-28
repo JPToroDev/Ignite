@@ -29,7 +29,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     case theme(String)
 
     /// The user's preferred color scheme options.
-    public enum ColorScheme: Equatable, Sendable {
+    public enum ColorScheme: CaseIterable, Equatable, Sendable {
         /// Dark mode preference
         case dark
         /// Light mode preference
@@ -37,7 +37,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     }
 
     /// The user's motion preference options.
-    public enum Motion: Equatable, Sendable {
+    public enum Motion: CaseIterable, Equatable, Sendable {
         /// Reduced motion preference
         case reduced
         /// Standard motion preference
@@ -45,7 +45,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     }
 
     /// The user's contrast preference options.
-    public enum Contrast: Equatable, Sendable {
+    public enum Contrast: CaseIterable, Equatable, Sendable {
         /// Reduced contrast preference
         case reduced
         /// High contrast preference
@@ -55,7 +55,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     }
 
     /// The user's transparency preference options.
-    public enum Transparency: Equatable, Sendable {
+    public enum Transparency: CaseIterable, Equatable, Sendable {
         /// Reduced transparency preference
         case reduced
         /// Standard transparency preference
@@ -63,7 +63,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     }
 
     /// The device orientation options.
-    public enum Orientation: Equatable, Sendable {
+    public enum Orientation: CaseIterable, Equatable, Sendable {
         /// Portrait orientation
         case portrait
         /// Landscape orientation
@@ -71,7 +71,7 @@ public enum MediaQuery: Equatable, Hashable, Sendable {
     }
 
     /// The web application display mode options.
-    public enum DisplayMode: Equatable, Sendable {
+    public enum DisplayMode: CaseIterable, Equatable, Sendable {
         /// Standard browser mode
         case browser
         /// Full screen mode

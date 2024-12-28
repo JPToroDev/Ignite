@@ -70,7 +70,7 @@ final class StyleManager {
         let collector = StyledHTML()
         var cssRules: [String] = []
 
-        let conditions = generateMediaQueries(themes: themes)
+        let conditions = generateEnvironmentConditions(themes: themes)
         var stylesByCondition: [MediaQuery: CoreAttributes] = [:]
 
         // Collect all styles for each condition and track which themes were explicitly handled
@@ -79,16 +79,20 @@ final class StyleManager {
         for condition in conditions {
             let styledHTML = style.style(content: collector, environmentConditions: condition)
             if !styledHTML.attributes.styles.isEmpty {
-                stylesByCondition[condition] = styledHTML.attributes
-                // If this was a theme condition and it produced different styles from default,
-                // mark it as explicitly handled
-                if case .theme(let id) = condition {
-                    explicitlyHandledThemes.insert(id)
+                // Convert condition to media queries for CSS generation
+                let mediaQueries = condition.toMediaQueries()
+                for query in mediaQueries {
+                    stylesByCondition[query] = styledHTML.attributes
+                    if case .theme(let id) = query {
+                        explicitlyHandledThemes.insert(id)
+                    }
                 }
             }
         }
 
         // Find the style that appears most frequently across all media queries.
+        // Since styles typically only vary for a few specific cases,
+        // the most common style comes from the "else" clause and becomes our default.
         let defaultStyle = stylesByCondition.values
             .max { a, b in
                 stylesByCondition.values.filter { $0.styles == a.styles }.count <
@@ -132,59 +136,62 @@ final class StyleManager {
     }
 
     /// Generates an array of all possible media queries that styles should be tested against.
-    /// - Parameter themes: Array of themes to generate theme-specific queries for
-    /// - Returns: An array of MediaQuery cases
-    private func generateMediaQueries(themes: [Theme]) -> [MediaQuery] {
-        var queries: [MediaQuery] = []
+    /// - Parameter themes: Array of themes to generate theme-specific queries for.
+    /// - Returns: An array of all possible `EnvironmentConditions` instances.
+    private func generateEnvironmentConditions(themes: [Theme]) -> [EnvironmentConditions] {
+        // Get all possible values for each condition type
+        let colorSchemes = MediaQuery.ColorScheme.allCases
+        let motions = MediaQuery.Motion.allCases
+        let contrasts = MediaQuery.Contrast.allCases
+        let transparencies = MediaQuery.Transparency.allCases
+        let orientations = MediaQuery.Orientation.allCases
+        let displayModes = MediaQuery.DisplayMode.allCases
 
-        // Add theme-specific queries for all provided themes, excluding auto
-        queries.append(contentsOf: themes
-            .filter { $0.id != "auto" }
-            .map { MediaQuery.theme($0.id) }
-        )
+        // Start with base condition (no specific settings)
+        var conditions = [EnvironmentConditions()]
 
-        // Color scheme queries
-        queries.append(contentsOf: [
-            .colorScheme(.light),
-            .colorScheme(.dark)
-        ])
+        // Helper function to generate all combinations with a new condition type
+        func addCombinations<T>(values: [T], setter: (T, inout EnvironmentConditions) -> Void) {
+            let existingConditions = conditions
+            for value in values {
+                for existing in existingConditions {
+                    var new = existing
+                    setter(value, &new)
+                    conditions.append(new)
+                }
+            }
+        }
 
-        // Motion preference queries
-        queries.append(contentsOf: [
-            .motion(.reduced),
-            .motion(.allowed)
-        ])
+        // Generate all possible combinations by progressively adding each condition type
+        addCombinations(values: themes) { theme, condition in
+            condition.theme = theme.id
+        }
 
-        // Contrast preference queries
-        queries.append(contentsOf: [
-            .contrast(.reduced),
-            .contrast(.high),
-            .contrast(.low)
-        ])
+        addCombinations(values: colorSchemes) { scheme, condition in
+            condition.colorScheme = scheme
+        }
 
-        // Transparency preference queries
-        queries.append(contentsOf: [
-            .transparency(.reduced),
-            .transparency(.normal)
-        ])
+        addCombinations(values: motions) { motion, condition in
+            condition.motion = motion
+        }
 
-        // Orientation queries
-        queries.append(contentsOf: [
-            .orientation(.portrait),
-            .orientation(.landscape)
-        ])
+        addCombinations(values: contrasts) { contrast, condition in
+            condition.contrast = contrast
+        }
 
-        // Display mode queries
-        queries.append(contentsOf: [
-            .displayMode(.browser),
-            .displayMode(.fullscreen),
-            .displayMode(.minimalUI),
-            .displayMode(.pip),
-            .displayMode(.standalone),
-            .displayMode(.windowControlsOverlay)
-        ])
+        addCombinations(values: transparencies) { transparency, condition in
+            condition.transparency = transparency
+        }
 
-        return queries
+        addCombinations(values: orientations) { orientation, condition in
+            condition.orientation = orientation
+        }
+
+        addCombinations(values: displayModes) { mode, condition in
+            condition.displayMode = mode
+        }
+
+        return conditions
     }
 
     /// Generates a CSS rule for a specific style and media query
