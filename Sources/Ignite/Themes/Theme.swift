@@ -22,7 +22,7 @@
 @MainActor
 public protocol Theme: Sendable {
     /// The name of the theme, which must be unique
-    static var name: String { get set }
+    static var name: String { get }
 
     /// Primary brand color
     var accent: Color { get }

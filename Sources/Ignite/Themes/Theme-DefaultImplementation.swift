@@ -94,7 +94,7 @@ public extension Theme {
     static var id: String {
         let baseID = name.kebabCased()
 
-        guard self != DefaultLightTheme.self && self != DefaultDarkTheme.self else {
+        guard baseID != "light" && baseID != "dark" else {
             return baseID
         }
 
