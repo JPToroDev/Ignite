@@ -83,19 +83,24 @@ public extension Theme {
     var xxLargeMaxWidth: any LengthUnit { .default }
 }
 
-extension Theme {
+public extension Theme {
+
+    var id: String {
+        Self.id
+    }
+
     /// Internal identifier used for theme switching and CSS selectors.
     /// Automatically appends "-light" or "-dark" suffix based on protocol conformance.
-    var id: String {
+    static var id: String {
         let baseID = name.kebabCased()
 
-        guard type(of: self) != DefaultLightTheme.self && type(of: self) != DefaultDarkTheme.self else {
+        guard self != DefaultLightTheme.self && self != DefaultDarkTheme.self else {
             return baseID
         }
 
         switch self {
-        case is LightTheme: return baseID + "-light"
-        case is DarkTheme: return baseID + "-dark"
+        case is LightTheme.Type: return baseID + "-light"
+        case is DarkTheme.Type: return baseID + "-dark"
         default: return baseID
         }
     }

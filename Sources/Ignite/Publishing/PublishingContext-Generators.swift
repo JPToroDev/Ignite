@@ -130,10 +130,17 @@ extension PublishingContext {
         }
     }
 
-    /// Generates the CSS file containing all media query rules.
+    /// Generates the CSS file containing all media query rules, including styles.
     func generateMediaQueryCSS() throws {
+        // Combine CSS from both managers
+        let mediaQueryCSS = CSSManager.default.allRules
+        let stylesCSS = StyleManager.default.generateAllCSS(themes: site.allThemes)
+        let combinedCSS = [mediaQueryCSS, stylesCSS]
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n\n")
+
         let cssPath = buildDirectory.appending(path: "css/media-queries.min.css")
-        try CSSManager.default.allRules.write(to: cssPath, atomically: true, encoding: .utf8)
+        try combinedCSS.write(to: cssPath, atomically: true, encoding: .utf8)
     }
 
     /// Generates animations for the site.
@@ -222,6 +229,8 @@ extension PublishingContext {
         :root {
             --supports-light-theme: \(supportsLightTheme);
             --supports-dark-theme: \(supportsDarkTheme);
+            --light-theme-id: "\(site.lightTheme?.id ?? "")";
+            --dark-theme-id: "\(site.darkTheme?.id ?? "")";
             --bs-root-font-size: 16px;
             font-size: var(--bs-root-font-size);
         }

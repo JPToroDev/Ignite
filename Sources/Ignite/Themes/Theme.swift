@@ -19,9 +19,10 @@
 ///     var fontFamilyBase: Font = .custom("Helvetica")
 /// }
 /// ```
+@MainActor
 public protocol Theme: Sendable {
     /// The name of the theme, which must be unique
-    var name: String { get set }
+    static var name: String { get set }
 
     /// Primary brand color
     var accent: Color { get }

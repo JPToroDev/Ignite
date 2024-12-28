@@ -6,7 +6,7 @@
 //
 
 /// A type that represents different media query conditions for applying conditional styles.
-public enum MediaQuery {
+public enum MediaQuery: Equatable, Hashable, Sendable {
     /// Applies styles based on the user's preferred color scheme.
     case colorScheme(ColorScheme)
 
@@ -29,7 +29,7 @@ public enum MediaQuery {
     case theme(String)
 
     /// The user's preferred color scheme options.
-    public enum ColorScheme {
+    public enum ColorScheme: Equatable, Sendable {
         /// Dark mode preference
         case dark
         /// Light mode preference
@@ -37,7 +37,7 @@ public enum MediaQuery {
     }
 
     /// The user's motion preference options.
-    public enum Motion {
+    public enum Motion: Equatable, Sendable {
         /// Reduced motion preference
         case reduced
         /// Standard motion preference
@@ -45,7 +45,7 @@ public enum MediaQuery {
     }
 
     /// The user's contrast preference options.
-    public enum Contrast {
+    public enum Contrast: Equatable, Sendable {
         /// Reduced contrast preference
         case reduced
         /// High contrast preference
@@ -55,7 +55,7 @@ public enum MediaQuery {
     }
 
     /// The user's transparency preference options.
-    public enum Transparency {
+    public enum Transparency: Equatable, Sendable {
         /// Reduced transparency preference
         case reduced
         /// Standard transparency preference
@@ -63,7 +63,7 @@ public enum MediaQuery {
     }
 
     /// The device orientation options.
-    public enum Orientation {
+    public enum Orientation: Equatable, Sendable {
         /// Portrait orientation
         case portrait
         /// Landscape orientation
@@ -71,7 +71,7 @@ public enum MediaQuery {
     }
 
     /// The web application display mode options.
-    public enum DisplayMode {
+    public enum DisplayMode: Equatable, Sendable {
         /// Standard browser mode
         case browser
         /// Full screen mode
