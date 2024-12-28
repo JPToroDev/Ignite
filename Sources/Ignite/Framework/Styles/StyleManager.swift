@@ -159,7 +159,7 @@ final class StyleManager {
     ///   - themes: Array of themes to generate theme-specific styles for
     private func generateCSS(for style: any Style, themes: [Theme]) -> String {
         let typeName = String(describing: type(of: style))
-        var cssRules: Set<String> = []
+        var cssRules: OrderedSet<String> = []
 
         // Get all styles for all possible conditions
         let stylesMap = generateStylesMap(for: style, themes: themes)
@@ -170,7 +170,7 @@ final class StyleManager {
             \(stylesMap.defaultStyle.map { "\($0.name): \($0.value)" }.joined(separator: "; "))
         }
         """
-        cssRules.insert(rule)
+        cssRules.append(rule)
 
         // Generate specific rules for unique conditions
         for (condition, styles) in stylesMap.uniqueConditions {
@@ -191,7 +191,7 @@ final class StyleManager {
                     }
                 }
                 """
-                cssRules.insert(combinedRule)
+                cssRules.append(combinedRule)
             } else if condition.theme != nil {
                 // Theme-only rule
                 let themeRule = """
@@ -199,7 +199,7 @@ final class StyleManager {
                     \(stylesString)
                 }
                 """
-                cssRules.insert(themeRule)
+                cssRules.append(themeRule)
             } else {
                 // Media query-only rule
                 let mediaQueries = condition.toMediaQueries()
@@ -212,7 +212,7 @@ final class StyleManager {
                     }
                 }
                 """
-                cssRules.insert(mediaRule)
+                cssRules.append(mediaRule)
             }
         }
 
