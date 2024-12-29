@@ -87,7 +87,6 @@ public struct Section: BlockHTML {
         }
 
         var gutterClass = ""
-        var gapStyle: AttributeValue?
 
         if let customSpacing {
             sectionAttributes.append(styles: .init(name: .rowGap, value: "\(customSpacing)px"))
@@ -105,7 +104,6 @@ public struct Section: BlockHTML {
                     GroupBox(item)
                         .class(className(for: item))
                         .class(gutterClass)
-                        .style(gapStyle)
                 } else {
                     item
                 }

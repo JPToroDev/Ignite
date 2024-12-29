@@ -41,7 +41,6 @@ struct HiddenModifier: HTMLModifier {
 
             // Register for later processing
             CSSManager.default.register(queries)
-            
             return content.class(className)
         } else {
             return content.class(isHidden ? "d-none" : nil)

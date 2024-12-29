@@ -130,11 +130,18 @@ extension PublishingContext {
         }
     }
 
-    /// Generates the CSS file containing all media query rules.
+    /// Generates the CSS file containing all media query rules, including styles.
     func generateMediaQueryCSS() throws {
         CSSManager.default.setThemes(site.allThemes)
+        let mediaQueryCSS = CSSManager.default.allRules
+        print("Generating CSS for custom styles. This may take a moment...")
+        let stylesCSS = StyleManager.default.generateAllCSS(themes: site.allThemes)
+        let combinedCSS = [mediaQueryCSS, stylesCSS]
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n\n")
+
         let cssPath = buildDirectory.appending(path: "css/media-queries.min.css")
-        try CSSManager.default.allRules.write(to: cssPath, atomically: true, encoding: .utf8)
+        try combinedCSS.write(to: cssPath, atomically: true, encoding: .utf8)
     }
 
     /// Generates animations for the site.
@@ -219,11 +226,12 @@ extension PublishingContext {
             fatalError("Ignite requires that you provide a light or dark theme.")
         }
 
-        // Set initial root variables
         cssContent += """
         :root {
             --supports-light-theme: \(supportsLightTheme);
             --supports-dark-theme: \(supportsDarkTheme);
+            --light-theme-id: "\(site.lightTheme?.id ?? "")";
+            --dark-theme-id: "\(site.darkTheme?.id ?? "")";
         }
 
         html {

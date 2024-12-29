@@ -34,7 +34,7 @@ public struct Group: BlockHTML {
 
     public func render(context: PublishingContext) -> String {
         return items.map {
-            var item: any HTML = $0
+            let item: any HTML = $0
             AttributeStore.default.merge(attributes, intoHTML: item.id)
             return item.render(context: context)
         }.joined()
