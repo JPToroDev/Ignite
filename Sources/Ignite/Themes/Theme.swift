@@ -149,9 +149,6 @@
     /// Font size for h6 elements
     var xSmallHeadingSize: LengthUnit { get }
 
-    /// Bottom margin for headings
-    var headingBottomMargin: LengthUnit { get }
-
     /// Optional custom font family for headings
     var headingFont: Font { get }
 
@@ -160,6 +157,12 @@
 
     /// Line height for headings
     var headingLineHeight: LengthUnit { get }
+
+    /// Bottom margin for headings
+    var headingBottomMargin: LengthUnit { get }
+
+    /// Bottom margin for paragraphs
+    var paragraphMarginBottom: LengthUnit { get }
 
     /// Extra small breakpoint
     var xSmallBreakpoint: LengthUnit { get }

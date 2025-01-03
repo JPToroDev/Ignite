@@ -62,10 +62,13 @@ public extension Theme {
     var xSmallHeadingSize: LengthUnit { .default }
 
     // Heading Properties
-    var headingBottomMargin: LengthUnit { .default }
     var headingFont: Font { .default }
     var headingFontWeight: LengthUnit { .default }
     var headingLineHeight: LengthUnit { .default }
+
+    // Bottom Margins
+    var headingBottomMargin: LengthUnit { .default }
+    var paragraphMarginBottom: LengthUnit { .default }
 
     // Breakpoints
     var xSmallBreakpoint: LengthUnit { .px(576) }
