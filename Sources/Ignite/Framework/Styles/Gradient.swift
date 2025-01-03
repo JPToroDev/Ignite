@@ -6,7 +6,7 @@
 //
 
 /// A linear gradient that transitions between colors along a line.
-public struct LinearGradient: CustomStringConvertible {
+public struct Gradient: CustomStringConvertible {
     /// The direction of the gradient
     public enum Direction {
         case top
@@ -58,13 +58,13 @@ public struct LinearGradient: CustomStringConvertible {
     }
 }
 
-public extension LinearGradient {
+public extension Gradient {
     /// Creates a linear gradient background
     /// - Parameters:
     ///   - colors: The colors to use in the gradient
     ///   - direction: The direction of the gradient
     /// - Returns: A linear gradient background
-    static func linearGradient(colors: Color..., direction: LinearGradient.Direction = .trailing) -> LinearGradient {
-        LinearGradient(colors: colors, direction: direction)
+    static func linearGradient(colors: Color..., direction: Gradient.Direction = .trailing) -> Gradient {
+        Gradient(colors: colors, direction: direction)
     }
 }

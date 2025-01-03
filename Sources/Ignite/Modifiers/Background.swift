@@ -17,7 +17,7 @@ struct BackgroundModifier: HTMLModifier {
     var material: Material?
 
     /// The gradient to apply.
-    var gradient: LinearGradient?
+    var gradient: Gradient?
 
     /// Applies the background style to the provided HTML content.
     /// - Parameter content: The HTML content to modify
@@ -70,7 +70,7 @@ public extension HTML {
     /// Applies a linear gradient background
     /// - Parameter gradient: The gradient to apply
     /// - Returns: The modified HTML element
-    func background(_ gradient: LinearGradient) -> some HTML {
+    func background(_ gradient: Gradient) -> some HTML {
         modifier(BackgroundModifier(gradient: gradient))
     }
 }
@@ -101,7 +101,7 @@ public extension BlockHTML {
     /// Applies a linear gradient background
     /// - Parameter gradient: The gradient to apply
     /// - Returns: The modified HTML element
-    func background(_ gradient: LinearGradient) -> some BlockHTML {
+    func background(_ gradient: Gradient) -> some BlockHTML {
         modifier(BackgroundModifier(gradient: gradient))
     }
 }
