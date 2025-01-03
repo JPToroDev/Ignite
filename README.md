@@ -121,13 +121,13 @@ Accordion {
 It has automatic code syntax highlighting for a dozen languages:
 
 ```swift
-CodeBlock(language: "swift", """
+CodeBlock(.swift) { """
 struct ContentView: View {
     var body: some View {
         Text("Hello, Swift!")
     }
 }
-""")
+""" }
 ```
 
 ![Swift code with syntax highlighting.](images/code.png)
