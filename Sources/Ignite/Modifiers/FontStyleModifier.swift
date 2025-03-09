@@ -25,7 +25,7 @@ public extension InlineElement {
 
 private extension HTML {
     func fontStyleModifier(style: Font.Style) -> any HTML {
-        if self.isText {
+        if self.isTextualElement {
             self.fontStyle(style)
         } else {
             Section(self.class("font-inherit"))

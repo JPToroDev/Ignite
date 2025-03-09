@@ -36,17 +36,6 @@ private extension HTML {
     /// - Parameter content: The HTML content to modify
     /// - Returns: The modified HTML content with font styling applied
     func fontModifier(_ font: Font) -> any HTML {
-        if self.isText {
-            self.applyToText(font)
-        } else {
-            self.applyToNonText(font)
-        }
-    }
-
-    /// Applies font styling to text content
-    /// - Parameter content: The text HTML content to modify
-    /// - Returns: The modified HTML content with font styling applied
-    func applyToText(_ font: Font) -> any HTML {
         var modified: any HTML = self.style(.fontWeight, font.weight.rawValue.formatted())
 
         if let style = font.style {
@@ -65,34 +54,42 @@ private extension HTML {
         }
 
         return modified
+            .class("font-inherit")
     }
 
-    /// Applies font styling to non-text content
-    /// - Parameter content: The non-text HTML content to modify
-    /// - Returns: The modified HTML content with font styling applied
-    func applyToNonText(_ font: Font) -> any HTML {
-        var styles = [InlineStyle]()
-        var classes = [String]()
-
-        styles.append(.init(.fontWeight, value: String(font.weight.rawValue)))
-
-        if let name = font.name, name.isEmpty == false {
-            styles.append(.init(.fontFamily, value: name))
-        }
-
-        if let responsiveSize = font.responsiveSize {
-            let classNames = registerClasses(for: responsiveSize)
-            classes.append(classNames)
-        } else if let size = font.size {
-            styles.append(.init(.fontSize, value: size.stringValue))
-        } else if let style = font.style {
-            styles.append(.init(.fontSize, value: style.sizeVariable))
-        }
-
-        return Section(self.class("font-inherit"))
-            .style(styles)
-            .class(classes)
-    }
+//    /// Applies font styling to text content
+//    /// - Parameter content: The text HTML content to modify
+//    /// - Returns: The modified HTML content with font styling applied
+//    func applyToText(_ font: Font) -> any HTML {
+//
+//    }
+//
+//    /// Applies font styling to non-text content
+//    /// - Parameter content: The non-text HTML content to modify
+//    /// - Returns: The modified HTML content with font styling applied
+//    func applyToNonText(_ font: Font) -> any HTML {
+//        var styles = [InlineStyle]()
+//        var classes = [String]()
+//
+//        styles.append(.init(.fontWeight, value: String(font.weight.rawValue)))
+//
+//        if let name = font.name, name.isEmpty == false {
+//            styles.append(.init(.fontFamily, value: name))
+//        }
+//
+//        if let responsiveSize = font.responsiveSize {
+//            let classNames = registerClasses(for: responsiveSize)
+//            classes.append(classNames)
+//        } else if let size = font.size {
+//            styles.append(.init(.fontSize, value: size.stringValue))
+//        } else if let style = font.style {
+//            styles.append(.init(.fontSize, value: style.sizeVariable))
+//        }
+//
+//        return Section(self.class("font-inherit"))
+//            .style(styles)
+//            .class(classes)
+//    }
 
     /// Registers CSS classes for responsive font sizes and returns the generated class name.
     /// - Parameter responsiveSize: The responsive font size.

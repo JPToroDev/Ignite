@@ -81,8 +81,11 @@ extension HTML {
     }
 
     /// A Boolean value indicating whether this represents `Text`.
-    var isText: Bool {
-        body is Text || (body as? AnyHTML)?.wrapped is Text
+    var isTextualElement: Bool {
+        body is Text ||
+        body is Link ||
+        (body as? AnyHTML)?.wrapped is Text ||
+        (body as? AnyHTML)?.wrapped is Link
     }
 }
 
