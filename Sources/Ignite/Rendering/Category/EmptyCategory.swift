@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-/// Represents the absense of a category.
+/// Represents the absence of a category.
 struct EmptyCategory: Category {
     var name: String { "" }
     var articles: [Article] { [] }
