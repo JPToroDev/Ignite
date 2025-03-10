@@ -33,17 +33,17 @@ import Foundation
 @MainActor
 public protocol Site: Sendable {
     /// The type of your homepage. Required.
-    associatedtype HomePageLayout: StaticLayout
+    associatedtype HomePageType: StaticPage
 
     /// The type used to generate your tag pages. A default is provided that means
     /// no tags pages are generated.
-    associatedtype TagPageLayout: TagLayout
+    associatedtype TagPageType: TagPage
 
     /// The type that defines the base layout structure for all pages.
     associatedtype LayoutType: Layout
 
-    /// The Markdown parser to use for Content pages.
-    associatedtype MarkdownRendererType: MarkdownRenderer
+    /// The article parser to use for each `ArticlePage`.
+    associatedtype ArticleRendererType: ArticleRenderer
 
     /// A robots.txt configuration for your site. A default is provided that means
     /// all robots can index all pages.
@@ -84,11 +84,11 @@ public protocol Site: Sendable {
     /// Visit https://icons.getbootstrap.com for the full list.
     var builtInIconsEnabled: BootstrapOptions { get }
 
-    /// The Markdown renderer to use for content in this site. Note: This
+    /// The article renderer to use for content in this site. Note: This
     /// only applies to content pages rendered from the Content folder;
     /// the standard MarkdownToHTML parser is used for `Text` and
     /// other built-in elements regardless of the setting here.
-    var markdownRenderer: MarkdownRendererType.Type { get }
+    var articleRenderer: ArticleRendererType.Type { get }
 
     /// Controls how the RSS feed for your site should be generated. The default
     /// configuration sends back content description only for 20 items. To disable
@@ -100,11 +100,11 @@ public protocol Site: Sendable {
     var robotsConfiguration: RobotsType { get }
 
     /// The homepage for your site; what users land on when visiting your root domain.
-    var homePage: HomePageLayout { get }
+    var homePage: HomePageType { get }
 
-    /// A type that conforms to `TagLayout`, to be used when rendering individual
+    /// A type that conforms to `TagPage`, to be used when rendering individual
     /// tag pages or the "all tags" page.
-    var tagLayout: TagPageLayout { get }
+    var tagPage: TagPageType { get }
 
     /// The base layout applied to all pages. This is used to render all pages that don't
     /// explicitly override the layout with something custom.
@@ -136,11 +136,11 @@ public protocol Site: Sendable {
     /// The path to the favicon
     var favicon: URL? { get }
 
-    /// An array of all the static layouts you want to include in your site.
-    @StaticLayoutBuilder var staticLayouts: [any StaticLayout] { get }
+    /// An array of all the static pages you want to include in your site.
+    @StaticPageBuilder var staticPages: [any StaticPage] { get }
 
-    /// An array of all the content layouts you want to include in your site.
-    @ArticleLayoutBuilder var articleLayouts: [any ArticleLayout] { get }
+    /// An array of all the article pages you want to include in your site.
+    @ArticlePageBuilder var articlePages: [any ArticlePage] { get }
 
     /// Publishes this entire site from user space.
     func publish(from file: StaticString, buildDirectoryPath: String) async throws
@@ -184,7 +184,7 @@ public extension Site {
     var builtInIconsEnabled: BootstrapOptions { .localBootstrap }
 
     /// Use the standard MarkdownToHTML renderer by default.
-    var markdownRenderer: MarkdownToHTML.Type {
+    var articleRenderer: MarkdownToHTML.Type {
         MarkdownToHTML.self
     }
 
@@ -195,14 +195,14 @@ public extension Site {
     /// A default robots.txt configuration that allows all robots to index all pages.
     var robotsConfiguration: DefaultRobotsConfiguration { DefaultRobotsConfiguration() }
 
-    /// No static layouts by default.
-    var staticLayouts: [any StaticLayout] { [] }
+    /// No static pages by default.
+    var staticPages: [any StaticPage] { [] }
 
-    /// No content layouts by default.
-    var articleLayouts: [any ArticleLayout] { [] }
+    /// No content pages by default.
+    var articlePages: [any ArticlePage] { [] }
 
-    /// An empty tag layout by default, which triggers no tag pages being made.
-    var tagLayout: EmptyTagLayout { EmptyTagLayout() }
+    /// An empty tag page by default, which triggers no tag pages being made.
+    var tagPage: EmptyTagPage { EmptyTagPage() }
 
     /// The default favicon being nil
     var favicon: URL? { nil }
