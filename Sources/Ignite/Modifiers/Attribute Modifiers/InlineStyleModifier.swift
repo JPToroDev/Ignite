@@ -61,3 +61,12 @@ extension HTML {
         AnyHTML(inlineStyleModifier(styles: styles))
     }
 }
+
+extension InlineElement {
+    /// Adds inline styles to the element.
+    /// - Parameter styles: An array of `InlineStyle` objects
+    /// - Returns: The modified `InlineElement`
+    func style(_ styles: [InlineStyle]) -> some InlineElement {
+        AnyHTML(inlineStyleModifier(styles: styles))
+    }
+}
