@@ -221,8 +221,8 @@ public struct NavigationBar: HTML {
                 form.configuredAsNavigationItem()
             } else if let form = control as? SearchForm {
                 form.configuredAsNavigationItem()
-            } else {
-                control
+            } else if let form = control as? SubscribeForm {
+                form.configuredAsNavigationItem()
             }
         }
     }
