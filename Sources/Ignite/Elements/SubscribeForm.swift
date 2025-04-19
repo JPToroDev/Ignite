@@ -56,6 +56,9 @@ public struct SubscribeForm: HTML, NavigationItem {
     /// The label text for the email input field.
     private var emailFieldLabel = "Email"
 
+    /// The label text for the email input field.
+    private var emailFieldPrompt: String? = "Email"
+
     /// The display style for form labels.
     private var labelStyle: LabelStyle = .hidden
 
@@ -132,6 +135,15 @@ public struct SubscribeForm: HTML, NavigationItem {
         return copy
     }
 
+    /// Sets the prompt for the email input field.
+    /// - Parameter prompt: The text to use as the email field prompt.
+    /// - Returns: A modified form with the updated field label.
+    public func emailFieldPrompt(_ prompt: String) -> Self {
+        var copy = self
+        copy.emailFieldPrompt = prompt
+        return copy
+    }
+
     /// Sets the size of form controls and labels
     /// - Parameter size: The desired size
     /// - Returns: A modified form with the specified control size
@@ -170,7 +182,7 @@ public struct SubscribeForm: HTML, NavigationItem {
 
     public func render() -> String {
         var formOutput = Form {
-            TextField(emailFieldLabel, prompt: emailFieldLabel)
+            TextField(emailFieldLabel, prompt: emailFieldPrompt)
                 .type(.text)
                 .id(service.emailFieldID)
                 .class(controlSize.controlClass)
