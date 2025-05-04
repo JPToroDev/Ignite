@@ -12,7 +12,7 @@ public struct ToggleVisibility: Action {
     /// The unique identifier of the element we're trying to show/hide.
     var id: String
 
-    /// Creates a new ToggleElementVisibility action from a specific page element ID.
+    /// Creates a new `ToggleVisibility` action from a specific page element ID.
     /// - Parameter id: The unique identifier of the element we're trying to show/hide.
     public init(_ id: String) {
         self.id = id
@@ -24,10 +24,10 @@ public struct ToggleVisibility: Action {
 }
 
 public extension Action where Self == ToggleVisibility {
-    /// Creates a new `SwitchTheme` action
-    /// - Parameter theme: The theme to switch to
-    /// - Returns: A `SwitchTheme` action configured with the specified theme
-    static func toggleVisibility(_ theme: any Theme) -> Self {
-        SwitchTheme(theme)
+    /// Creates a new `ToggleVisibility` action
+    /// - Parameter id: The unique identifier of the element whose visibility will be toggled
+    /// - Returns: A `ToggleVisibility` action configured with the specified element ID
+    static func toggleVisibility(_ id: String) -> Self {
+        ToggleVisibility(id)
     }
 }
