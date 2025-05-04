@@ -22,3 +22,16 @@ public extension BodyElement {
         set {} // swiftlint:disable:this unused_setter_value
     }
 }
+
+extension BodyElement {
+    /// Checks if this element is an empty HTML element.
+    var isEmpty: Bool {
+        if let element = self as? any HTML, element.is(EmptyHTML.self) {
+            true
+        } else if let element = self as? any InlineElement, element.is(EmptyInlineElement.self) {
+            true
+        } else {
+            false
+        }
+    }
+}

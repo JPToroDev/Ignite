@@ -44,19 +44,15 @@ extension InlineElement {
 
     /// Checks if this element is `EmptyInlineElement`
     var isEmpty: Bool {
-        if let collection = self as? InlineElementCollection {
-            collection.elements.allSatisfy { $0 is EmptyInlineElement }
+        if let collection = self.as(InlineElementCollection.self) {
+            collection.elements.allSatisfy { $0.is(EmptyInlineElement.self) }
         } else {
-            self is EmptyInlineElement
+            self.is(EmptyInlineElement.self)
         }
     }
 
     /// A Boolean value indicating whether this represents `Image`.
     var isImage: Bool {
-        if let anyHTML = body as? AnyInlineElement {
-            anyHTML.wrapped is Image
-        } else {
-            body is Image
-        }
+        self.is(Image.self)
     }
 }

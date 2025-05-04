@@ -36,29 +36,21 @@ extension HTML {
 
     /// Checks if this element is an empty HTML element.
     var isEmpty: Bool {
-        if let collection = self as? HTMLCollection {
-            collection.elements.allSatisfy { $0 is EmptyHTML }
+        if let collection = self.as(HTMLCollection.self) {
+            collection.elements.allSatisfy { $0.is(EmptyHTML.self) }
         } else {
-            self is EmptyHTML
+            self.is(EmptyHTML.self)
         }
     }
 
     /// A Boolean value indicating whether this represents `Text`.
     var isText: Bool {
-        if let anyHTML = body as? AnyHTML {
-            anyHTML.wrapped is Text
-        } else {
-            body is Text
-        }
+        self.is(Text.self)
     }
 
     /// A Boolean value indicating whether this represents `Section`.
     var isSection: Bool {
-        if let anyHTML = body as? AnyHTML {
-            anyHTML.wrapped is Section
-        } else {
-            body is Section
-        }
+        self.is(Section.self)
     }
 }
 
