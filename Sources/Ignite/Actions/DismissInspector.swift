@@ -26,3 +26,12 @@ public struct DismissInspector: Action {
         """
     }
 }
+
+public extension Action where Self == DismissInspector {
+    /// Creates a new `DismissInspector`
+    /// - Parameter id: The unique identifier of the inspector to dismiss
+    /// - Returns: A `DismissInspector` action configured with the specified inspector ID
+    static func dismissInspector(_ id: String) -> Self {
+        DismissInspector(id: id)
+    }
+}

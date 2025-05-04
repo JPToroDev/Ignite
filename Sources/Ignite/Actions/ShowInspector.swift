@@ -25,3 +25,12 @@ public struct ShowInspector: Action, Sendable {
         """
     }
 }
+
+public extension Action where Self == ShowInspector {
+    /// Creates a new `ShowInspector` action
+    /// - Parameter id: The unique identifier of the inspector to show
+    /// - Returns: A `ShowInspector` action configured with the specified element ID
+    static func showInspector(_ id: String) -> Self {
+        ShowInspector(id: id)
+    }
+}
