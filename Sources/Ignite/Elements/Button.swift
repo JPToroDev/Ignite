@@ -71,7 +71,7 @@ public struct Button: InlineElement, FormItem {
     /// Creates a button from a more complex piece of HTML.
     /// - Parameter label: An inline element builder of all the content
     /// for this button.
-    public init(@InlineElementBuilder label: @escaping () -> some InlineElement) {
+    public init(@InlineElementBuilder label: () -> some InlineElement) {
         self.label = label()
     }
 
@@ -80,7 +80,6 @@ public struct Button: InlineElement, FormItem {
     ///   - title: The label text to display on this button.
     ///   - systemImage: An image name chosen from https://icons.getbootstrap.com.
     ///   - actions: An element builder that returns an array of actions to run when this button is pressed.
-    /// - actions: An element builder that returns an array of actions to run when this button is pressed.
     public init(
         _ title: String,
         systemImage: String? = nil,
@@ -91,16 +90,43 @@ public struct Button: InlineElement, FormItem {
         addEvent(name: "onclick", actions: actions())
     }
 
+    /// Creates a button with a label.
+    /// - Parameters:
+    ///   - title: The label text to display on this button.
+    ///   - systemImage: An image name chosen from https://icons.getbootstrap.com.
+    ///   - action: The action to run when this button is pressed.
+    public init(
+        _ title: String,
+        systemImage: String? = nil,
+        action: any Action
+    ) {
+        self.label = title
+        self.systemImage = systemImage
+        addEvent(name: "onclick", actions: [action])
+    }
+
     /// Creates a button with a label and actions to run when it's pressed.
     /// - Parameters:
     ///   - actions: An element builder that returns an array of actions to run when this button is pressed.
     ///   - label: The label text to display on this button.
     public init(
         @ActionBuilder actions: () -> [Action],
-        @InlineElementBuilder label: @escaping () -> some InlineElement
+        @InlineElementBuilder label: () -> some InlineElement
     ) {
         self.label = label()
         addEvent(name: "onclick", actions: actions())
+    }
+
+    /// Creates a button with a label and actions to run when it's pressed.
+    /// - Parameters:
+    ///   - action: The action to run when this button is pressed.
+    ///   - label: The label text to display on this button.
+    public init(
+        action: any Action,
+        @InlineElementBuilder label: () -> some InlineElement
+    ) {
+        self.label = label()
+        addEvent(name: "onclick", actions: [action])
     }
 
     /// Adjusts the size of this button.
