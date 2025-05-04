@@ -16,7 +16,7 @@ public struct DismissModal: Action {
         self.id = id
     }
 
-    /// Renders this action using publishing context passed in.
+    /// Renders this action into JavaScript.
     /// - Returns: The JavaScript for this action.
     public func compile() -> String {
         """
