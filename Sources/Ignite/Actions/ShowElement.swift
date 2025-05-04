@@ -10,7 +10,7 @@ public struct ShowElement: Action {
     /// The unique identifier of the element we're trying to hide.
     var id: String
 
-    /// Creates a new ShowElement action from a specific page element ID.
+    /// Creates a new `ShowElement` action from a specific page element ID.
     /// - Parameter id: The unique identifier of the element we're trying to hide.
     public init(_ id: String) {
         self.id = id
@@ -20,5 +20,14 @@ public struct ShowElement: Action {
     /// - Returns: The JavaScript for this action.
     public func compile() -> String {
         "document.getElementById('\(id)').classList.remove('d-none')"
+    }
+}
+
+public extension Action where Self == ShowElement {
+    /// Creates a new `ShowElement` action
+    /// - Parameter id: The unique identifier of the element to show
+    /// - Returns: A `ShowElement` action configured with the specified element ID
+    static func showElement(_ id: String) -> Self {
+        ShowElement(id)
     }
 }

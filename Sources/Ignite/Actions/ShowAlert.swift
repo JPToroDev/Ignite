@@ -10,7 +10,7 @@ public struct ShowAlert: Action {
     /// The text to show inside the alert
     var message: String
 
-    /// Creates a new ShowAlert action with its message string.
+    /// Creates a new `ShowAlert` action with its message string.
     /// - Parameter message: The message text to show in the alert.
     public init(message: String) {
         self.message = message
@@ -20,5 +20,14 @@ public struct ShowAlert: Action {
     /// - Returns: The JavaScript for this action.
     public func compile() -> String {
         "alert('\(message.escapedForJavascript())')"
+    }
+}
+
+public extension Action where Self == ShowAlert {
+    /// Creates a new `ShowAlert` action
+    /// - Parameter message: The text to show inside the alert
+    /// - Returns: A `ShowAlert` action configured with the specified message
+    static func showAlert(_ message: String) -> Self {
+        ShowAlert(message: message)
     }
 }

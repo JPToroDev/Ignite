@@ -10,7 +10,7 @@ public struct HideElement: Action {
     /// The unique identifier of the element we're trying to hide.
     var id: String
 
-    /// Creates a new HideElement action from a specific page element ID.
+    /// Creates a new `HideElement` action from a specific page element ID.
     /// - Parameter id: The unique identifier of the element we're trying to hide.
     public init(_ id: String) {
         self.id = id
@@ -20,5 +20,14 @@ public struct HideElement: Action {
     /// - Returns: The JavaScript for this action.
     public func compile() -> String {
         "document.getElementById('\(id)').classList.add('d-none')"
+    }
+}
+
+public extension Action where Self == HideElement {
+    /// Creates a new `HideElement` action
+    /// - Parameter id: The unique identifier of the element to hide
+    /// - Returns: A `HideElement` action configured with the specified element ID
+    static func hideElement(_ id: String) -> Self {
+        HideElement(id)
     }
 }

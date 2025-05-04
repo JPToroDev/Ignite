@@ -10,7 +10,7 @@ public struct DismissModal: Action {
     /// The unique identifier of the element of the modal we're trying to dismiss.
     var id: String
 
-    /// Creates a new DismissModal action from a specific page element ID.
+    /// Creates a new `DismissModal` action from a specific page element ID.
     /// - Parameter id: The unique identifier of the element of the modal we're trying to dismiss.
     public init(id: String) {
         self.id = id
@@ -24,5 +24,14 @@ public struct DismissModal: Action {
         const modalInstance = bootstrap.Modal.getInstance(modal);
         if (modalInstance) { modalInstance.hide(); }
         """
+    }
+}
+
+public extension Action where Self == DismissModal {
+    /// Creates a new `DismissModal` action
+    /// - Parameter id: The unique identifier of the modal to dismiss
+    /// - Returns: A `DismissModal` action configured with the specified modal ID
+    static func dismissModal(_ id: String) -> Self {
+        DismissModal(id: id)
     }
 }
