@@ -164,6 +164,7 @@ extension PublishingContext {
     private func baseThemeRules(_ theme: any Theme) -> [String] {
         var rules: [CustomStringConvertible] = []
         rules.append(contentsOf: responsiveVariables(for: theme))
+        rules.append(contentsOf: buttonColorVariants(for: theme))
         rules.append(contentsOf: containerMediaQueries(for: theme))
         rules.append(globalRulesets())
         return rules.map(\.description)

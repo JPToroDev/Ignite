@@ -74,6 +74,31 @@ extension PublishingContext {
         }
     }
 
+    // Generate the color variants for active buttons.
+    func buttonColorVariants(for theme: any Theme) -> [Ruleset] {
+        let brandColors: [(BootstrapVariable, Color, String)] = [
+            (.primary, theme.accent, "btn-primary"),
+            (.secondary, theme.secondaryAccent, "btn-secondary"),
+            (.success, theme.success, "btn-success"),
+            (.info, theme.info, "btn-info"),
+            (.warning, theme.warning, "btn-warning"),
+            (.danger, theme.danger, "btn-danger"),
+            (.light, theme.offWhite, "btn-light"),
+            (.dark, theme.offBlack, "btn-dark")
+        ]
+
+        return brandColors.map { variable, color, className in
+            Ruleset(.attribute(name: "data-bs-theme", value: theme.cssID), .class(className)) {
+                InlineStyle("--bs-btn-bg", value: color.description)
+                InlineStyle("--bs-btn-border-color", value: color.description)
+                InlineStyle("--bs-btn-hover-border-color", value: color.weighted(.semiDark).description)
+                InlineStyle("--bs-btn-hover-bg", value: color.weighted(.semiDark).description)
+                InlineStyle("--bs-btn-active-bg", value: color.weighted(.dark).description)
+                InlineStyle("--bs-btn-active-border-color", value: color.weighted(.dark).description)
+            }
+        }
+    }
+
     /// Creates responsive measurement styles
     private func createResponsiveStyles(
         from values: ResponsiveValues<LengthUnit>,
