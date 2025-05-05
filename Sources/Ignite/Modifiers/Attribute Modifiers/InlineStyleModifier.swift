@@ -45,27 +45,15 @@ public extension InlineElement {
     }
 }
 
-public extension MarkupElement where Self: HeadElement {
-    /// Adds an inline CSS style property to the `HeadElement`
-    /// - Parameters:
-    ///   - property: The CSS property to set
-    ///   - value: The value to set for the property
-    /// - Returns: A modified copy of the element with the style property added
-    @discardableResult func style(_ property: Property, _ value: String) -> some HeadElement {
-        var copy = self
-        copy.attributes.append(styles: .init(property, value: value))
-        return copy
-    }
-}
-
 extension HTML {
     /// Adds an inline style to the element.
     /// - Parameters:
     ///   - property: The CSS property.
     ///   - value: The value.
     /// - Returns: The modified `HTML` element
-    func style(_ property: String, _ value: String) -> some HTML {
-        AnyHTML(inlineStyleModifier([.init(property, value: value)], content: self))
+    func style(_ property: String, _ value: String?) -> some HTML {
+        guard let value else { return AnyHTML(self) }
+        return AnyHTML(inlineStyleModifier([.init(property, value: value)], content: self))
     }
 
     /// Adds inline styles to the element.
