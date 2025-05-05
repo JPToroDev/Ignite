@@ -115,11 +115,11 @@ public struct SplitView: HTML {
             Section(sidebar)
                 .class("splitview-sidebar")
                 .class("collapse collapse-horizontal show")
+                .data("collapse-on-min", (!isDismissDisabled).description)
                 .style("--splitview-divider-color", dividerColor?.description)
                 .style("--splitview-min-width", minWidth?.stringValue)
                 .style("--splitview-default-width", idealWidth?.stringValue)
                 .style("--splitview-max-width", maxWidth?.stringValue)
-                .style("--splitview-collapse-on-min", (!isDismissDisabled).description)
                 .id(htmlID)
 
             Section {

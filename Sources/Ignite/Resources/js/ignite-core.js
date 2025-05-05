@@ -170,8 +170,7 @@ function initializeSplitView() {
         getComputedStyle(sidebar).getPropertyValue('--splitview-default-width')
     );
 
-    const SHOULD_COLLAPSE = getComputedStyle(sidebar)
-        .getPropertyValue('--splitview-collapse-on-min') === 'true';
+    const SHOULD_COLLAPSE = sidebar.dataset.collapseOnMin === 'true';
 
     const COLLAPSED_WIDTH = 0;
 
