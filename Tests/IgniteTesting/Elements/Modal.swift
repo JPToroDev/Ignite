@@ -25,7 +25,9 @@ struct ModalTests {
         let output = element.markupString()
 
         #expect(output == """
-        <div id="showModalId" tabindex="-1" class="modal fade" aria-labelledby="modalLabel" aria-hidden="true">\
+        <div id="showModalId" tabindex="-1" class="modal fade" \
+        data-bs-keyboard="true" data-bs-backdrop="true" data-bs-focus="true" \
+        aria-labelledby="modalLabel" aria-hidden="true">\
         <div class="modal-dialog modal-dialog-centered">\
         <div class="modal-content"><div class="modal-body">\
         <h3 class="text-center m-5">Dismiss me by clicking on the backdrop.</h3>\
@@ -51,7 +53,9 @@ struct ModalTests {
         let output = element.markupString()
 
         #expect(output == """
-        <div id="dismissModalId" tabindex="-1" class="modal fade" aria-labelledby="modalLabel" aria-hidden="true">\
+        <div id="dismissModalId" tabindex="-1" class="modal fade" \
+        data-bs-keyboard="true" data-bs-backdrop="true" data-bs-focus="true" \
+        aria-labelledby="modalLabel" aria-hidden="true">\
         <div class="modal-dialog modal-dialog-centered"><div class="modal-content">\
         <div class="modal-body"><div class="text-end">\
         <button type="button" class="btn btn-close" label="Close" onclick="\
@@ -122,7 +126,9 @@ struct ModalTests {
         let output = element.markupString()
 
         #expect(output == """
-        <div id="headerModalId" tabindex="-1" class="modal fade" aria-labelledby="modalLabel" aria-hidden="true">\
+        <div id="headerModalId" tabindex="-1" class="modal fade" \
+        data-bs-keyboard="true" data-bs-backdrop="true" data-bs-focus="true" \
+        aria-labelledby="modalLabel" aria-hidden="true">\
         <div class="modal-dialog modal-dialog-centered"><div class="modal-content">\
         <div class="modal-header"><h5>Header</h5>\
         <button type="button" class="btn btn-close" label="Close" onclick="\
@@ -151,7 +157,9 @@ struct ModalTests {
         let output = element.markup()
 
         #expect(output.string == """
-        <div id="footerModalId" tabindex="-1" class="modal fade" aria-labelledby="modalLabel" aria-hidden="true">\
+        <div id="footerModalId" tabindex="-1" class="modal fade" \
+        data-bs-keyboard="true" data-bs-backdrop="true" data-bs-focus="true" \
+        aria-labelledby="modalLabel" aria-hidden="true">\
         <div class="modal-dialog modal-dialog-centered"><div class="modal-content">\
         <div class="modal-body"><p>Body</p></div><div class="modal-footer">\
         <button type="button" class="btn btn-secondary" onclick="\
@@ -187,6 +195,7 @@ struct ModalTests {
 
         #expect(output.string == """
         <div id="headerAndFooterModalId" tabindex="-1" class="modal fade" \
+        data-bs-keyboard="true" data-bs-backdrop="true" data-bs-focus="true" \
         aria-labelledby="modalLabel" aria-hidden="true">\
         <div class="modal-dialog modal-dialog-centered">\
         <div class="modal-content"><div class="modal-header"><h5>Header</h5>\
@@ -212,29 +221,11 @@ struct ModalTests {
                 .font(.title5)
         }
         .size(.large)
-        .scrollableContent(true)
+        .contentScrollDisabled(false)
 
         let output = element.markupString()
         #expect(output.contains("""
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         """))
     }
-
-    @Test("Modals Presentation Options", arguments: [
-        ShowModal.Option.backdrop(dismissible: true), ShowModal.Option.backdrop(dismissible: false),
-        ShowModal.Option.noBackdrop, ShowModal.Option.focus(true), ShowModal.Option.focus(false),
-        ShowModal.Option.keyboard(true), ShowModal.Option.keyboard(false)])
-    func checkModalPresentationOptions(option: ShowModal.Option) async throws {
-        let element = Button("Show Modal") {
-            ShowModal(id: "showModalId", options: [option])
-        }
-        let output = element.markupString()
-
-        #expect(output.contains("""
-        <button type="button" class="btn" onclick="const options = {
-            \(option.htmlOption)
-        };
-        """))
-    }
-
 }

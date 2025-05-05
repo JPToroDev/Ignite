@@ -30,14 +30,14 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row justify-content-center">\
-        <div class="col align-self-center g-3">\
+        <div class="row h-100 justify-content-center g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
-        <div class="col align-self-center g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/stack.jpg" alt="A door partly open." class="img-fluid" />\
         </div>\
-        <div class="col align-self-center g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/wind.jpg" alt="A windy day." class="img-fluid" />\
         </div>\
         </div>
@@ -63,14 +63,14 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row justify-content-center">\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="row h-100 justify-content-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/stack.jpg" alt="A door partly open." class="img-fluid" />\
         </div>\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/wind.jpg" alt="A windy day." class="img-fluid" />\
         </div>\
         </div>
@@ -100,17 +100,17 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row justify-content-center">\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="row h-100 justify-content-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/stack.jpg" alt="A door partly open." class="img-fluid" />\
         </div>\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/rug.jpg" alt="A nice rug." class="img-fluid" />\
         </div>\
-        <div class="col-md-4 align-self-center g-3">\
+        <div class="col-md-4 align-self-center">\
         <img src="/images/photos/car.jpg" alt="The window of a car." class="img-fluid" />\
         </div>\
         </div>
@@ -137,17 +137,17 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row justify-content-center row-cols-1 row-cols-md-2">\
-        <div class="col align-self-center g-3">\
+        <div class="row h-100 justify-content-center row-cols-1 row-cols-md-2 g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
-        <div class="col align-self-center g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/stack.jpg" alt="A door partly open." class="img-fluid" />\
         </div>\
-        <div class="col align-self-center g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/rug.jpg" alt="A nice rug." class="img-fluid" />\
         </div>\
-        <div class="col align-self-center g-3">\
+        <div class="col align-self-center">\
         <img src="/images/photos/car.jpg" alt="The window of a car." class="img-fluid" />\
         </div>\
         </div>
