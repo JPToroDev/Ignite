@@ -20,6 +20,9 @@ public enum Cursor: String, CaseIterable, Sendable {
 
     /// Something can be zoomed (magnified) out.
     case zoomOut = "zoom-out"
+
+    /// Something can be resized horizontally.
+    case resizeHorizontally = "col-resize"
 }
 
 public extension HTML {
