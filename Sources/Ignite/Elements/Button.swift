@@ -102,6 +102,7 @@ public struct Button: InlineElement, FormItem {
     ) {
         self.label = title
         self.systemImage = systemImage
+        dataAttributes(for: action)
         addEvent(name: "onclick", actions: [action])
     }
 
@@ -126,6 +127,7 @@ public struct Button: InlineElement, FormItem {
         @InlineElementBuilder label: () -> some InlineElement
     ) {
         self.label = label()
+        dataAttributes(for: action)
         addEvent(name: "onclick", actions: [action])
     }
 
@@ -163,6 +165,14 @@ public struct Button: InlineElement, FormItem {
         var copy = self
         copy.isDisabled = disabled
         return copy
+    }
+
+    /// Adds the required data attributes for actions that use collpase animations.
+    /// - Parameter action: The action of the this button.
+    private mutating func dataAttributes(for action: any Action) {
+        guard let toggleSidebar = action as? ToggleSidebar else { return }
+        attributes.append(dataAttributes: .init(name: "bs-toggle", value: "collapse"))
+        attributes.append(dataAttributes: .init(name: "bs-target", value: "#\(toggleSidebar.id)"))
     }
 
     /// Returns an array containing the correct CSS classes to style this button

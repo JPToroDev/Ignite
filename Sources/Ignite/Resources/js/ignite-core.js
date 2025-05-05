@@ -153,3 +153,117 @@ function igniteFilterTable(searchText, tableId) {
     tbody.innerHTML = "";
     matchingRows.forEach(row => tbody.appendChild(row));
 }
+
+// SECTION: SplitView -------------------------------------------------------------------------
+
+function initializeSplitView() {
+    const dividerHitarea = document.getElementById('splitview-divider-hitarea');
+    const container = document.querySelector('.splitview');
+    const sidebar = document.querySelector('.splitview-sidebar');
+    let isDragging = false;
+
+    const MIN_WIDTH = parseInt(
+        getComputedStyle(sidebar).getPropertyValue('--splitview-min-width')
+    );
+
+    const DEFAULT_WIDTH = parseInt(
+        getComputedStyle(sidebar).getPropertyValue('--splitview-default-width')
+    );
+
+    const SHOULD_COLLAPSE = getComputedStyle(sidebar)
+        .getPropertyValue('--splitview-collapse-on-min') === 'true';
+
+    const COLLAPSED_WIDTH = 0;
+
+    // Store the last non-collapsed width
+    let lastWidth = DEFAULT_WIDTH;
+
+    function collapsePanel() {
+        sidebar.style.width = `${COLLAPSED_WIDTH}px`;
+        sidebar.classList.add('collapsed');
+        dividerHitarea.classList.add('collapsed');
+    }
+
+    function expandPanel() {
+        sidebar.style.width = `${lastWidth}px`;
+        sidebar.classList.remove('collapsed');
+        dividerHitarea.classList.remove('collapsed');
+    }
+
+    function togglePanel() {
+        if (sidebar.classList.contains('collapsed')) {
+            expandPanel();
+        } else {
+            lastWidth = parseInt(sidebar.style.width) || DEFAULT_WIDTH;
+            collapsePanel();
+        }
+    }
+
+    function showPanel() {
+        if (sidebar.classList.contains('collapsed')) {
+            expandPanel();
+        }
+    }
+
+    function hidePanel() {
+        if (!sidebar.classList.contains('collapsed')) {
+            lastWidth = parseInt(sidebar.style.width) || DEFAULT_WIDTH;
+            collapsePanel();
+        }
+    }
+
+    function handleDrag(e) {
+        if (!isDragging) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const leftWidth = clientX - containerRect.left;
+
+        if (leftWidth < MIN_WIDTH) {
+            if (SHOULD_COLLAPSE) {
+                collapsePanel();
+            } else {
+                sidebar.style.width = `${MIN_WIDTH}px`;
+                lastWidth = MIN_WIDTH;
+            }
+        } else if (leftWidth < containerRect.width - MIN_WIDTH) {
+            sidebar.style.width = `${leftWidth}px`;
+            lastWidth = leftWidth;
+            sidebar.classList.remove('collapsed');
+            dividerHitarea.classList.remove('collapsed');
+        }
+    }
+
+    function handleDragEnd() {
+        isDragging = false;
+        dividerHitarea.classList.remove('active');
+    }
+
+    dividerHitarea.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dividerHitarea.classList.add('active');
+        e.preventDefault();
+    });
+
+    dividerHitarea.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        dividerHitarea.classList.add('active');
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', handleDrag);
+    document.addEventListener('touchmove', handleDrag);
+    document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchend', handleDragEnd);
+
+    // Make functions available globally
+    window.igniteToggleSplitView = togglePanel;
+    window.igniteShowSplitView = showPanel;
+    window.igniteHideSplitView = hidePanel;
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializeSplitView();
+    updateMainContentHeight();
+});

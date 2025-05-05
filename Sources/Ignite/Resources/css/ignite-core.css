@@ -1,43 +1,3 @@
-/* Since positioning the image, we need to help out the caption */
-.carousel-caption {
-  bottom: 3rem;
-  z-index: 10;
-}
-
-/* Declare heights because of positioning of img element */
-.carousel-item {
-  height: 32rem;
-}
-
-/* Removing padding from the last paragraph in an alert. */
-div.alert p:last-child {
-  margin-bottom: 0;
-}
-
-.font-inherit, .font-inherit * {
-  font: inherit;
-}
-
-.color-inherit, .color-inherit * {
-  color: inherit;
-}
-
-.line-height-inherit {
-  line-height: inherit;
-}
-
-.form-control::placeholder {
-    color: gray;
-    opacity: 1;
-}
-/* Removing text syling from a link. */
-.link-plain {
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* Define CSS Variables for Material Backgrounds */
 :root {
     /* Light Material Values */
     --material-light-ultra-thin: rgba(255, 255, 255, 0.5);
@@ -62,6 +22,14 @@ div.alert p:last-child {
     --material-dark-thick-blur: rgba(30, 30, 30, 0.5);
     --material-dark-ultra-thick: rgba(30, 30, 30, 0.9);
     --material-dark-ultra-thick-blur: rgba(30, 30, 30, 0.6);
+
+    /* HSplitView Values */
+    --splitview-divider-active-color: #007aff;
+    --splitview-divider-color: #cccccc;
+    --splitview-min-width: 100;
+    --splitview-default-width: 250;
+    --splitview-max-width: 400;
+    --splitview-collapse-on-min: false;
 }
 
 /* Auto-switching Material Classes */
@@ -247,6 +215,10 @@ div.alert p:last-child {
     }
 }
 
+.ig-main-content {
+    height: 100%;
+}
+
 .ig-text-small {
     font-size: 0.9rem;
 }
@@ -278,32 +250,28 @@ div.alert p:last-child {
 }
 
 /* Split view component styles */
-.hsplitview {
+.splitview {
     display: flex;
-    width: 100%;
     height: 100%;
     overflow: hidden;
     position: relative;
 }
 
-.left-panel {
+.splitview-sidebar {
     height: 100%;
-    background-color: #f2f2f2;
-    padding: 20px;
     overflow-y: auto;
     flex-shrink: 0;
     width: 30%;
+    max-width: var(--splitview-max-width);
 }
 
-.right-panel {
+.splitview-content {
     flex: 1;
     height: 100%;
-    background-color: #ffffff;
-    padding: 20px;
     overflow-y: auto;
 }
 
-.divider-wrapper {
+.splitview-divider {
     position: relative;
     width: 1px;
     height: 100%;
@@ -311,7 +279,7 @@ div.alert p:last-child {
     flex-shrink: 0;
 }
 
-.divider-hitarea {
+.splitview-divider-hitarea {
     position: absolute;
     width: 20px;
     height: 100%;
@@ -321,19 +289,59 @@ div.alert p:last-child {
     z-index: 100;
 }
 
-.divider-hitarea:hover + .divider-line,
-.divider-hitarea.active + .divider-line {
-    background-color: #007aff;
+.splitview-divider-hitarea:hover + .splitview-divider-line,
+.splitview-divider-hitarea.active + .splitview-divider-line {
+    background-color: var(--splitview-divider-active-color);
     width: 4px;
     left: -1.5px;
 }
 
-.divider-line {
+.splitview-divider-line {
     position: absolute;
     width: 1px;
     height: 100%;
-    background-color: #cccccc;
+    background-color: var(--splitview-divider-color);
     top: 0;
     left: 0;
     transition: background-color 0.2s, width 0.2s, left 0.2s;
+}
+
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+  bottom: 3rem;
+  z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item {
+  height: 32rem;
+}
+
+/* Removing padding from the last paragraph in an alert. */
+div.alert p:last-child {
+  margin-bottom: 0;
+}
+
+.font-inherit, .font-inherit * {
+  font: inherit;
+}
+
+.color-inherit, .color-inherit * {
+  color: inherit;
+}
+
+.line-height-inherit {
+  line-height: inherit;
+}
+
+.form-control::placeholder {
+    color: gray;
+    opacity: 1;
+}
+
+/* Removing text syling from a link. */
+.link-plain {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
 }

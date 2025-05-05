@@ -5,6 +5,8 @@
 // See LICENSE for license information.
 //
 
+/// A resizable split view that divides content into a
+/// sidebar and main content area with an interactive divider.
 public struct SplitView: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { self }
@@ -15,16 +17,38 @@ public struct SplitView: HTML {
     /// Whether this HTML belongs to the framework.
     public var isPrimitive: Bool { true }
 
+    /// The sidebar content of the split view.
     private var sidebar: any BodyElement
+
+    /// The main content of the split view.
     private var content: any BodyElement
+
+    /// The base color of the divider between sidebar and content.
     private var dividerColor: Color?
+
+    /// The color of the divider when hovered.
     private var dividerHoverColor: Color?
+
+    /// The preferred width of the sidebar.
     private var idealWidth: LengthUnit?
+
+    /// The minimum width the sidebar can be resized to.
     private var minWidth: LengthUnit?
+
+    /// The maximum width the sidebar can be resized to.
     private var maxWidth: LengthUnit?
+
+    /// Whether the sidebar can be dismissed by dragging.
     private var isDismissDisabled = true
+
+    /// The unique identifier for this split view.
     private let htmlID: String
 
+    /// Creates a new split view with the specified sidebar and content.
+    /// - Parameters:
+    ///   - id: A unique identifier for this split view.
+    ///   - sidebar: A closure that returns the sidebar content.
+    ///   - content: A closure that returns the main content.
     public init(
         id: String,
         @HTMLBuilder sidebar: () -> some HTML,
@@ -35,6 +59,11 @@ public struct SplitView: HTML {
         self.content = content()
     }
 
+    /// Sets different colors for the divider in its normal and hover states.
+    /// - Parameters:
+    ///   - base: The default color of the divider.
+    ///   - hover: The color of the divider when hovered.
+    /// - Returns: A modified split view with the specified divider colors.
     public func dividerColor(_ base: Color, hover: Color) -> Self {
         var copy = self
         copy.dividerColor = base
@@ -42,6 +71,9 @@ public struct SplitView: HTML {
         return copy
     }
 
+    /// Sets the same color for the divider in both normal and hover states.
+    /// - Parameter color: The color to use for the divider in all states.
+    /// - Returns: A modified split view with the specified divider color.
     public func dividerColor(_ color: Color) -> Self {
         var copy = self
         copy.dividerColor = color
@@ -49,6 +81,12 @@ public struct SplitView: HTML {
         return copy
     }
 
+    /// Configures the width constraints for the sidebar.
+    /// - Parameters:
+    ///   - minWidth: The minimum width the sidebar can be resized to.
+    ///   - idealWidth: The preferred width of the sidebar.
+    ///   - maxWidth: The maximum width the sidebar can be resized to.
+    /// - Returns: A modified split view with the specified width constraints.
     public func sidebarWidth(
         minWidth: LengthUnit? = nil,
         idealWidth: LengthUnit? = nil,
@@ -61,40 +99,45 @@ public struct SplitView: HTML {
         return copy
     }
 
+    /// Controls whether the sidebar can be dismissed by dragging.
+    /// - Parameter disabled: When `true`, prevents the sidebar from being dismissed by dragging.
+    /// - Returns: A modified split view with the specified dismiss behavior.
     public func interactiveDismissDisabled(_ disabled: Bool) -> Self {
         var copy = self
         copy.isDismissDisabled = disabled
         return copy
     }
 
+    /// Generates the HTML markup for this split view.
+    /// - Returns: The markup representation of this split view.
     public func markup() -> Markup {
         Section {
             Section(sidebar)
-                .class("left-panel")
+                .class("splitview-sidebar")
                 .class("collapse collapse-horizontal show")
-                .style(.init("--hsplitview-divider-color", value: dividerColor?.description ?? ""))
-                .style(.init("--splitview-min-width", value: minWidth?.stringValue ?? ""))
-                .style(.init("--splitview-default-width", value: idealWidth?.stringValue ?? ""))
-                .style(.init("--splitview-max-width", value: maxWidth?.stringValue ?? ""))
-                .style(.init("--splitview-collapse-on-min", value: (!isDismissDisabled).description))
+                .style("--splitview-divider-color", dividerColor?.description)
+                .style("--splitview-min-width", minWidth?.stringValue)
+                .style("--splitview-default-width", idealWidth?.stringValue)
+                .style("--splitview-max-width", maxWidth?.stringValue)
+                .style("--splitview-collapse-on-min", (!isDismissDisabled).description)
                 .id(htmlID)
 
             Section {
                 Section()
-                    .class("divider-hitarea")
-                    .id("divider-hitarea")
+                    .class("splitview-divider-hitarea")
+                    .id("splitview-divider-hitarea")
                 Section()
-                    .style(.init("--hsplitview-divider-color", value: dividerColor?.description ?? ""))
-                    .style(.init("--hsplitview-divider-active-color", value: dividerHoverColor?.description ?? ""))
-                    .class("divider-line")
+                    .style("--splitview-divider-color", dividerColor?.description)
+                    .style("--splitview-divider-active-color", dividerHoverColor?.description)
+                    .class("splitview-divider-line")
             }
-            .class("divider-wrapper")
+            .class("splitview-divider")
 
             Section(content)
-                .class("right-panel")
+                .class("splitview-content")
         }
+        .class("splitview")
         .attributes(attributes)
-        .class("hsplitview")
         .markup()
     }
 }
