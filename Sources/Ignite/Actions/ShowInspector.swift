@@ -5,13 +5,13 @@
 // See LICENSE for license information.
 //
 
-/// Shows an inspector panel with the content of the page element identified by ID
+/// Shows an `Inspector`.
 public struct ShowInspector: Action, Sendable {
     /// The unique identifier of the element to display in the inspector.
     let id: String
 
-    /// Creates a new `ShowInspector` action from a specific page element ID.
-    /// - Parameter id: The unique identifier of the element we're trying to show as an inspector.
+    /// Creates a new `ShowInspector` action.
+    /// - Parameter id: The unique identifier of inspector to show.
     public init(id: String) {
         self.id = id
     }

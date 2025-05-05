@@ -5,13 +5,13 @@
 // See LICENSE for license information.
 //
 
-/// Dismiss an inspector panel with the content of the page element identified by ID
+/// Dismiss an `Inspector`
 public struct DismissInspector: Action {
-    /// The unique identifier of the element of the inspector we're trying to dismiss.
+    /// The unique identifier of the inspector to dismiss.
     var id: String
 
-    /// Creates a new `DismissInspector` action from a specific page element ID.
-    /// - Parameter id: The unique identifier of the element of the inspector we're trying to dismiss.
+    /// Creates a new `DismissInspector` action.
+    /// - Parameter id: The unique identifier of the inspector to dismiss.
     public init(id: String) {
         self.id = id
     }
@@ -30,7 +30,7 @@ public struct DismissInspector: Action {
 public extension Action where Self == DismissInspector {
     /// Creates a new `DismissInspector`
     /// - Parameter id: The unique identifier of the inspector to dismiss
-    /// - Returns: A `DismissInspector` action configured with the specified inspector ID
+    /// - Returns: A `DismissInspector` action configured with the specified `Inspector` ID
     static func dismissInspector(_ id: String) -> Self {
         DismissInspector(id: id)
     }
