@@ -30,6 +30,10 @@ public struct Section: HTML, FormItem {
 
     var content: any BodyElement
 
+    init() {
+        self.content = EmptyHTML()
+    }
+
     init(_ content: any BodyElement) {
         self.content = content
     }
