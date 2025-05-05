@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-public struct Document: MarkupElement {
+public struct PlainDocument: MarkupElement {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -20,6 +20,12 @@ public struct Document: MarkupElement {
         self.language = PublishingContext.shared.environment.language
         self.head = head
         self.body = body
+    }
+
+    public init(@DocumentBuilder content: () -> PlainDocument) {
+        self.language = PublishingContext.shared.environment.language
+        self.body = content().body
+        self.head = content().head
     }
 
     public func markup() -> Markup {
