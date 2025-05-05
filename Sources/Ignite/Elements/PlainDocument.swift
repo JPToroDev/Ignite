@@ -33,7 +33,7 @@ public struct PlainDocument: Document {
         let bodyMarkup = body.markup()
         // Deferred head rendering to accommodate for context updates during body rendering
         let headMarkup = head.markup()
-       
+
         var output = "<!doctype html>"
         output += "<html\(attributes)>"
         output += headMarkup.string

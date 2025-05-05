@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
+// Specialized method for block page elements.
 @MainActor private func frameModifier(
     width: LengthUnit? = nil,
     minWidth: LengthUnit? = nil,
@@ -242,16 +243,16 @@ public extension NavigationItem {
     ///   - minWidth: A minimum width for this element
     ///   - width: An exact width for this element
     ///   - maxWidth: A maximum width for this element
-    ///   - height: An exact height for this element
     ///   - minHeight: A minimum height for this element
+    ///   - height: An exact height for this element
     ///   - maxHeight: A maximum height for this element
     /// - Returns: A modified copy of the element with frame constraints applied
     func frame(
         minWidth: LengthUnit? = nil,
         width: LengthUnit? = nil,
         maxWidth: LengthUnit? = nil,
-        height: LengthUnit? = nil,
         minHeight: LengthUnit? = nil,
+        height: LengthUnit? = nil,
         maxHeight: LengthUnit? = nil
     ) -> Self {
         let dimensionStyles = frameModifier(
@@ -300,16 +301,16 @@ public extension StyledHTML {
     ///   - minWidth: A minimum width for this element
     ///   - width: An exact width for this element
     ///   - maxWidth: A maximum width for this element
-    ///   - height: An exact height for this element
     ///   - minHeight: A minimum height for this element
+    ///   - height: An exact height for this element
     ///   - maxHeight: A maximum height for this element
     /// - Returns: A modified copy of the element with frame constraints applied
     func frame(
         minWidth: LengthUnit? = nil,
         width: LengthUnit? = nil,
         maxWidth: LengthUnit? = nil,
-        height: LengthUnit? = nil,
         minHeight: LengthUnit? = nil,
+        height: LengthUnit? = nil,
         maxHeight: LengthUnit? = nil
     ) -> Self {
         let dimensionStyles = frameModifier(
