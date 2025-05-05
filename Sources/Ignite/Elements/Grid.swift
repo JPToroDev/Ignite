@@ -116,6 +116,8 @@ public struct Grid: HTML {
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         var gridAttributes = attributes.appending(classes: ["row"])
+        // Needed for children that size their height based on this Grid
+        gridAttributes.append(classes: "h-100")
         gridAttributes.append(classes: alignment.horizontal.containerAlignmentClass)
 
         // If a column count is set, we want to use that for all
@@ -129,13 +131,13 @@ public struct Grid: HTML {
             ])
         }
 
-        var gutterClass = ""
-
         switch spacingAmount {
-        case .exact(let pixels) where pixels != 0:
+        case .exact(let pixels) where pixels == 0:
+            gridAttributes.append(classes: "g-0")
+        case .exact(let pixels):
             gridAttributes.append(styles: .init(.rowGap, value: "\(pixels)px"))
-        case .semantic(let amount) where spacingAmount != .semantic(.none):
-            gutterClass = "g-\(amount.rawValue)"
+        case .semantic(let amount):
+            gridAttributes.append(classes: "g-\(amount.rawValue)")
         default: break
         }
 
@@ -148,7 +150,6 @@ public struct Grid: HTML {
                     handlePassthrough(passthrough, attributes: modified.attributes)
                 } else {
                     handleItem(item)
-                        .class(gutterClass)
                 }
             }
         }
@@ -178,16 +179,9 @@ public struct Grid: HTML {
     ///   - attributes: HTML attributes to apply to each element in the group.
     /// - Returns: A view containing the styled group elements.
     func handlePassthrough(_ passthrough: any PassthroughElement, attributes: CoreAttributes) -> some HTML {
-        let gutterClass = if case .semantic(let amount) = spacingAmount {
-            "g-\(amount.rawValue)"
-        } else {
-            ""
-        }
-
         let collection = HTMLCollection(passthrough.items.compactMap { $0 as? any HTML })
         return ForEach(collection) { item in
             handleItem(item.attributes(attributes))
-                .class(gutterClass)
         }
     }
 
