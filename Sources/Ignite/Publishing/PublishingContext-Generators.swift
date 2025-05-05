@@ -83,18 +83,18 @@ extension PublishingContext {
             .joined(separator: "\n\n")
 
         do {
-            let igniteCoreDirectory = buildDirectory.appending(path: "css/ignite-core.min.css")
+            let igniteCoreDirectory = buildDirectory.appending(path: "css/ignite-core.css")
             let existingContent = try String(contentsOf: igniteCoreDirectory, encoding: .utf8)
             let newContent = existingContent + "\n\n" + combinedCSS
             try newContent.write(to: igniteCoreDirectory, atomically: true, encoding: .utf8)
         } catch {
-            addError(.failedToWriteFile("css/ignite-core.min.css"))
+            addError(.failedToWriteFile("css/ignite-core.css"))
         }
     }
 
     /// Generates animations for the site.
     func generateAnimations() {
-        let animationsPath = buildDirectory.appending(path: "css/ignite-core.min.css")
+        let animationsPath = buildDirectory.appending(path: "css/ignite-core.css")
         AnimationManager.shared.write(to: animationsPath)
     }
 }

@@ -218,10 +218,10 @@ final class PublishingContext {
         copyAssets()
         copyFonts()
 
-        let igniteCorePath = buildDirectory.appending(path: "css/ignite-core.min.css").decodedPath
+        let igniteCorePath = buildDirectory.appending(path: "css/ignite-core.css").decodedPath
 
         if !FileManager.default.fileExists(atPath: igniteCorePath) {
-            copy(resource: "css/ignite-core.min.css")
+            copy(resource: "css/ignite-core.css")
         }
 
         copy(resource: "js/ignite-core.js")

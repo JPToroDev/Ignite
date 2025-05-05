@@ -16,7 +16,7 @@ extension PublishingContext {
             .map(\.description)
             .joined(separator: "\n\n")
 
-        writeThemeRules(rules, to: "css/ignite-core.min.css")
+        writeThemeRules(rules, to: "css/ignite-core.css")
     }
 
     /// Writes CSS rules to a file
