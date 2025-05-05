@@ -75,31 +75,31 @@ extension PublishingContext {
     }
 
     /// Creates CSS rules for light theme
-    private func lightThemeRules(_ theme: any Theme, darkThemeID: String?) -> [String] {
+    private func lightThemeRules(_ theme: any Theme) -> [String] {
         var rules: [CustomStringConvertible] = []
-        rules.append(rootStyles(for: theme))
-        rules.append(contentsOf: baseThemeRules(theme))
+        // If this is the only theme, use it as root theme
+        if !site.supportsDarkTheme, site.alternateThemes.isEmpty {
+            rules.append(rootStyles(for: theme))
+            rules.append(baseThemeRules(theme))
+            return rules.map(\.description)
+        }
+
         rules.append(contentsOf: themeOverrides(for: theme))
         return rules.map(\.description)
     }
 
     /// Creates CSS rules for dark theme
-    private func darkThemeRules(_ theme: any Theme, lightThemeID: String?) -> [String] {
+    private func darkThemeRules(_ theme: any Theme) -> [String] {
         var rules: [CustomStringConvertible] = []
 
         // If this is the only theme, use it as root theme
         if !site.supportsLightTheme, site.alternateThemes.isEmpty {
             rules.append(rootStyles(for: theme))
-            return baseThemeRules(theme)
+            rules.append(baseThemeRules(theme))
+            return rules.map(\.description)
         }
 
-        // Add explicit dark theme override
-        rules.append(
-            Ruleset(.attribute(name: "data-bs-theme", value: theme.cssID)) {
-                themeStyles(for: theme)
-            }
-        )
-
+        rules.append(contentsOf: themeOverrides(for: theme))
         return rules.map(\.description)
     }
 
@@ -124,11 +124,11 @@ extension PublishingContext {
         let (lightTheme, darkTheme) = configureDefaultThemes(site.lightTheme, site.darkTheme)
 
         if let lightTheme {
-            rules.append(contentsOf: lightThemeRules(lightTheme, darkThemeID: darkTheme?.cssID))
+            rules.append(contentsOf: lightThemeRules(lightTheme))
         }
 
         if let darkTheme {
-            rules.append(contentsOf: darkThemeRules(darkTheme, lightThemeID: lightTheme?.cssID))
+            rules.append(contentsOf: darkThemeRules(darkTheme))
         }
 
         for theme in site.alternateThemes {
