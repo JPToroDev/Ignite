@@ -161,4 +161,34 @@ public extension Body {
         copy.attributes.append(classes: classes)
         return copy
     }
+
+    /// Creates a specific frame for this element, either using exact values or
+    /// using minimum/maximum ranges.
+    /// - Parameters:
+    ///   - minWidth: A minimum width for this element
+    ///   - width: An exact width for this element
+    ///   - maxWidth: A maximum width for this element
+    ///   - minHeight: A minimum height for this element
+    ///   - height: An exact height for this element
+    ///   - maxHeight: A maximum height for this element
+    /// - Returns: A modified copy of the element with frame constraints applied
+    func frame(
+        minWidth: LengthUnit? = nil,
+        width: LengthUnit? = nil,
+        maxWidth: LengthUnit? = nil,
+        minHeight: LengthUnit? = nil,
+        height: LengthUnit? = nil,
+        maxHeight: LengthUnit? = nil
+    ) -> Self {
+        let dimensionStyles = Ignite.frameModifier(
+            width: width,
+            minWidth: minWidth,
+            maxWidth: maxWidth,
+            height: height,
+            minHeight: minHeight,
+            maxHeight: maxHeight)
+        var copy = self
+        copy.attributes.append(styles: dimensionStyles)
+        return copy
+    }
 }
