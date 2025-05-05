@@ -48,9 +48,12 @@ public struct ZStack: HTML {
             elementAttributes.append(classes: "mb-0")
             elementAttributes.append(styles: [
                 .init(.position, value: "relative"),
-                .init(.gridArea, value: "1/1"),
-                .init(.zIndex, value: "\(index)")
+                .init(.gridArea, value: "1/1")
             ])
+
+            if item.attributes.get(styles: .zIndex).isEmpty {
+                elementAttributes.append(styles: .init(.zIndex, value: "\(index)"))
+            }
 
             elementAttributes.append(styles: alignment.itemAlignmentRules)
             return item.attributes(elementAttributes)
