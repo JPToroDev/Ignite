@@ -44,12 +44,16 @@ extension PublishingContext {
             image: page.image
         )
 
-        let values = EnvironmentValues(
+        var values = EnvironmentValues(
             sourceDirectory: sourceDirectory,
             site: site,
             allContent: allContent,
             pageMetadata: pageMetadata,
             pageContent: page)
+
+        if page.layout.body is FlowDocument {
+            values.isUsingFlowDocument = true
+        }
 
         let outputString = withEnvironment(values) {
             page.layout.body.markupString()
@@ -72,13 +76,17 @@ extension PublishingContext {
             image: article.image.flatMap { URL(string: $0) }
         )
 
-        let values = EnvironmentValues(
+        var values = EnvironmentValues(
             sourceDirectory: sourceDirectory,
             site: site,
             allContent: allContent,
             pageMetadata: pageMetadata,
             pageContent: layout,
             article: article)
+
+        if layout.layout.body is FlowDocument {
+            values.isUsingFlowDocument = true
+        }
 
         let outputString = withEnvironment(values) {
             layout.layout.body.markupString()
@@ -118,13 +126,17 @@ extension PublishingContext {
                 AllTagsCategory(articles: content(tagged: nil))
             }
 
-            let values = EnvironmentValues(
+            var values = EnvironmentValues(
                 sourceDirectory: sourceDirectory,
                 site: site,
                 allContent: allContent,
                 pageMetadata: metadata,
                 pageContent: tagLayout,
                 category: category)
+
+            if tagLayout.layout.body is FlowDocument {
+                values.isUsingFlowDocument = true
+            }
 
             let outputString = withEnvironment(values) {
                 tagLayout.layout.body.markupString()

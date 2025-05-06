@@ -67,6 +67,9 @@ public struct EnvironmentValues {
     /// Content that has the current tag.
     var taggedContent: [Article] = []
 
+    /// Whether the current `Layout` uses a `FlowDocument`.
+    var isUsingFlowDocument = false
+
     init() {
         self.articles = ArticleLoader(content: [])
         self.feedConfiguration = FeedConfiguration(mode: .full, contentCount: 0)

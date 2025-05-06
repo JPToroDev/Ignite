@@ -30,7 +30,9 @@ public protocol Layout {
 public extension Layout {
     /// The current page being rendered.
     var content: some HTML {
-        Section(PublishingContext.shared.environment.pageContent)
+        let environment = PublishingContext.shared.environment
+        return Section(environment.pageContent)
             .class("ig-main-content")
+            .class(environment.isUsingFlowDocument ? "d-flex flex-column flex-grow-1" : nil)
     }
 }
