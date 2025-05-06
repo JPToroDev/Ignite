@@ -367,3 +367,8 @@ div.alert p:last-child {
         display: none;
     }
 }
+
+/* Hide divider when sidebar is collapsed */
+.splitview-sidebar.collapsed + .splitview-divider-responsive {
+    display: none;
+}

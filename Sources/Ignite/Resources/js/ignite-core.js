@@ -188,6 +188,9 @@ function initializeSplitView() {
         sidebar.classList.add('collapsed');
         dividerHitarea.classList.add('collapsed');
 
+        // Synchronize with Bootstrap's state
+        sidebar.classList.remove('show');
+
         // Wait for the animation to complete before hiding
         // Default transition duration is 0.35s in Bootstrap
         setTimeout(() => {
