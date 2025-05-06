@@ -1,5 +1,5 @@
 //
-// HSplitView.swift
+// SplitView.swift
 // Ignite
 // https://www.github.com/twostraws/Ignite
 // See LICENSE for license information.
@@ -40,6 +40,9 @@ public struct SplitView: HTML {
 
     /// Whether the sidebar can be dismissed by dragging.
     private var isDismissDisabled = true
+
+    /// Whether the sidebar's dismiss button is visible.
+    private var dismissButtonVisibility = Visibility.visible
 
     /// The unique identifier for this split view.
     private let htmlID: String
@@ -108,16 +111,27 @@ public struct SplitView: HTML {
         return copy
     }
 
+    /// Controls the visibility of the sidebar's dismiss button.
+    /// - Parameter visibility: Specify `.visible` to show or `.hidden` to hide the dismiss button.
+    /// - Returns: A modified `SplitView` with the updated dismiss button visibility.
+    public func dismissButtonVisibility(_ visibility: Visibility) -> Self {
+        var copy = self
+        copy.dismissButtonVisibility = visibility
+        return copy
+    }
+
     /// Generates the HTML markup for this split view.
     /// - Returns: The markup representation of this split view.
     public func markup() -> Markup {
         Section {
             Section {
-                Button("", action: .toggleSidebar(htmlID))
-                    .class("btn-close")
-                    .class("d-inline", "d-md-none")
-                    .class("splitview-close-button")
-                    .aria(.label, "Close")
+                if dismissButtonVisibility == .visible {
+                    Button("", action: .toggleSidebar(htmlID))
+                        .class("btn-close")
+                        .class("d-inline", "d-md-none")
+                        .class("splitview-close-button")
+                        .aria(.label, "Close")
+                }
 
                 Section(sidebar)
                     .class("splitview-sidebar-content")
