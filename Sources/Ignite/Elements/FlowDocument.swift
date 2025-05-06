@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-/// An document whose `<html>` and `<body>` elements have a height of `100%`.
+/// An document whose `<body>` uses flex layout and has a height that matches the viewport.
 /// This document type can be useful when designing complex flexbox and grid layouts.
 public struct FlowDocument: Document {
     /// The standard set of control attributes for HTML elements.
@@ -26,7 +26,7 @@ public struct FlowDocument: Document {
         attributes.append(customAttributes: .init(name: "lang", value: language.rawValue))
 
         var body = body
-        body.attributes.append(classes: "d-flex flex-column min-vh-100")
+        body.attributes.append(classes: "d-flex", "flex-column", "min-vh-100")
         let bodyMarkup = body.markup()
 
         // Deferred head rendering to accommodate for context updates during body rendering
