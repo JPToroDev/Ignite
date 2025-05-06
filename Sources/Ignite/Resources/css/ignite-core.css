@@ -215,10 +215,6 @@
     }
 }
 
-.ig-main-content {
-    height: 100%;
-}
-
 .ig-text-small {
     font-size: 0.9rem;
 }
@@ -292,18 +288,11 @@ div.alert p:last-child {
 /* Split view component styles */
 .splitview {
     display: flex;
-    height: 100%;
     overflow: hidden;
     position: relative;
 }
 
-.splitview-content {
-    height: 100%;
-    overflow-y: auto;
-}
-
 .splitview-sidebar {
-    height: 100%;
     overflow-y: auto;
     display: flex;
     flex-shrink: 0;
@@ -318,7 +307,6 @@ div.alert p:last-child {
 .splitview-divider {
     position: relative;
     width: 1px;
-    height: 100%;
     background-color: #cccccc;
     flex-shrink: 0;
 }
