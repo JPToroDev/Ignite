@@ -7,7 +7,7 @@
 
 /// An document whose `<html>` and `<body>` elements have a height of `100%`.
 /// This document type can be useful when designing complex flexbox and grid layouts.
-public struct FullHeightDocument: Document {
+public struct FlowDocument: Document {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -23,11 +23,10 @@ public struct FullHeightDocument: Document {
 
     public func markup() -> Markup {
         var attributes = attributes
-        attributes.append(style: .height, value: "100%")
         attributes.append(customAttributes: .init(name: "lang", value: language.rawValue))
 
         var body = body
-        body.attributes.append(style: .height, value: "100%")
+        body.attributes.append(classes: "d-flex flex-column min-vh-100")
         let bodyMarkup = body.markup()
 
         // Deferred head rendering to accommodate for context updates during body rendering

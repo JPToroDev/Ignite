@@ -284,6 +284,16 @@ function initializeSplitView() {
     function handleDragEnd() {
         isDragging = false;
         dividerHitarea.classList.remove('active');
+
+        if (sidebar.offsetWidth <= MIN_WIDTH) {
+            sidebar.classList.add('collapsed');
+            sidebar.classList.remove('show');
+            dividerHitarea.classList.add('collapsed');
+        } else {
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.add('show');
+            dividerHitarea.classList.remove('collapsed');
+        }
     }
 
     dividerHitarea.addEventListener('mousedown', (e) => {
