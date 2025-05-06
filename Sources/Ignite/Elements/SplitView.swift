@@ -89,14 +89,14 @@ public struct SplitView: HTML {
 
     /// Configures the width constraints for the sidebar.
     /// - Parameters:
-    ///   - minWidth: The minimum width the sidebar can be resized to.
-    ///   - idealWidth: The preferred width of the sidebar.
-    ///   - maxWidth: The maximum width the sidebar can be resized to.
+    ///   - min: The minimum width the sidebar can be resized to.
+    ///   - ideal: The preferred width of the sidebar.
+    ///   - max: The maximum width the sidebar can be resized to.
     /// - Returns: A modified split view with the specified width constraints.
     public func sidebarWidth(
-        minWidth: LengthUnit? = nil,
-        idealWidth: LengthUnit? = nil,
-        maxWidth: LengthUnit? = nil
+        min: LengthUnit? = nil,
+        ideal: LengthUnit? = nil,
+        max: LengthUnit? = nil
     ) -> Self {
         var copy = self
         copy.idealWidth = idealWidth
