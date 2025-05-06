@@ -99,9 +99,9 @@ public struct SplitView: HTML {
         max: LengthUnit? = nil
     ) -> Self {
         var copy = self
-        copy.idealWidth = idealWidth
-        copy.minWidth = minWidth
-        copy.maxWidth = maxWidth
+        copy.minWidth = min
+        copy.idealWidth = ideal
+        copy.maxWidth = max
         return copy
     }
 
