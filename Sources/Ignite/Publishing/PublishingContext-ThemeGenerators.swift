@@ -74,26 +74,10 @@ extension PublishingContext {
         )
     }
 
-    /// Creates CSS rules for light theme
-    private func lightThemeRules(_ theme: any Theme) -> [String] {
+    /// Creates CSS rules for a base theme
+    private func themeRules(_ theme: any Theme, supportsOtherTheme: Bool) -> [String] {
         var rules: [CustomStringConvertible] = []
-        // If this is the only theme, use it as root theme
-        if !site.supportsDarkTheme, site.alternateThemes.isEmpty {
-            rules.append(rootStyles(for: theme))
-            rules.append(baseThemeRules(theme))
-            return rules.map(\.description)
-        }
-
-        rules.append(contentsOf: themeOverrides(for: theme))
-        return rules.map(\.description)
-    }
-
-    /// Creates CSS rules for dark theme
-    private func darkThemeRules(_ theme: any Theme) -> [String] {
-        var rules: [CustomStringConvertible] = []
-
-        // If this is the only theme, use it as root theme
-        if !site.supportsLightTheme, site.alternateThemes.isEmpty {
+        if !supportsOtherTheme, site.alternateThemes.isEmpty {
             rules.append(rootStyles(for: theme))
             rules.append(baseThemeRules(theme))
             return rules.map(\.description)
@@ -124,11 +108,11 @@ extension PublishingContext {
         let (lightTheme, darkTheme) = configureDefaultThemes(site.lightTheme, site.darkTheme)
 
         if let lightTheme {
-            rules.append(contentsOf: lightThemeRules(lightTheme))
+            rules.append(contentsOf: themeRules(lightTheme, supportsOtherTheme: site.supportsDarkTheme))
         }
 
         if let darkTheme {
-            rules.append(contentsOf: darkThemeRules(darkTheme))
+            rules.append(contentsOf: themeRules(darkTheme, supportsOtherTheme: site.supportsLightTheme))
         }
 
         for theme in site.alternateThemes {
