@@ -5,16 +5,31 @@
 // See LICENSE for license information.
 //
 
-@MainActor
-private func idModifier(_ id: String, content: any HTML) -> any HTML {
+@MainActor private func idModifier(
+    _ id: String,
+    content: any BodyElement
+) -> any BodyElement {
     guard !id.isEmpty else { return content }
-    var copy: any HTML = content.isPrimitive ? content : Section(content)
+    var copy: any BodyElement
+
+    if content.isPrimitive {
+        copy = content
+    } else if let html = content as? any HTML,
+              html.body.isPrimitive,
+              html.body.isContainer {
+        copy = html.body
+    } else {
+        copy = Section(content)
+    }
+
     copy.attributes.id = id
     return copy
 }
 
-@MainActor
-private func idModifier(_ id: String, content: any InlineElement) -> any InlineElement {
+@MainActor private func idModifier(
+    _ id: String,
+    content: any InlineElement
+) -> any InlineElement {
     guard !id.isEmpty else { return content }
     var copy: any InlineElement = content.isPrimitive ? content : Span(content)
     copy.attributes.id = id

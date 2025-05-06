@@ -10,7 +10,18 @@
     content: any BodyElement
 ) -> any BodyElement {
     guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
-    var copy: any BodyElement = content.isPrimitive ? content : Section(content)
+    var copy: any BodyElement
+
+    if content.isPrimitive {
+        copy = content
+    } else if let html = content as? any HTML,
+              html.body.isPrimitive,
+              html.body.isContainer {
+        copy = html.body
+    } else {
+        copy = Section(content)
+    }
+
     copy.attributes.append(classes: classNames)
     return copy
 }

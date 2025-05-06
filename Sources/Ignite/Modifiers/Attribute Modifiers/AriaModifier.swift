@@ -11,7 +11,23 @@
     content: any BodyElement
 ) -> any BodyElement {
     guard let value else { return content }
-    var copy: any BodyElement = content.isPrimitive ? content : Section(content)
+    var copy: any BodyElement
+
+    if content.isPrimitive {
+        copy = content
+    } else if let html = content as? any HTML,
+              html.body.isPrimitive,
+              html.body.isContainer {
+        // Unnecessarily adding an extra <div> can break positioning
+        // contexts and advanced flow layouts. It's not great that
+        // we lose the type information, but since everything put
+        // through a modifier becomes AnyHTML anyway, it's not any
+        // worse than what we currently have.
+        copy = html.body
+    } else {
+        copy = Section(content)
+    }
+
     copy.attributes.aria.append(.init(name: key.rawValue, value: value))
     return copy
 }

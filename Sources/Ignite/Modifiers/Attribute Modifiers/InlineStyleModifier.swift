@@ -9,7 +9,18 @@
     _ styles: [InlineStyle],
     content: any BodyElement
 ) -> any BodyElement {
-    var copy: any BodyElement = content.isPrimitive ? content : Section(content)
+    var copy: any BodyElement
+
+    if content.isPrimitive {
+        copy = content
+    } else if let html = content as? any HTML,
+              html.body.isPrimitive,
+              html.body.isContainer {
+        copy = html.body
+    } else {
+        copy = Section(content)
+    }
+
     copy.attributes.append(styles: styles)
     return copy
 }

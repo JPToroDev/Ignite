@@ -9,8 +9,18 @@
     _ name: String,
     value: String, content: any BodyElement
 ) -> any BodyElement {
-    guard !value.isEmpty else { return content }
-    var copy: any BodyElement = content.isPrimitive ? content : Section(content)
+    var copy: any BodyElement
+
+    if content.isPrimitive {
+        copy = content
+    } else if let html = content as? any HTML,
+              html.body.isPrimitive,
+              html.body.isContainer {
+        copy = html.body
+    } else {
+        copy = Section(content)
+    }
+
     copy.attributes.data.append(.init(name: name, value: value))
     return copy
 }
@@ -20,7 +30,6 @@
     value: String,
     content: any InlineElement
 ) -> any InlineElement {
-    guard !value.isEmpty else { return content }
     var copy: any InlineElement = content.isPrimitive ? content : Span(content)
     copy.attributes.data.append(.init(name: name, value: value))
     return copy
