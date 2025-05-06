@@ -325,7 +325,7 @@ function initializeSplitView() {
         // On show.bs.collapse (triggered at the start of showing)
         sidebar.addEventListener('show.bs.collapse', () => {
             // Make visible first before Bootstrap shows it
-            sidebar.style.display = 'flex'; // Or your original display value
+            sidebar.style.display = 'flex';
             expandPanel();
         });
     }
@@ -340,3 +340,32 @@ function initializeSplitView() {
 document.addEventListener('DOMContentLoaded', () => {
     initializeSplitView();
 });
+
+// Resets sidebar width when crossing mobile breakpoint
+(function() {
+  // Track if we're in mobile mode
+  let isMobile = window.innerWidth <= 767.98;
+
+  // Listen for viewport size changes
+  window.addEventListener('resize', () => {
+    const wasMobile = isMobile;
+    isMobile = window.innerWidth <= 767.98;
+
+    // Only act when crossing the breakpoint
+    if (wasMobile !== isMobile) {
+      const sidebar = document.querySelector('.splitview-sidebar');
+      const content = document.querySelector('.splitview-sidebar-content');
+
+      if (!sidebar || sidebar.classList.contains('collapsed')) return;
+
+      if (isMobile) {
+        sidebar.style.width = '';
+      } else {
+        const defaultWidth = parseInt(
+          getComputedStyle(content).getPropertyValue('--splitview-default-width') || '250'
+        );
+        sidebar.style.width = defaultWidth + 'px';
+      }
+    }
+  });
+})();
