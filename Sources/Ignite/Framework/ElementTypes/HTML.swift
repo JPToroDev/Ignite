@@ -52,6 +52,11 @@ extension HTML {
     var isSection: Bool {
         self.is(Section.self)
     }
+
+    /// Whether this element is a `<div>`.
+    var isContainer: Bool {
+        body.markup().string.hasPrefix("<div")
+    }
 }
 
 extension HTML {
