@@ -7,21 +7,10 @@
 
 @MainActor private func attributeModifier(
     _ attribute: Attribute?,
-    content: any BodyElement
-) -> any BodyElement {
+    content: any HTML
+) -> any HTML {
     guard let attribute else { return content }
-    var copy: any BodyElement
-
-    if content.isPrimitive {
-        copy = content
-    } else if let html = content as? any HTML,
-              html.body.isPrimitive,
-              html.body.isContainer {
-        copy = html.body
-    } else {
-        copy = Section(content)
-    }
-
+    var copy = content.attributableContent
     copy.attributes.append(customAttributes: attribute)
     return copy
 }

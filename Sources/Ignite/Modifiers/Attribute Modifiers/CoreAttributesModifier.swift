@@ -7,20 +7,9 @@
 
 @MainActor private func coreAttributesModifier(
     _ attributes: CoreAttributes,
-    content: any BodyElement
-) -> any BodyElement {
-    var copy: any BodyElement
-
-    if content.isPrimitive {
-        copy = content
-    } else if let html = content as? any HTML,
-              html.body.isPrimitive,
-              html.body.isContainer {
-        copy = html.body
-    } else {
-        copy = Section(content)
-    }
-
+    content: any HTML
+) -> any HTML {
+    var copy = content.attributableContent
     copy.attributes.merge(attributes)
     return copy
 }
@@ -30,6 +19,22 @@
     content: any InlineElement
 ) -> any InlineElement {
     var copy: any InlineElement = content.isPrimitive ? content : Span(content)
+    copy.attributes.merge(attributes)
+    return copy
+}
+
+
+@MainActor private func coreAttributesModifier(
+    _ attributes: CoreAttributes,
+    content: any BodyElement
+) -> any BodyElement {
+    var copy: any BodyElement = if let element = content as? any HTML {
+        coreAttributesModifier(attributes, content: element)
+    } else if let element = content as? any InlineElement {
+        coreAttributesModifier(attributes, content: element)
+    } else {
+        content
+    }
     copy.attributes.merge(attributes)
     return copy
 }

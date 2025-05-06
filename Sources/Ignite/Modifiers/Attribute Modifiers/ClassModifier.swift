@@ -7,29 +7,36 @@
 
 @MainActor private func classModifier(
     _ classNames: [String],
-    content: any BodyElement
-) -> any BodyElement {
+    content: any HTML
+) -> any HTML {
     guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
-    var copy: any BodyElement
-
-    if content.isPrimitive {
-        copy = content
-    } else if let html = content as? any HTML,
-              html.body.isPrimitive,
-              html.body.isContainer {
-        copy = html.body
-    } else {
-        copy = Section(content)
-    }
-
+    var copy = content.attributableContent
     copy.attributes.append(classes: classNames)
     return copy
 }
 
-@MainActor
-private func classModifier(_ classNames: [String], content: any InlineElement) -> any InlineElement {
+@MainActor private func classModifier(
+    _ classNames: [String],
+    content: any InlineElement
+) -> any InlineElement {
     guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
     var copy: any InlineElement = content.isPrimitive ? content : Span(content)
+    copy.attributes.append(classes: classNames)
+    return copy
+}
+
+@MainActor private func classModifier(
+    _ classNames: [String],
+    content: any BodyElement
+) -> any BodyElement {
+    guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
+    var copy: any BodyElement = if let element = content as? any HTML {
+        classModifier(classNames, content: element)
+    } else if let element = content as? any InlineElement {
+        classModifier(classNames, content: element)
+    } else {
+        content
+    }
     copy.attributes.append(classes: classNames)
     return copy
 }

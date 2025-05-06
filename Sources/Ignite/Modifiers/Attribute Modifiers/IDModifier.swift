@@ -7,21 +7,10 @@
 
 @MainActor private func idModifier(
     _ id: String,
-    content: any BodyElement
-) -> any BodyElement {
+    content: any HTML
+) -> any HTML {
     guard !id.isEmpty else { return content }
-    var copy: any BodyElement
-
-    if content.isPrimitive {
-        copy = content
-    } else if let html = content as? any HTML,
-              html.body.isPrimitive,
-              html.body.isContainer {
-        copy = html.body
-    } else {
-        copy = Section(content)
-    }
-
+    var copy = content.attributableContent
     copy.attributes.id = id
     return copy
 }

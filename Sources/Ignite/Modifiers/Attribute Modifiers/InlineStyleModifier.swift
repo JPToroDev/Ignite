@@ -7,20 +7,9 @@
 
 @MainActor private func inlineStyleModifier(
     _ styles: [InlineStyle],
-    content: any BodyElement
-) -> any BodyElement {
-    var copy: any BodyElement
-
-    if content.isPrimitive {
-        copy = content
-    } else if let html = content as? any HTML,
-              html.body.isPrimitive,
-              html.body.isContainer {
-        copy = html.body
-    } else {
-        copy = Section(content)
-    }
-
+    content: any HTML
+) -> any HTML {
+    var copy = content.attributableContent
     copy.attributes.append(styles: styles)
     return copy
 }
@@ -106,14 +95,5 @@ extension InlineElement {
     /// - Returns: The modified `InlineElement` element
     func style(_ styles: [InlineStyle]) -> some InlineElement {
         AnyInlineElement(inlineStyleModifier(styles, content: self))
-    }
-}
-
-extension BodyElement {
-    /// Adds inline styles to the element.
-    /// - Parameter styles: An array of `InlineStyle` objects
-    /// - Returns: The modified `InlineElement` element
-    func style(_ styles: [InlineStyle]) -> some BodyElement {
-        AnyHTML(inlineStyleModifier(styles, content: self))
     }
 }
