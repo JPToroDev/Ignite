@@ -44,6 +44,9 @@ public struct SplitView: HTML {
     /// Whether the sidebar's dismiss button is visible.
     private var dismissButtonVisibility = Visibility.visible
 
+    /// The background color of the sidebar.
+    private var sidebarBackgroundColor: Color?
+
     /// The unique identifier for this split view.
     private let htmlID: String
 
@@ -120,6 +123,15 @@ public struct SplitView: HTML {
         return copy
     }
 
+    /// Sets the background color of the sidebar in the split view.
+    /// - Parameter color: The color to use for the sidebar's background.
+    /// - Returns: A modified split view with the specified sidebar background color.
+    public func sidebarBackground(_ color: Color) -> Self {
+        var copy = self
+        copy.sidebarBackgroundColor = color
+        return copy
+    }
+
     /// Generates the HTML markup for this split view.
     /// - Returns: The markup representation of this split view.
     public func markup() -> Markup {
@@ -142,6 +154,7 @@ public struct SplitView: HTML {
             .class("splitview-sidebar")
             .class("collapse", "collapse-horizontal", "show")
             .data("collapse-on-min", (!isDismissDisabled).description)
+            .style(.backgroundColor, sidebarBackgroundColor?.description ?? "")
             .style("--splitview-divider-color", dividerColor?.description)
             .id(htmlID)
 
