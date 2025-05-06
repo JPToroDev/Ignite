@@ -112,15 +112,24 @@ public struct SplitView: HTML {
     /// - Returns: The markup representation of this split view.
     public func markup() -> Markup {
         Section {
-            Section(sidebar)
-                .class("splitview-sidebar")
-                .class("collapse collapse-horizontal show")
-                .data("collapse-on-min", (!isDismissDisabled).description)
-                .style("--splitview-divider-color", dividerColor?.description)
-                .style("--splitview-min-width", minWidth?.stringValue)
-                .style("--splitview-default-width", idealWidth?.stringValue)
-                .style("--splitview-max-width", maxWidth?.stringValue)
-                .id(htmlID)
+            Section {
+                Button("", action: .toggleSidebar(htmlID))
+                    .class("btn-close")
+                    .class("d-inline", "d-md-none")
+                    .class("splitview-close-button")
+                    .aria(.label, "Close")
+
+                Section(sidebar)
+                    .class("splitview-sidebar-content")
+                    .style("--splitview-min-width", minWidth?.stringValue)
+                    .style("--splitview-default-width", idealWidth?.stringValue)
+                    .style("--splitview-max-width", maxWidth?.stringValue)
+            }
+            .class("splitview-sidebar")
+            .class("collapse", "collapse-horizontal", "show")
+            .data("collapse-on-min", (!isDismissDisabled).description)
+            .style("--splitview-divider-color", dividerColor?.description)
+            .id(htmlID)
 
             Section {
                 Section()
@@ -132,6 +141,7 @@ public struct SplitView: HTML {
                     .class("splitview-divider-line")
             }
             .class("splitview-divider")
+            .class("splitview-divider-responsive")
 
             Section(content)
                 .class("splitview-content")
