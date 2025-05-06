@@ -116,8 +116,6 @@ public struct Grid: HTML {
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         var gridAttributes = attributes.appending(classes: ["row"])
-        // Needed for children that size their height based on this Grid
-        gridAttributes.append(classes: "h-100")
         gridAttributes.append(classes: alignment.horizontal.containerAlignmentClass)
 
         // If a column count is set, we want to use that for all
