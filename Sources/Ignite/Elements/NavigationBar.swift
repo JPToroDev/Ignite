@@ -63,18 +63,6 @@ public struct NavigationBar: HTML {
         }
     }
 
-    /// Which icon should be used in the navigation menu toggle button.
-    public enum NavigationMenuIcon: String, Sendable {
-        /// A hamburger menu icon (three horizontal lines).
-        case bars = "navbar-toggler-icon"
-
-        /// A three-dots menu icon.
-        case ellipsis = "bi bi-three-dots"
-
-        /// The default icon for navigation menus.
-        public static var automatic: Self { .bars}
-    }
-
     /// The content and behavior of this HTML.
     public var body: some HTML { self }
 
@@ -89,7 +77,7 @@ public struct NavigationBar: HTML {
     private var widthClasses: [String] = ["container"]
 
     /// The icon displayed in the navigation menu toggle button.
-    private var toggleIcon: NavigationMenuIcon = .automatic
+    private var toggleIcon: SystemImage = .navigationMenu
 
     /// The visual style applied to the navigation menu toggle button.
     private var toggleMenuStyle: NavigationMenuStyle = .automatic
@@ -189,7 +177,7 @@ public struct NavigationBar: HTML {
     /// Sets the icon to display in the navigation menu toggle button.
     /// - Parameter icon: The icon to use for the toggle button.
     /// - Returns: A new `NavigationBar` instance with the updated toggle icon.
-    public func navigationMenuIcon(_ icon: NavigationMenuIcon) -> Self {
+    public func navigationMenuIcon(_ icon: SystemImage) -> Self {
         var copy = self
         copy.toggleIcon = icon
         return copy
