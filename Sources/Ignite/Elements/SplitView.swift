@@ -174,6 +174,7 @@ public struct SplitView: HTML {
                 .class("splitview-content")
         }
         .class("splitview")
+        .layoutPriority(1)
         .attributes(attributes)
         .markup()
     }
