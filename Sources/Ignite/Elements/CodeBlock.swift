@@ -23,10 +23,10 @@ public struct CodeBlock: HTML {
     public var isPrimitive: Bool { true }
 
     /// The code to display.
-    var content: String
+    private var content: String
 
     /// The language of the code being shown.
-    var language: HighlighterLanguage?
+    private var language: HighlighterLanguage?
 
     /// Creates a new `Code` instance from the given content.
     /// - Parameters:
