@@ -28,7 +28,13 @@ public struct SyntaxHighlighterConfiguration: Sendable {
     var firstLineNumber: Int
 
     /// Whether long lines should wrap to the next line.
-    var shouldWrapLines: Bool
+    var wrapLines: Bool
+
+    /// The language that should automatically be applied to code blocks and inline code.
+    var defaultLanguage: HighlighterLanguage?
+
+    /// Whether inline code should use syntax highlighting.
+    var highlightInlineCode: Bool
 
     /// Default configuration that automatically detects languages.
     public static let automatic: Self = .init(languages: [])
@@ -36,18 +42,24 @@ public struct SyntaxHighlighterConfiguration: Sendable {
     /// Creates a new syntax highlighter configuration.
     /// - Parameters:
     ///   - languages: The programming languages to enable highlighting for.
+    ///   - defaultLanguage: The language automatically applied to code blocks and inline code.
+    ///   - highlightInlineCode: Whether inline code should use syntax highlighting.
     ///   - lineNumberVisibility: Whether and how to display line numbers.
     ///   - firstLineNumber: The number to start counting from when showing line numbers.
-    ///   - shouldWrapLines: Whether long lines should wrap to the next line.
+    ///   - wrapLines: Whether long lines should wrap to the next line.
     public init(
         languages: [HighlighterLanguage],
+        defaultLanguage: HighlighterLanguage? = nil,
+        highlightInlineCode: Bool = false,
         lineNumberVisibility: LineNumberVisibility = .hidden,
         firstLineNumber: Int = 1,
-        shouldWrapLines: Bool = false
+        wrapLines: Bool = false,
     ) {
         self.languages = languages
+        self.defaultLanguage = defaultLanguage
+        self.highlightInlineCode = highlightInlineCode
         self.lineNumberVisibility = lineNumberVisibility
         self.firstLineNumber = firstLineNumber
-        self.shouldWrapLines = shouldWrapLines
+        self.wrapLines = wrapLines
     }
 }
