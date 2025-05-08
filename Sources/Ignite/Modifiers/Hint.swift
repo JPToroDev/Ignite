@@ -26,7 +26,7 @@ private func hintData(html: String) -> [Attribute] {
     parser.defaultHighlighter = config.defaultLanguage?.rawValue
     parser.highlightInlineCode = config.highlightInlineCode
 
-    let components = parser.render()
+    let components = parser.parse()
     let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
     return hintData(html: cleanedHTML)
 }

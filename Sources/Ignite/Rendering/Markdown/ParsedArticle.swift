@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-public struct ArticleComponents {
+public struct ParsedArticle {
     /// The title of this document.
     public var title: String
 

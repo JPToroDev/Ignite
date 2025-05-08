@@ -118,7 +118,7 @@ public struct Text: HTML, DropdownItem {
         parser.defaultHighlighter = config.defaultLanguage?.rawValue
         parser.highlightInlineCode = config.highlightInlineCode
 
-        let components = parser.render()
+        let components = parser.parse()
 
         // Process each paragraph individually to preserve line breaks.
         // We could simply replace newlines with <br>, but then the paragraphs
@@ -157,7 +157,7 @@ public struct Text: HTML, DropdownItem {
             parser.defaultHighlighter = config.defaultLanguage?.rawValue
             parser.highlightInlineCode = config.highlightInlineCode
 
-            let components = try parser.render()
+            let components = try parser.parse()
             let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
             self.content = cleanedHTML
         } catch {

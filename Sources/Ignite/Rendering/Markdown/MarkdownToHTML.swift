@@ -32,10 +32,10 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Initializes a renderer with default values.
     public init() {}
 
-    public mutating func render() -> ArticleComponents {
+    public mutating func parse() -> ParsedArticle {
         let document = Markdown.Document(parsing: markup)
         let body = visit(document)
-        return ArticleComponents(title: title, description: description, body: body)
+        return ParsedArticle(title: title, description: description, body: body)
     }
 
     /// Visit some markup when no other handler is suitable.

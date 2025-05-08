@@ -151,7 +151,7 @@ public struct Article {
         parser.defaultHighlighter = config.defaultLanguage?.rawValue
         parser.highlightInlineCode = config.highlightInlineCode
 
-        let components = try parser.render()
+        let components = try parser.parse()
         self.text = components.body
         self.description = components.description.strippingTags()
 

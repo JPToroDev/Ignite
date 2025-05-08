@@ -27,5 +27,5 @@ public protocol ArticleRenderer {
     var highlightInlineCode: Bool { get set }
 
     /// Returns the processed title, description, and body of the raw markup.
-    mutating func render() throws -> ArticleComponents
+    mutating func parse() throws -> ParsedArticle
 }
