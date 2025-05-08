@@ -7,6 +7,7 @@
 
 /// The collection of syntax highlighters supported by Ignite.
 public enum HighlighterLanguage: String, Sendable {
+    case automatic = ""
     case appleScript = "applescript"
     case bash = "bash"
     case c = "c" // swiftlint:disable:this identifier_name
@@ -53,16 +54,5 @@ public enum HighlighterLanguage: String, Sendable {
         case .typeScript: .javaScript
         default: nil
         }
-    }
-
-    var files: [String] {
-        var result = ["prism-core.js"]
-
-        if let dependency {
-            result.append("\(dependency.rawValue).js")
-        }
-
-        result.append("\(self.rawValue).js")
-        return result
     }
 }
