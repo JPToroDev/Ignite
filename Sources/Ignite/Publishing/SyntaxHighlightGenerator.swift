@@ -14,9 +14,8 @@ struct SyntaxHighlightGenerator {
     func generateSyntaxHighlighters(context: PublishingContext) -> String {
         var result = ""
 
-        var highlighters = context.syntaxHighlighters.union(
-            context.site.syntaxHighlighterConfiguration.languages
-        )
+        let siteLanguages =  context.site.syntaxHighlighterConfiguration.languages
+        var highlighters = context.syntaxHighlighters.union(siteLanguages)
         var highlightersCount = 0
 
         // A lazy way to recursively scan through dependencies
