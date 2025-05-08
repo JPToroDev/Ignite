@@ -5,71 +5,8 @@
 // See LICENSE for license information.
 //
 
-@MainActor
-private func fontModifier(_ font: Font, content: any HTML) -> any HTML {
-    if let content = content.as(Text.self) {
-        var styles = [InlineStyle]()
-        styles.append(.init(.fontWeight, value: font.weight.rawValue.formatted()))
-
-        if let name = font.name, !name.isEmpty {
-            styles.append(.init(.fontFamily, value: "'\(name)'"))
-        }
-
-        if let size = font.size {
-            styles.append(.init(.fontSize, value: size.stringValue))
-        }
-
-        var modified: any HTML = content.style(styles)
-
-        if let style = font.style, let sizeVariable = style.sizeVariable {
-            styles.append(.init(.fontSize, value: sizeVariable))
-        }
-
-        if let responsiveSize = font.responsiveSize {
-            let classNames = CSSManager.shared.registerFont(responsiveSize)
-            modified = modified.class(classNames)
-        }
-
-        return modified
-    } else {
-        var styles = [InlineStyle]()
-        var classes = [String]()
-
-        styles.append(.init(.fontWeight, value: String(font.weight.rawValue)))
-
-        if let name = font.name, !name.isEmpty {
-            styles.append(.init(.fontFamily, value: "'\(name)'"))
-        }
-
-        if let size = font.size {
-            styles.append(.init(.fontSize, value: size.stringValue))
-        } else if let style = font.style, let sizeVariable = style.sizeVariable {
-            styles.append(.init(.fontSize, value: sizeVariable))
-        }
-
-        if let responsiveSize = font.responsiveSize {
-            classes.append(CSSManager.shared.registerFont(responsiveSize))
-        }
-
-        return Section(content.class("font-inherit"))
-            .style(styles)
-            .class(classes)
-    }
-}
-
-@MainActor
-private func fontModifier(_ font: Font, content: any InlineElement) -> any InlineElement {
-    var styles = [InlineStyle]()
-    styles.append(.init(.fontWeight, value: font.weight.rawValue.formatted()))
-
-    if let name = font.name, !name.isEmpty {
-        styles.append(.init(.fontFamily, value: "'\(name)'"))
-    }
-
-    if let size = font.size {
-        styles.append(.init(.fontSize, value: size.stringValue))
-    }
-
+@MainActor private func fontModifier(_ font: Font, content: any InlineElement) -> any InlineElement {
+    var styles = buildFontStyles(font)
     var modified = content.style(styles)
 
     if let style = font.style, let sizeVariable = style.sizeVariable {
@@ -82,6 +19,65 @@ private func fontModifier(_ font: Font, content: any InlineElement) -> any Inlin
     }
 
     return modified
+}
+
+@MainActor private func fontModifier(_ font: Font, content: any HTML) -> any HTML {
+    if let content = content.as(Text.self) {
+        applyFontToText(font, content: content)
+    } else {
+        applyFontToHTML(font, content: content)
+    }
+}
+
+@MainActor private func applyFontToText(_ font: Font, content: Text) -> any HTML {
+    var styles = buildFontStyles(font)
+    var modified: any HTML = content.style(styles)
+
+    if let style = font.style, let sizeVariable = style.sizeVariable {
+        styles.append(.init(.fontSize, value: sizeVariable))
+    }
+
+    if let responsiveSize = font.responsiveSize {
+        let classNames = CSSManager.shared.registerFont(responsiveSize)
+        modified = modified.class(classNames)
+    }
+
+    return modified
+}
+
+@MainActor private func applyFontToHTML(_ font: Font, content: any HTML) -> any HTML {
+    var styles = buildFontStyles(font)
+    var classes = [String]()
+
+    if let style = font.style, let sizeVariable = style.sizeVariable {
+        styles.append(.init(.fontSize, value: sizeVariable))
+    }
+
+    if let responsiveSize = font.responsiveSize {
+        classes.append(CSSManager.shared.registerFont(responsiveSize))
+    }
+
+    return Section(content.class("font-inherit"))
+        .style(styles)
+        .class(classes)
+}
+
+@MainActor private func buildFontStyles(_ font: Font) -> [InlineStyle] {
+    var styles = [InlineStyle]()
+
+    if let weight = font.weight {
+        styles.append(.init(.fontWeight, value: weight.rawValue.formatted()))
+    }
+
+    if let name = font.name, !name.isEmpty {
+        styles.append(.init(.fontFamily, value: "'\(name)'"))
+    }
+
+    if let size = font.size {
+        styles.append(.init(.fontSize, value: size.stringValue))
+    }
+
+    return styles
 }
 
 public extension HTML {
@@ -140,7 +136,10 @@ public extension StyledHTML {
         }
 
         var styles = [InlineStyle]()
-        styles.append(.init(.fontWeight, value: font.weight.description))
+
+        if let weight = font.weight {
+            styles.append(.init(.fontWeight, value: weight.rawValue.formatted()))
+        }
 
         if let style = font.style {
             styles.append(.init(.fontStyle, value: style.rawValue))
