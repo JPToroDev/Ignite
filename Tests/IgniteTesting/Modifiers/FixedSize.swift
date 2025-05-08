@@ -18,6 +18,6 @@ class FixedSizeTests: IgniteTestSuite {
     func fixedSizeModifier() async throws {
         let element = Text("Hello").fixedSize()
         let output = element.markupString()
-        #expect(output == "<div style=\"display: inline-block\"><p>Hello</p></div>")
+        #expect(output == "<p style=\"width: fit-content\">Hello</p>")
     }
 }

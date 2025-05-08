@@ -30,7 +30,7 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row h-100 justify-content-center g-3">\
+        <div class="row justify-content-center g-3">\
         <div class="col align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
@@ -63,7 +63,7 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row h-100 justify-content-center g-3">\
+        <div class="row justify-content-center g-3">\
         <div class="col-md-4 align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
@@ -100,7 +100,7 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row h-100 justify-content-center g-3">\
+        <div class="row justify-content-center g-3">\
         <div class="col-md-4 align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
@@ -137,7 +137,7 @@ class GridTests: IgniteTestSuite {
         let output = element.markupString()
 
         #expect(output == """
-        <div class="row h-100 justify-content-center row-cols-1 row-cols-md-2 g-3">\
+        <div class="row justify-content-center row-cols-1 row-cols-md-2 g-3">\
         <div class="col align-self-center">\
         <img src="/images/photos/shades.jpg" alt="A pair of sunglasses." class="img-fluid" />\
         </div>\
