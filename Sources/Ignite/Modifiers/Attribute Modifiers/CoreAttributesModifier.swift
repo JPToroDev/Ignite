@@ -23,7 +23,6 @@
     return copy
 }
 
-
 @MainActor private func coreAttributesModifier(
     _ attributes: CoreAttributes,
     content: any BodyElement

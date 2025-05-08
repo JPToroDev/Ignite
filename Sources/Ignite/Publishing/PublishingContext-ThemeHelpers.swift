@@ -74,27 +74,33 @@ extension PublishingContext {
         }
     }
 
-    // Generate the color variants for active buttons.
+    /// Generate the color variants for active buttons.
     func buttonColorVariants(for theme: any Theme) -> [Ruleset] {
-        let brandColors: [(BootstrapVariable, Color, String)] = [
-            (.primary, theme.accent, "btn-primary"),
-            (.secondary, theme.secondaryAccent, "btn-secondary"),
-            (.success, theme.success, "btn-success"),
-            (.info, theme.info, "btn-info"),
-            (.warning, theme.warning, "btn-warning"),
-            (.danger, theme.danger, "btn-danger"),
-            (.light, theme.offWhite, "btn-light"),
-            (.dark, theme.offBlack, "btn-dark")
+        struct ButtonColorVariant {
+            let variable: BootstrapVariable
+            let color: Color
+            let className: String
+        }
+
+        let brandColors: [ButtonColorVariant] = [
+            .init(variable: .primary, color: theme.accent, className: "btn-primary"),
+            .init(variable: .secondary, color: theme.secondaryAccent, className: "btn-secondary"),
+            .init(variable: .success, color: theme.success, className: "btn-success"),
+            .init(variable: .info, color: theme.info, className: "btn-info"),
+            .init(variable: .warning, color: theme.warning, className: "btn-warning"),
+            .init(variable: .danger, color: theme.danger, className: "btn-danger"),
+            .init(variable: .light, color: theme.offWhite, className: "btn-light"),
+            .init(variable: .dark, color: theme.offBlack, className: "btn-dark")
         ]
 
-        return brandColors.map { variable, color, className in
-            Ruleset(.attribute("data-bs-theme", value: theme.cssID), .class(className)) {
-                InlineStyle("--bs-btn-bg", value: color.description)
-                InlineStyle("--bs-btn-border-color", value: color.description)
-                InlineStyle("--bs-btn-hover-border-color", value: color.weighted(.semiDark).description)
-                InlineStyle("--bs-btn-hover-bg", value: color.weighted(.semiDark).description)
-                InlineStyle("--bs-btn-active-bg", value: color.weighted(.dark).description)
-                InlineStyle("--bs-btn-active-border-color", value: color.weighted(.dark).description)
+        return brandColors.map { variant in
+            Ruleset(.attribute("data-bs-theme", value: theme.cssID), .class(variant.className)) {
+                InlineStyle("--bs-btn-bg", value: variant.color.description)
+                InlineStyle("--bs-btn-border-color", value: variant.color.description)
+                InlineStyle("--bs-btn-hover-border-color", value: variant.color.weighted(.semiDark).description)
+                InlineStyle("--bs-btn-hover-bg", value: variant.color.weighted(.semiDark).description)
+                InlineStyle("--bs-btn-active-bg", value: variant.color.weighted(.dark).description)
+                InlineStyle("--bs-btn-active-border-color", value: variant.color.weighted(.dark).description)
             }
         }
     }

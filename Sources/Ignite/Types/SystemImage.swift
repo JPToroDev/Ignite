@@ -7,7 +7,7 @@
 
 /// Icons provided by the framework.
 @MainActor
-public struct SystemImage: Sendable, @preconcurrency RawRepresentable {
+public struct SystemImage {
     /// The class of the Bootstrap icon.
     private var value: String
 
