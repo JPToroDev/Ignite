@@ -123,6 +123,19 @@ public extension Body {
         return copy
     }
 
+    /// Applies margins on selected sides of this element, using adaptive sizing.
+    /// - Parameters:
+    ///   - edges: The edges where this margin should be applied.
+    ///   - amount: The amount of margin to apply, specified as a
+    ///   `SpacingAmount` case.
+    /// - Returns: A copy of the current element with the new margins applied.
+    func margin(_ edges: Edge, _ amount: SpacingAmount) -> Self {
+        let classes = content.edgeAdjustedClasses(prefix: "m", edges, amount.rawValue)
+        var copy = self
+        copy.attributes.append(classes: classes)
+        return copy
+    }
+
     /// Applies padding on selected sides of this element. Defaults to 20 pixels.
     /// - Parameters:
     ///   - edges: The edges where this padding should be applied.
@@ -133,6 +146,19 @@ public extension Body {
         let styles = content.edgeAdjustedStyles(prefix: "padding", edges, length.stringValue)
         var copy = self
         copy.attributes.append(styles: styles)
+        return copy
+    }
+
+    /// Applies padding on selected sides of this element using adaptive sizing.
+    /// - Parameters:
+    ///   - edges: The edges where this padding should be applied.
+    ///   - amount: The amount of padding to apply, specified as a
+    /// `SpacingAmount` case.
+    /// - Returns: A copy of the current element with the new padding applied.
+    func padding(_ edges: Edge, _ amount: SpacingAmount) -> Self {
+        let classes = content.edgeAdjustedClasses(prefix: "p", edges, amount.rawValue)
+        var copy = self
+        copy.attributes.append(classes: classes)
         return copy
     }
 
