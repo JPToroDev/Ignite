@@ -16,9 +16,18 @@ private func hintData(html: String) -> [Attribute] {
      .init(name: "bs-html", value: "true")]
 }
 
-private func hintData(markdown: String) -> [Attribute] {
-    let parser = MarkdownToHTML(markdown: markdown, removeTitleFromBody: true)
-    let cleanedHTML = parser.body.replacing(#/<\/?p>/#, with: "")
+@MainActor private func hintData(markdown: String) -> [Attribute] {
+    let site = PublishingContext.shared.site
+    let config = site.syntaxHighlighterConfiguration
+    var parser = MarkdownToHTML()
+
+    parser.markup = markdown
+    parser.removeTitleFromBody = true
+    parser.defaultHighlighter = config.defaultLanguage?.rawValue
+    parser.highlightInlineCode = config.highlightInlineCode
+
+    let components = parser.render()
+    let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
     return hintData(html: cleanedHTML)
 }
 

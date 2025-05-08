@@ -9,27 +9,23 @@ import Foundation
 
 /// A protocol defining the basic information we need to get good
 /// article parsing. This is implemented by the default
-/// MarkdownToHTML parser included with Ignite, but users
+/// `MarkdownToHTML` parser included with Ignite, but users
 /// can override that default in their `Site` conformance to
 /// get a custom parser if needed.
 public protocol ArticleRenderer {
-    /// The title of this document.
-    var title: String { get }
-
-    /// The description of this document, which is the first paragraph.
-    var description: String { get }
-
-    /// The body text of this file, which includes its title by default.
-    var body: String { get }
+    /// The unprocessed content of this document.
+    var markup: String { get set }
 
     /// Whether to remove the article's title from its body. This only applies
     /// to the first heading.
-    var removeTitleFromBody: Bool { get }
+    var removeTitleFromBody: Bool { get set }
 
-    /// Parses Markdown provided as a direct input string.
-    /// - Parameters:
-    ///   - markdown: The Markdown to parse.
-    ///   - removeTitleFromBody: `true` if the first title should be removed
-    ///   from the final `text` property.
-    init(markdown: String, removeTitleFromBody: Bool) throws
+    /// The default syntax highlighter for code snippets.
+    var defaultHighlighter: String? { get set }
+
+    /// Whether inline code should use syntax highlighting.
+    var highlightInlineCode: Bool { get set }
+
+    /// Returns the processed title, description, and body of the raw markup.
+    mutating func render() throws -> ArticleComponents
 }

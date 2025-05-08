@@ -109,13 +109,22 @@ public struct Text: HTML, DropdownItem {
     /// Creates a new Text struct from a Markdown string.
     /// - Parameter markdown: The Markdown text to parse.
     public init(markdown: String) {
-        let parser = MarkdownToHTML(markdown: markdown, removeTitleFromBody: true)
+        let site = PublishingContext.shared.site
+        let config = site.syntaxHighlighterConfiguration
+        var parser = MarkdownToHTML()
+
+        parser.markup = markdown
+        parser.removeTitleFromBody = true
+        parser.defaultHighlighter = config.defaultLanguage?.rawValue
+        parser.highlightInlineCode = config.highlightInlineCode
+
+        let components = parser.render()
 
         // Process each paragraph individually to preserve line breaks.
         // We could simply replace newlines with <br>, but then the paragraphs
         // wouldn't respond to a theme's paragraphBottomMargin property.
-        if parser.body.contains("</p><p>") {
-            let paragraphs = parser.body
+        if components.body.contains("</p><p>") {
+            let paragraphs = components.body
                 .components(separatedBy: "</p><p>")
                 .map {
                     $0.replacingOccurrences(of: "<p>", with: "")
@@ -127,7 +136,7 @@ public struct Text: HTML, DropdownItem {
             self.isMultilineMarkdown = true
         } else {
             // Remove the wrapping <p> tags since they'll be added by markup()
-            let cleanedHTML = parser.body.replacing(#/<\/?p>/#, with: "")
+            let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
             self.content = cleanedHTML
             self.isMultilineMarkdown = false
         }
@@ -139,8 +148,17 @@ public struct Text: HTML, DropdownItem {
     ///   - parser: The parser to process the text.
     public init(markup: String, parser: any ArticleRenderer.Type) {
         do {
-            let parser = try parser.init(markdown: markup, removeTitleFromBody: true)
-            let cleanedHTML = parser.body.replacing(#/<\/?p>/#, with: "")
+            let site = PublishingContext.shared.site
+            let config = site.syntaxHighlighterConfiguration
+            var parser = site.articleRenderer
+
+            parser.markup = markup
+            parser.removeTitleFromBody = true
+            parser.defaultHighlighter = config.defaultLanguage?.rawValue
+            parser.highlightInlineCode = config.highlightInlineCode
+
+            let components = try parser.render()
+            let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
             self.content = cleanedHTML
         } catch {
             self.content = markup

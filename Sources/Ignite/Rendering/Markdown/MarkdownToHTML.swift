@@ -11,33 +11,37 @@ import Markdown
 /// A simple Markdown to HTML parser powered by Apple's swift-markdown.
 public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// The title of this document.
-    public var title = ""
+    private var title = ""
 
     /// The description of this document, which is the first paragraph.
-    public var description = ""
+    private var description = ""
 
-    /// The body text of this file, which includes its title by default.
-    public var body = ""
+    /// The unprocessed content of this document.
+    public var markup: String = ""
 
     /// Whether to remove the Markdown title from its body. This only applies
     /// to the first heading.
-    public var removeTitleFromBody: Bool
+    public var removeTitleFromBody: Bool = true
 
-    /// Parses Markdown provided as a direct input string.
-    /// - Parameters:
-    ///   - markdown: The Markdown to parse.
-    ///   - removeTitleFromBody: True if the first title should be removed
-    ///   from the final `body` property.
-    public init(markdown: String, removeTitleFromBody: Bool) {
-        self.removeTitleFromBody = removeTitleFromBody
-        let document = Markdown.Document(parsing: markdown)
-        body = visit(document)
+    /// The default syntax highlighter for code snippets.
+    public var defaultHighlighter: String?
+
+    /// Whether inline code should use syntax highlighting.
+    public var highlightInlineCode: Bool = false
+
+    /// Initializes a renderer with default values.
+    public init() {}
+
+    public mutating func render() -> ArticleComponents {
+        let document = Markdown.Document(parsing: markup)
+        let body = visit(document)
+        return ArticleComponents(title: title, description: description, body: body)
     }
 
     /// Visit some markup when no other handler is suitable.
     /// - Parameter markup: The markup that is being processed.
     /// - Returns: A string to append to the output.
-    mutating public func defaultVisit(_ markup: Markdown.Markup) -> String {
+    public mutating func defaultVisit(_ markup: Markdown.Markup) -> String {
         var result = ""
 
         for child in markup.children {
@@ -50,7 +54,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes block quote markup.
     /// - Parameter blockQuote: The block quote data to process.
     /// - Returns: A HTML <blockquote> element with the block quote's children inside.
-    mutating public func visitBlockQuote(_ blockQuote: Markdown.BlockQuote) -> String {
+    public mutating func visitBlockQuote(_ blockQuote: Markdown.BlockQuote) -> String {
         var result = "<blockquote>"
 
         for child in blockQuote.children {
@@ -68,6 +72,8 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     public func visitCodeBlock(_ codeBlock: Markdown.CodeBlock) -> String {
         if let language = codeBlock.language {
             #"<pre><code class="language-\#(language.lowercased())">\#(codeBlock.code)</code></pre>"#
+        } else if let defaultHighlighter {
+            #"<pre><code class="language-\#(defaultHighlighter)">\#(codeBlock.code)</code></pre>"#
         } else {
             #"<pre><code>\#(codeBlock.code)</code></pre>"#
         }
@@ -90,7 +96,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes emphasis markup.
     /// - Parameter emphasis: The emphasized content to process.
     /// - Returns: A HTML <em> element with the markup's children inside.
-    mutating public func visitEmphasis(_ emphasis: Markdown.Emphasis) -> String {
+    public mutating func visitEmphasis(_ emphasis: Markdown.Emphasis) -> String {
         var result = "<em>"
 
         for child in emphasis.children {
@@ -105,7 +111,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// - Parameter heading: The heading to process.
     /// - Returns: A HTML <h*> element with its children inside. The heading
     /// level depends on the markup. The first heading is used for the document title.
-    mutating public func visitHeading(_ heading: Markdown.Heading) -> String {
+    public mutating func visitHeading(_ heading: Markdown.Heading) -> String {
         var headingContent = ""
 
         for child in heading.children {
@@ -148,8 +154,12 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Process inline code markup.
     /// - Parameter inlineCode: The inline code markup to process.
     /// - Returns: A HTML <code> tag containing the code.
-    mutating public func visitInlineCode(_ inlineCode: Markdown.InlineCode) -> String {
-        "<code>\(inlineCode.code)</code>"
+    public mutating func visitInlineCode(_ inlineCode: Markdown.InlineCode) -> String {
+        if let defaultHighlighter {
+            #"<code class="language-\#(defaultHighlighter)">\#(inlineCode.code)</code>"#
+        } else {
+            "<code>\(inlineCode.code)</code>"
+        }
     }
 
     /// Processes a chunk of inline HTML markup.
@@ -162,7 +172,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes hyperlink markup.
     /// - Parameter link: The link markup to process.
     /// - Returns: Returns a HTML <a> tag with the correct location and content.
-    mutating public func visitLink(_ link: Markdown.Link) -> String {
+    public mutating func visitLink(_ link: Markdown.Link) -> String {
         var result = #"<a href="\#(link.destination ?? "#")">"#
 
         for child in link.children {
@@ -176,7 +186,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes one item from a list.
     /// - Parameter listItem: The list item markup to process.
     /// - Returns: A HTML <li> tag containing the list item's contents.
-    mutating public func visitListItem(_ listItem: Markdown.ListItem) -> String {
+    public mutating func visitListItem(_ listItem: Markdown.ListItem) -> String {
         var result = "<li>"
 
         for child in listItem.children {
@@ -190,7 +200,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes unordered list markup.
     /// - Parameter orderedList: The unordered list markup to process.
     /// - Returns: A HTML <ol> element with the correct contents.
-    mutating public func visitOrderedList(_ orderedList: Markdown.OrderedList) -> String {
+    public mutating func visitOrderedList(_ orderedList: Markdown.OrderedList) -> String {
         var result = "<ol>"
 
         for listItem in orderedList.listItems {
@@ -206,7 +216,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// - Returns: If we're inside a list this sends back the paragraph's
     /// contents. Otherwise, it wraps the contents in a HTML <p> element.
     /// The first paragraph in the document is used for the document description.
-    mutating public func visitParagraph(_ paragraph: Markdown.Paragraph) -> String {
+    public mutating func visitParagraph(_ paragraph: Markdown.Paragraph) -> String {
         var result = ""
         var paragraphContents = ""
 
@@ -234,7 +244,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes some strikethrough markup.
     /// - Parameter strikethrough: The strikethrough markup to process.
     /// - Returns: Content wrapped inside a HTML <s> element.
-    mutating public func visitStrikethrough(_ strikethrough: Markdown.Strikethrough) -> String {
+    public mutating func visitStrikethrough(_ strikethrough: Markdown.Strikethrough) -> String {
         var result = "<s>"
 
         for child in strikethrough.children {
@@ -249,7 +259,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes some strong markup.
     /// - Parameter strong: The strong markup to process.
     /// - Returns: Content wrapped inside a HTML <strong> element.
-    mutating public func visitStrong(_ strong: Markdown.Strong) -> String {
+    public mutating func visitStrong(_ strong: Markdown.Strong) -> String {
         var result = "<strong>"
 
         for child in strong.children {
@@ -311,7 +321,6 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
             output += "<td>"
             output += visit(child)
             output += "</td>"
-
         }
 
         output += "</tr>"
@@ -321,7 +330,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Processes plain text markup.
     /// - Parameter text: The plain text markup to process.
     /// - Returns: The same text that was read as input.
-    mutating public func visitText(_ text: Markdown.Text) -> String {
+    public mutating func visitText(_ text: Markdown.Text) -> String {
         text.plainText
     }
 

@@ -91,7 +91,7 @@ public protocol Site: Sendable {
     /// only applies to content pages rendered from the Content folder;
     /// the standard MarkdownToHTML parser is used for `Text` and
     /// other built-in elements regardless of the setting here.
-    var articleRenderer: ArticleRendererType.Type { get }
+    var articleRenderer: ArticleRendererType { get }
 
     /// Controls how the RSS feed for your site should be generated. The default
     /// configuration sends back content description only for 20 items. To disable
@@ -194,9 +194,7 @@ public extension Site {
     var builtInIconsEnabled: BootstrapOptions { .localBootstrap }
 
     /// Use the standard MarkdownToHTML renderer by default.
-    var articleRenderer: MarkdownToHTML.Type {
-        MarkdownToHTML.self
-    }
+    var articleRenderer: MarkdownToHTML { MarkdownToHTML() }
 
     /// A default feed configuration allows 20 items of content, showing just
     /// their descriptions.

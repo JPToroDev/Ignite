@@ -143,13 +143,19 @@ public struct Article {
         let processed = processMetadata(for: markdown)
 
         let site = PublishingContext.shared.site
+        let config = site.syntaxHighlighterConfiguration
         // Use whatever Markdown renderer was configured for the site we're publishing.
-        let parser = try site.articleRenderer.init(markdown: processed, removeTitleFromBody: true)
+        var parser = site.articleRenderer
+        parser.markup = processed
+        parser.removeTitleFromBody = true
+        parser.defaultHighlighter = config.defaultLanguage?.rawValue
+        parser.highlightInlineCode = config.highlightInlineCode
 
-        self.text = parser.body
-        self.description = parser.description.strippingTags()
+        let components = try parser.render()
+        self.text = components.body
+        self.description = components.description.strippingTags()
 
-        resolveTitle(parser.title, url: url)
+        resolveTitle(components.title, url: url)
         populateMetadataDates(urlValues: resourceValues)
 
         self.path = metadata["path"] as? String ?? deployPath
