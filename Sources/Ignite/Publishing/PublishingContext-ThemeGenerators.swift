@@ -11,11 +11,7 @@ extension PublishingContext {
     /// Creates CSS rules for all themes and writes to themes.min.css
     func generateThemes(_ themes: [any Theme]) {
         guard !themes.isEmpty else { return }
-
         let rules = generateThemeRules(themes)
-            .map(\.description)
-            .joined(separator: "\n\n")
-
         writeThemeRules(rules, to: "css/ignite-core.css")
     }
 
@@ -24,7 +20,7 @@ extension PublishingContext {
         let cssPath = buildDirectory.appending(path: path)
         do {
             let existingContent = try String(contentsOf: cssPath, encoding: .utf8)
-            let newContent = existingContent + "\n\n" + rules
+            let newContent = rules + "\n\n" + existingContent
             try newContent.write(to: cssPath, atomically: true, encoding: .utf8)
         } catch {
             fatalError(.failedToWriteFile(path))
@@ -54,16 +50,16 @@ extension PublishingContext {
                   !systemFonts.contains(family)
             else { return nil }
             return font.sources.compactMap { source in
-                generateFontRule(family: family, source: source)?.description
+                generateFontRule(family: family, source: source)
             }
         }
 
-        return declarations.flatMap { $0 }
+        return declarations.flatMap(\.self)
     }
 
-    private func generateFontRule(family: String, source: FontSource) -> CustomStringConvertible? {
+    private func generateFontRule(family: String, source: FontSource) -> String? {
         if source.url.host()?.contains("fonts.googleapis.com") == true {
-            return ImportRule(source.url)
+            return ImportRule(source.url).render()
         }
 
         return FontFaceRule(
@@ -71,65 +67,65 @@ extension PublishingContext {
             source: source.url,
             weight: source.weight.description,
             style: source.variant.rawValue
-        )
+        ).render()
     }
 
     /// Creates CSS rules for a base theme
-    private func themeRules(_ theme: any Theme, supportsOtherTheme: Bool) -> [String] {
-        var rules: [CustomStringConvertible] = []
-        if !supportsOtherTheme, site.alternateThemes.isEmpty {
+    private func themeRules(_ theme: any Theme) -> String {
+        var rules = [any CSS]()
+
+        if !site.hasMultipleThemes {
             rules.append(rootStyles(for: theme))
-            rules.append(baseThemeRules(theme))
-            return rules.map(\.description)
+        } else if let overrides = themeOverrides(for: theme) {
+            rules.append(overrides)
         }
 
-        rules.append(contentsOf: themeOverrides(for: theme))
-        return rules.map(\.description)
+        rules.append(contentsOf: baseThemeRules(theme))
+        return rules.map { $0.render() }.joined(separator: "\n\n")
     }
 
     /// Collects all CSS rules for the themes
-    private func generateThemeRules(_ themes: [any Theme]) -> [String] {
+    private func generateThemeRules(_ themes: [any Theme]) -> String {
         guard site.supportsLightTheme || site.supportsDarkTheme else {
             fatalError(.missingDefaultTheme)
         }
 
-        var rules: OrderedSet<String> = []
-
+        let customFontRules = fontRules(for: CSSManager.shared.customFonts)
         let themeFontRules: OrderedSet = OrderedSet(themes.flatMap { theme in
             let themeFonts = [theme.monospaceFont, theme.font, theme.headingFont]
             return fontRules(for: themeFonts)
         })
 
+        var rules = [String]()
         rules.append(contentsOf: themeFontRules)
-
-        let customFontRules = fontRules(for: CSSManager.shared.customFonts)
         rules.append(contentsOf: customFontRules)
+        rules.append(globalRulesets())
 
         let (lightTheme, darkTheme) = configureDefaultThemes(site.lightTheme, site.darkTheme)
 
         if let lightTheme {
-            rules.append(contentsOf: themeRules(lightTheme, supportsOtherTheme: site.supportsDarkTheme))
+            rules.append(themeRules(lightTheme))
         }
 
         if let darkTheme {
-            rules.append(contentsOf: themeRules(darkTheme, supportsOtherTheme: site.supportsLightTheme))
+            rules.append(themeRules(darkTheme))
         }
 
         for theme in site.alternateThemes {
-            rules.append(
-                Ruleset(.attribute(name: "data-bs-theme", value: theme.cssID)) {
-                    themeStyles(for: theme)
-                }.description
-            )
+            let styles = themeStyles(for: theme)
+            let ruleset = Ruleset(.attribute("data-bs-theme", value: theme.cssID), styles: styles)
+            let rulsetString = ruleset.render()
+            rules.append(rulsetString)
         }
 
-        return Array(rules)
+        return rules.joined(separator: "\n\n")
     }
 
     /// Configures default light and dark themes, inheriting properties when needed
-    private func configureDefaultThemes(_ light: (any Theme)?, _ dark: (any Theme)?)
-    -> (light: (any Theme)?, dark: (any Theme)?
-    ) {
+    private func configureDefaultThemes(
+        _ light: (any Theme)?,
+        _ dark: (any Theme)?
+    ) -> (light: (any Theme)?, dark: (any Theme)?) {
         var lightTheme = light
         var darkTheme = dark
 
@@ -145,32 +141,24 @@ extension PublishingContext {
     }
 
     /// Creates base theme rules (for root theme)
-    private func baseThemeRules(_ theme: any Theme) -> [String] {
-        var rules: [CustomStringConvertible] = []
+    private func baseThemeRules(_ theme: any Theme) -> [any CSS] {
+        var rules: [any CSS] = []
+        rules.append(contentsOf: containerMediaQueries(for: theme))
         rules.append(contentsOf: responsiveVariables(for: theme))
         rules.append(contentsOf: buttonColorVariants(for: theme))
-        rules.append(contentsOf: containerMediaQueries(for: theme))
-        rules.append(globalRulesets())
-        return rules.map(\.description)
+        return rules
     }
 
     /// Creates theme override rulesets if needed
-    private func themeOverrides(for theme: any Theme) -> [Ruleset] {
-        var overrides: [Ruleset] = []
-
-        if site.hasMultipleThemes {
-            overrides.append(
-                Ruleset(.attribute(name: "data-bs-theme", value: theme.cssID)) {
-                    themeStyles(for: theme)
-                }
-            )
+    private func themeOverrides(for theme: any Theme) -> Ruleset? {
+        guard site.hasMultipleThemes else { return nil }
+        return Ruleset(.attribute("data-bs-theme", value: theme.cssID)) {
+            themeStyles(for: theme)
         }
-
-        return overrides
     }
 
     /// Contains the various snap dimensions for different Bootstrap widths.
-    private func containerMediaQueries(for theme: any Theme) -> [MediaQuery] {
+    private func containerMediaQueries(for theme: any Theme) -> [any CSS] {
         let breakpoints: [LengthUnit] = [
             theme.siteWidth.values[.small] ?? Bootstrap.smallContainer,
             theme.siteWidth.values[.medium] ?? Bootstrap.mediumContainer,
@@ -181,7 +169,7 @@ extension PublishingContext {
 
         return breakpoints.map { minWidth in
             MediaQuery(.breakpoint(.custom(minWidth))) {
-                Ruleset(.class("container")) {
+                Ruleset(.attribute("data-bs-theme", value: theme.cssID), .class("container")) {
                     InlineStyle(.maxWidth, value: "\(minWidth)")
                 }
             }

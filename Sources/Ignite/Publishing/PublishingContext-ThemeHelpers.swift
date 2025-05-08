@@ -67,7 +67,7 @@ extension PublishingContext {
             guard !styles.isEmpty, styles.allSatisfy({ !$0.value.isEmpty }) else { return nil }
 
             return MediaQuery(.breakpoint(.custom(minWidth))) {
-                Ruleset(.pseudoClass("root")) {
+                Ruleset(.attribute("data-bs-theme", value: theme.cssID)) {
                     styles
                 }
             }
@@ -88,7 +88,7 @@ extension PublishingContext {
         ]
 
         return brandColors.map { variable, color, className in
-            Ruleset(.attribute(name: "data-bs-theme", value: theme.cssID), .class(className)) {
+            Ruleset(.attribute("data-bs-theme", value: theme.cssID), .class(className)) {
                 InlineStyle("--bs-btn-bg", value: color.description)
                 InlineStyle("--bs-btn-border-color", value: color.description)
                 InlineStyle("--bs-btn-hover-border-color", value: color.weighted(.semiDark).description)

@@ -6,10 +6,10 @@
 //
 
 /// A structured representation of a CSS ruleset including selectors and styles
-struct Ruleset: CustomStringConvertible {
+struct Ruleset: CSS {
     /// Represents different types of CSS selectors
     enum Selector {
-        case attribute(name: String, value: String)
+        case attribute(_ name: String, value: String)
         case `class`(String)
         case pseudoClass(String)
         case type(String)
@@ -67,9 +67,5 @@ struct Ruleset: CustomStringConvertible {
         } else {
             return ""
         }
-    }
-
-    public var description: String {
-        render()
     }
 }

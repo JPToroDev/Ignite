@@ -241,20 +241,20 @@ extension StyleManager {
 
             let mediaQuery = MediaQuery(mediaFeatures) {
                 Ruleset(
-                    [.attribute(name: "data-bs-theme^", value: theme.idPrefix),
+                    [.attribute("data-bs-theme^", value: theme.idPrefix),
                      .class(className)],
                     styles: styles
                 )
             }
-            return mediaQuery.description
+            return mediaQuery.render()
         } else if let theme = condition.theme {
             // Theme-only rule
             let themeRuleset = Ruleset(
-                [.attribute(name: "data-bs-theme^", value: theme.idPrefix),
+                [.attribute("data-bs-theme^", value: theme.idPrefix),
                  .class(className)],
                 styles: styles
             )
-            return themeRuleset.description
+            return themeRuleset.render()
         } else if !mediaQueries.isEmpty {
             // Media query-only rule
             let mediaFeatures = convertToMediaFeatures(
@@ -266,9 +266,9 @@ extension StyleManager {
             let mediaQuery = MediaQuery(mediaFeatures) {
                 [ruleset]
             }
-            return mediaQuery.description
+            return mediaQuery.render()
         } else {
-            return ruleset.description
+            return ruleset.render()
         }
     }
 
@@ -299,7 +299,7 @@ extension StyleManager {
         let defaultStyles = stylesMap.defaultStyles.map { $0.important(isImportant) }
 
         let defaultRuleset = Ruleset(selector, styles: defaultStyles)
-        cssRules.append(defaultRuleset.description)
+        cssRules.append(defaultRuleset.render())
 
         // Generate specific rules for unique conditions
         for (condition, styles) in stylesMap.uniqueConditions {

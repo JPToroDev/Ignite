@@ -39,9 +39,3 @@ struct FontFaceRule: Hashable, Equatable, Sendable {
         """
     }
 }
-
-extension FontFaceRule: CustomStringConvertible {
-    var description: String {
-        render()
-    }
-}

@@ -17,9 +17,3 @@ struct ImportRule {
         "@import url('\(source.absoluteString)');"
     }
 }
-
-extension ImportRule: CustomStringConvertible {
-    var description: String {
-        render()
-    }
-}

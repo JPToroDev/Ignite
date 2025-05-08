@@ -6,7 +6,7 @@
 //
 
 /// Represents a CSS media query with nested declarations
-struct MediaQuery: CustomStringConvertible {
+struct MediaQuery: CSS {
     enum Combinator: String {
         case and = ") and ("
         case or = ") or (" // swiftlint:disable:this identifier_name
@@ -43,16 +43,12 @@ struct MediaQuery: CustomStringConvertible {
 
     func render() -> String {
         let query = features.map(\.description).joined(separator: combinator.rawValue)
-        let rulesBlock = rulesets.map(\.description).joined(separator: "\n\n")
+        let rulesBlock = rulesets.map { $0.render() }.joined(separator: "\n\n")
 
         return """
         @media (\(query)) {
             \(rulesBlock)
         }
         """
-    }
-
-    public var description: String {
-        render()
     }
 }
