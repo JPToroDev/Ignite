@@ -33,7 +33,7 @@ public struct CodeBlock: HTML {
     ///   - language: The programming language for the code. This affects
     ///   how the content is tagged, which in turn affects syntax highlighting.
     ///   - content: The code you want to render.
-    public init(_ language: HighlighterLanguage? = nil, _ content: () -> String) {
+    public init(_ language: HighlighterLanguage? = .automatic, _ content: () -> String) {
         self.language = language
         self.content = content()
     }
@@ -119,6 +119,10 @@ public struct CodeBlock: HTML {
         guard publishingContext.site.allHighlighterThemes.isEmpty == false else {
             fatalError(.missingDefaultSyntaxHighlighterTheme)
         }
+
+        let defaultLanguage = PublishingContext.shared.site.syntaxHighlighterConfiguration.defaultLanguage
+        let resolvedLanguage: HighlighterLanguage? = language == .automatic ? defaultLanguage : language
+        let language = resolvedLanguage
 
         if let language {
             publishingContext.syntaxHighlighters.append(language)

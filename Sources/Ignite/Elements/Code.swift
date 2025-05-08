@@ -26,15 +26,32 @@ public struct Code: InlineElement {
     /// The code to display.
     private var content: String
 
+    /// The language used by the syntax highlighter.
+    private var language: HighlighterLanguage?
+
     /// Creates a new `Code` instance from the given content.
-    /// - Parameter content: The code you want to render.
-    public init(_ content: String) {
+    /// - Parameters
+    ///   - content: The code you want to render.
+    ///   - language: The programming language for the code.
+    public init(_ content: String, language: HighlighterLanguage? = .automatic) {
         self.content = content
+        self.language = language
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        Markup("<code\(attributes)>\(content)</code>")
+        let defaultLanguage = PublishingContext.shared.site.syntaxHighlighterConfiguration.defaultLanguage
+        let resolvedLanguage: HighlighterLanguage? = language == .automatic ? defaultLanguage : language
+        let language = resolvedLanguage
+
+        if let language {
+            publishingContext.syntaxHighlighters.append(language)
+            var attributes = attributes
+            attributes.append(classes: "language-\(language)")
+            return Markup("<code\(attributes)>\(content)</code>")
+        } else {
+            return Markup("<code\(attributes)>\(content)</code>")
+        }
     }
 }
