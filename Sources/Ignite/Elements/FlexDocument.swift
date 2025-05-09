@@ -7,7 +7,7 @@
 
 /// An document whose `<body>` uses flex layout and has a height that matches the viewport.
 /// This document type can be useful when designing complex flexbox and grid layouts.
-public struct FlowDocument: Document {
+public struct FlexDocument: Document {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
