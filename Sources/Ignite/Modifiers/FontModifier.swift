@@ -6,56 +6,49 @@
 //
 
 @MainActor private func fontModifier(_ font: Font, content: any InlineElement) -> any InlineElement {
-    let styles = buildFontStyles(font)
-    var sizeClass: String?
-
-    if let responsiveSize = font.responsiveSize {
-        sizeClass = CSSManager.shared.registerFont(responsiveSize)
-    }
-
-    return content
-        .style(styles)
-        .class(sizeClass)
+    content.attributes(getAttributes(for: font, includeStyle: true))
 }
 
 @MainActor private func fontModifier(_ font: Font, content: any HTML) -> any HTML {
-    let styles = buildFontStyles(font)
-    var sizeClass: String?
-    if let responsiveSize = font.responsiveSize {
-        sizeClass = CSSManager.shared.registerFont(responsiveSize)
+    if var text = content.as(Text.self) {
+        if let style = font.style {
+            text.font = style
+        }
+        return text.attributes(getAttributes(for: font, includeStyle: false))
     }
 
-    return if let content = content.as(Text.self) {
-        content
-            .style(styles)
-            .class(sizeClass)
-    } else {
-        Section(content.class("font-inherit"))
-            .style(styles)
-            .class(sizeClass)
-    }
+    return Section(content.class("font-inherit"))
+        .attributes(getAttributes(for: font, includeStyle: true))
 }
 
-@MainActor private func buildFontStyles(_ font: Font) -> [InlineStyle] {
-    var styles = [InlineStyle]()
+@MainActor private func getAttributes(for font: Font, includeStyle: Bool) -> CoreAttributes {
+    var attributes = CoreAttributes()
 
     if let weight = font.weight {
-        styles.append(.init(.fontWeight, value: weight.description))
+        attributes.append(styles: .init(.fontWeight, value: weight.description))
     }
 
     if let name = font.name, !name.isEmpty {
-        styles.append(.init(.fontFamily, value: "'\(name)'"))
+        attributes.append(styles: .init(.fontFamily, value: "'\(name)'"))
     }
 
-    if let style = font.style, let sizeVariable = style.sizeVariable {
-        styles.append(.init(.fontSize, value: sizeVariable))
+    if let responsiveSize = font.responsiveSize {
+        let className = CSSManager.shared.registerFont(responsiveSize)
+        attributes.append(classes: className)
+    } else if let size = font.size {
+        attributes.append(styles: .init(.fontSize, value: size.stringValue))
     }
 
-    if let size = font.size {
-        styles.append(.init(.fontSize, value: size.stringValue))
+    if includeStyle, let style = font.style, let sizeClass = style.sizeClass {
+        attributes.append(classes: sizeClass)
     }
 
-    return styles
+    return attributes
+}
+
+@MainActor private func registerFontIfNeeded(_ font: Font) {
+    guard let name = font.name, !name.isEmpty else { return }
+    CSSManager.shared.registerFontFamily(font)
 }
 
 public extension HTML {
@@ -63,9 +56,7 @@ public extension HTML {
     /// - Parameter font: The font configuration to apply.
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font) -> some HTML {
-        if let name = font.name, !name.isEmpty {
-            CSSManager.shared.registerFontFamily(font)
-        }
+        registerFontIfNeeded(font)
         return AnyHTML(fontModifier(font, content: self))
     }
 
@@ -73,11 +64,8 @@ public extension HTML {
     /// - Parameter font: The responsive font configuration to apply.
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font.Responsive) -> some HTML {
-        let baseFont = font.font
-        if let name = baseFont.name, !name.isEmpty {
-            CSSManager.shared.registerFontFamily(baseFont)
-        }
-        return AnyHTML(fontModifier(baseFont, content: self))
+        registerFontIfNeeded(font.font)
+        return AnyHTML(fontModifier(font.font, content: self))
     }
 }
 
@@ -86,9 +74,7 @@ public extension InlineElement {
     /// - Parameter font: The font configuration to apply.
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font) -> some InlineElement {
-        if let name = font.name, !name.isEmpty {
-            CSSManager.shared.registerFontFamily(font)
-        }
+        registerFontIfNeeded(font)
         return AnyInlineElement(fontModifier(font, content: self))
     }
 
@@ -96,11 +82,8 @@ public extension InlineElement {
     /// - Parameter font: The responsive font configuration to apply.
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font.Responsive) -> some InlineElement {
-        let baseFont = font.font
-        if let name = baseFont.name, !name.isEmpty {
-            CSSManager.shared.registerFontFamily(baseFont)
-        }
-        return AnyInlineElement(fontModifier(baseFont, content: self))
+        registerFontIfNeeded(font.font)
+        return AnyInlineElement(fontModifier(font.font, content: self))
     }
 }
 
@@ -109,10 +92,11 @@ public extension StyledHTML {
     /// - Parameter font: The font configuration to apply.
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font) -> Self {
-        if let name = font.name, !name.isEmpty {
-            CSSManager.shared.registerFontFamily(font)
-        }
+        registerFontIfNeeded(font)
+        return style(buildFontStyles(font))
+    }
 
+    private func buildFontStyles(_ font: Font) -> [InlineStyle] {
         var styles = [InlineStyle]()
 
         if let weight = font.weight {
@@ -131,6 +115,6 @@ public extension StyledHTML {
             styles.append(.init(.fontSize, value: size.stringValue))
         }
 
-        return self.style(styles)
+        return styles
     }
 }
