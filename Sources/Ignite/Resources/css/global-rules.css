@@ -250,8 +250,8 @@ a:hover {
     border-color: var(--bs-dark) !important;
 }
 
-/* Paragraph margin */
 p {
+    color: var(--bs-body-color);
     margin-top: 0;
     margin-bottom: var(--bs-paragraph-margin-bottom, 1rem);
 }
