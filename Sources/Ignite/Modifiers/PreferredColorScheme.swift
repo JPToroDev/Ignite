@@ -11,11 +11,18 @@ public extension HTML {
     /// - Parameter colorScheme: The preferred color scheme to use. If `nil`, no color scheme is enforced.
     /// - Returns: A modified HTML element with the specified color scheme.
     func preferredColorScheme(_ colorScheme: ColorScheme?) -> some HTML {
-        if let colorScheme {
-            AnyHTML(self.data("bs-theme", colorScheme.rawValue))
-        } else {
-            AnyHTML(self)
+        guard let colorScheme else { return AnyHTML(self) }
+        var modified: any HTML = self.data("bs-theme", colorScheme.rawValue)
+
+        if colorScheme == .dark, let darkThemeID = publishingContext.site.darkTheme?.cssID {
+            modified = modified.data("ig-theme", darkThemeID)
         }
+
+        if colorScheme == .light, let lightThemeID = publishingContext.site.lightTheme?.cssID {
+            modified = modified.data("ig-theme", lightThemeID)
+        }
+
+        return AnyHTML(modified)
     }
 }
 
@@ -25,10 +32,17 @@ public extension InlineElement {
     /// - Parameter colorScheme: The preferred color scheme to use. If `nil`, no color scheme is enforced.
     /// - Returns: A modified HTML element with the specified color scheme.
     func preferredColorScheme(_ colorScheme: ColorScheme?) -> some InlineElement {
-        if let colorScheme {
-            AnyInlineElement(self.data("bs-theme", colorScheme.rawValue))
-        } else {
-            AnyInlineElement(self)
+        guard let colorScheme else { return AnyInlineElement(self) }
+        var modified: any InlineElement = self.data("bs-theme", colorScheme.rawValue)
+
+        if colorScheme == .dark, let darkThemeID = publishingContext.site.darkTheme?.cssID {
+            modified = modified.data("ig-theme", darkThemeID)
         }
+
+        if colorScheme == .light, let lightThemeID = publishingContext.site.lightTheme?.cssID {
+            modified = modified.data("ig-theme", lightThemeID)
+        }
+
+        return AnyInlineElement(modified)
     }
 }
