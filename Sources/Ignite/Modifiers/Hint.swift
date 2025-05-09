@@ -21,12 +21,11 @@ private func hintData(html: String) -> [Attribute] {
     let config = site.syntaxHighlighterConfiguration
     var parser = MarkdownToHTML()
 
-    parser.markup = markdown
     parser.removeTitleFromBody = true
     parser.defaultHighlighter = config.defaultLanguage?.rawValue
     parser.highlightInlineCode = config.highlightInlineCode
 
-    let components = parser.parse()
+    let components = parser.parse(markdown)
     let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
     return hintData(html: cleanedHTML)
 }

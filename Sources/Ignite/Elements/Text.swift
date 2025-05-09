@@ -113,12 +113,11 @@ public struct Text: HTML, DropdownItem {
         let config = site.syntaxHighlighterConfiguration
         var parser = MarkdownToHTML()
 
-        parser.markup = markdown
         parser.removeTitleFromBody = true
         parser.defaultHighlighter = config.defaultLanguage?.rawValue
         parser.highlightInlineCode = config.highlightInlineCode
 
-        let components = parser.parse()
+        let components = parser.parse(markdown)
 
         // Process each paragraph individually to preserve line breaks.
         // We could simply replace newlines with <br>, but then the paragraphs
@@ -152,12 +151,11 @@ public struct Text: HTML, DropdownItem {
             let config = site.syntaxHighlighterConfiguration
             var parser = site.articleRenderer
 
-            parser.markup = markup
             parser.removeTitleFromBody = true
             parser.defaultHighlighter = config.defaultLanguage?.rawValue
             parser.highlightInlineCode = config.highlightInlineCode
 
-            let components = try parser.parse()
+            let components = try parser.parse(markup)
             let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
             self.content = cleanedHTML
         } catch {

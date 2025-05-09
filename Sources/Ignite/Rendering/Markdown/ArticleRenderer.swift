@@ -13,9 +13,6 @@ import Foundation
 /// can override that default in their `Site` conformance to
 /// get a custom parser if needed.
 public protocol ArticleRenderer {
-    /// The unprocessed content of this document.
-    var markup: String { get set }
-
     /// Whether to remove the article's title from its body. This only applies
     /// to the first heading.
     var removeTitleFromBody: Bool { get set }
@@ -27,5 +24,5 @@ public protocol ArticleRenderer {
     var highlightInlineCode: Bool { get set }
 
     /// Returns the processed title, description, and body of the raw markup.
-    mutating func parse() throws -> ParsedArticle
+    mutating func parse(_ markup: String) throws -> ParsedArticle
 }

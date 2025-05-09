@@ -16,9 +16,6 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// The description of this document, which is the first paragraph.
     private var description = ""
 
-    /// The unprocessed content of this document.
-    public var markup: String = ""
-
     /// Whether to remove the Markdown title from its body. This only applies
     /// to the first heading.
     public var removeTitleFromBody: Bool = true
@@ -32,7 +29,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// Initializes a renderer with default values.
     public init() {}
 
-    public mutating func parse() -> ParsedArticle {
+    public mutating func parse(_ markup: String) -> ParsedArticle {
         let document = Markdown.Document(parsing: markup)
         let body = visit(document)
         return ParsedArticle(title: title, description: description, body: body)

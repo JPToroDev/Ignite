@@ -146,12 +146,11 @@ public struct Article {
         let config = site.syntaxHighlighterConfiguration
         // Use whatever Markdown renderer was configured for the site we're publishing.
         var parser = site.articleRenderer
-        parser.markup = processed
         parser.removeTitleFromBody = true
         parser.defaultHighlighter = config.defaultLanguage?.rawValue
         parser.highlightInlineCode = config.highlightInlineCode
 
-        let components = try parser.parse()
+        let components = try parser.parse(processed)
         self.text = components.body
         self.description = components.description.strippingTags()
 
