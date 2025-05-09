@@ -51,7 +51,7 @@ extension PublishingContext {
             pageMetadata: pageMetadata,
             pageContent: page)
 
-        if page.layout.body is FlowDocument {
+        if page.layout.body is FlexDocument {
             values.isUsingFlowDocument = true
         }
 
@@ -84,7 +84,7 @@ extension PublishingContext {
             pageContent: layout,
             article: article)
 
-        if layout.layout.body is FlowDocument {
+        if layout.layout.body is FlexDocument {
             values.isUsingFlowDocument = true
         }
 
@@ -134,7 +134,7 @@ extension PublishingContext {
                 pageContent: tagLayout,
                 category: category)
 
-            if tagLayout.layout.body is FlowDocument {
+            if tagLayout.layout.body is FlexDocument {
                 values.isUsingFlowDocument = true
             }
 
