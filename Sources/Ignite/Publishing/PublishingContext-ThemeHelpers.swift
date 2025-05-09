@@ -100,7 +100,10 @@ extension PublishingContext {
         return brandColors.map { variant in
             var selectors: [Ruleset.Selector] = [.class(variant.className)]
             if site.hasMultipleThemes {
-                selectors.prepend(.attribute("data-ig-theme", value: theme.cssID))
+                selectors = [
+                    .attribute("data-ig-theme", value: theme.cssID).and(.class(variant.className))
+                    .or(.class(variant.className).with(.attribute("data-ig-theme", value: theme.cssID)))
+                ]
             }
             return Ruleset(selectors) {
                 InlineStyle("--bs-btn-bg", value: variant.color.description)
