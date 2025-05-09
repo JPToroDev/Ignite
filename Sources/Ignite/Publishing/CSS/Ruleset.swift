@@ -44,6 +44,11 @@ struct Ruleset: CSS {
         self.styles = styles
     }
 
+    init(_ selectors: [Selector], @StyleBuilder styles: () -> [InlineStyle]) {
+        self.selectors = selectors
+        self.styles = styles()
+    }
+
     init(_ selectors: Selector..., @StyleBuilder styles: () -> [InlineStyle]) {
         self.selectors = selectors
         self.styles = styles()
