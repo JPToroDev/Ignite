@@ -5,10 +5,10 @@
 
     function applyTheme(themeID) {
         const lightThemeID = getComputedStyle(document.documentElement)
-            .getPropertyValue('light-theme-ID')
+            .getPropertyValue('--light-theme-ID')
             .trim() || 'light';
         const darkThemeID = getComputedStyle(document.documentElement)
-            .getPropertyValue('dark-theme-ID')
+            .getPropertyValue('--dark-theme-ID')
             .trim() || 'dark';
 
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
