@@ -44,12 +44,6 @@ extension Ruleset {
             Selector(name)
         }
 
-        /// Appends the universal selector to the current selector
-        /// - Returns: A selector that matches any element within the current selector
-        func universal() -> Selector {
-            Selector("\(value) *")
-        }
-
         /// Combines this selector with another selector using a comma
         /// - Parameter other: The selector to combine with
         /// - Returns: A new selector that matches either this selector or the other selector
