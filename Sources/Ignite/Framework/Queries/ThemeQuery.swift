@@ -15,7 +15,7 @@ public struct ThemeQuery: Query {
     }
 
     public var condition: String {
-        "data-bs-theme^=\"\(theme.idPrefix)\""
+        "data-ig-theme^=\"\(theme.idPrefix)\""
     }
 
     nonisolated public func hash(into hasher: inout Hasher) {

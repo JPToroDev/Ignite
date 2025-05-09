@@ -86,7 +86,7 @@ extension PublishingContext {
 
     /// Collects all CSS rules for the themes
     private func generateThemeRules(_ themes: [any Theme]) -> String {
-        guard site.supportsLightTheme || site.supportsDarkTheme else {
+        guard site.lightTheme != nil || site.darkTheme != nil else {
             fatalError(.missingDefaultTheme)
         }
 
@@ -103,6 +103,14 @@ extension PublishingContext {
 
         let (lightTheme, darkTheme) = configureDefaultThemes(site.lightTheme, site.darkTheme)
 
+        if site.hasMultipleThemes, let lightTheme {
+            rules.append(themeAttributeRules(lightTheme, attribute: "--light-theme-ID"))
+        }
+
+        if site.hasMultipleThemes, let darkTheme {
+            rules.append(themeAttributeRules(darkTheme, attribute: "--dark-theme-ID"))
+        }
+
         if let lightTheme {
             rules.append(themeRules(lightTheme))
         }
@@ -113,7 +121,7 @@ extension PublishingContext {
 
         for theme in site.alternateThemes {
             let styles = themeStyles(for: theme)
-            let ruleset = Ruleset(.attribute("data-bs-theme", value: theme.cssID), styles: styles)
+            let ruleset = Ruleset(.attribute("data-ig-theme", value: theme.cssID), styles: styles)
             let rulsetString = ruleset.render()
             rules.append(rulsetString)
         }
@@ -152,7 +160,7 @@ extension PublishingContext {
     /// Creates theme override rulesets if needed
     private func themeOverrides(for theme: any Theme) -> Ruleset? {
         guard site.hasMultipleThemes else { return nil }
-        return Ruleset(.attribute("data-bs-theme", value: theme.cssID)) {
+        return Ruleset(.attribute("data-ig-theme", value: theme.cssID)) {
             themeStyles(for: theme)
         }
     }
@@ -168,27 +176,23 @@ extension PublishingContext {
         ]
 
         return breakpoints.map { minWidth in
-            MediaQuery(.breakpoint(.custom(minWidth))) {
-                Ruleset(.attribute("data-bs-theme", value: theme.cssID), .class("container")) {
+            var selectors: [Ruleset.Selector] = [.class("container")]
+            if site.hasMultipleThemes {
+                selectors.prepend(.attribute("data-ig-theme", value: theme.cssID))
+            }
+            return MediaQuery(.breakpoint(.custom(minWidth))) {
+                Ruleset(selectors) {
                     InlineStyle(.maxWidth, value: "\(minWidth)")
                 }
             }
         }
     }
-}
 
-private extension Site {
-    var supportsLightTheme: Bool {
-        lightTheme != nil
-    }
-
-    var supportsDarkTheme: Bool {
-        darkTheme != nil
-    }
-
-    var hasMultipleThemes: Bool {
-        (supportsLightTheme && supportsDarkTheme) ||
-        !alternateThemes.isEmpty
+    /// Creates CSS rules to set theme attributes on the root element
+    private func themeAttributeRules(_ theme: any Theme, attribute: String) -> String {
+        Ruleset(.pseudoClass("root")) {
+            InlineStyle(attribute, value: theme.cssID)
+        }.render()
     }
 }
 

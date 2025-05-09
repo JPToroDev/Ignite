@@ -1,16 +1,22 @@
 (function() {
     function getThemePreference() {
-        return localStorage.getItem('custom-theme') || 'auto';
+        return localStorage.getItem('current-theme') || 'auto';
     }
 
     function applyTheme(themeID) {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const lightThemeID = document.documentElement.getAttribute('data-light-theme') || 'light';
-        const darkThemeID = document.documentElement.getAttribute('data-dark-theme') || 'dark';
-        const actualThemeID = themeID === 'auto' ? (prefersDark ? darkThemeID : lightThemeID) : themeID;
+        const lightThemeID = getComputedStyle(document.documentElement)
+            .getPropertyValue('light-theme-ID')
+            .trim() || 'light';
+        const darkThemeID = getComputedStyle(document.documentElement)
+            .getPropertyValue('dark-theme-ID')
+            .trim() || 'dark';
 
-        document.documentElement.setAttribute('data-bs-theme', actualThemeID);
-        document.documentElement.setAttribute('data-theme-state', themeID);
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const actualThemeID = themeID === 'auto' ? (prefersDark ? darkThemeID : lightThemeID) : themeID;
+        document.documentElement.setAttribute('data-ig-theme', actualThemeID);
+        const isDarkTheme = actualThemeID.endsWith('-dark');
+        document.documentElement.setAttribute('data-bs-theme', isDarkTheme ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-ig-auto-theme-enabled', themeID === 'auto' ? 'true' : 'false');
     }
 
     function applySyntaxTheme() {

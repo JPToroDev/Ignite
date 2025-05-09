@@ -14,3 +14,27 @@ public protocol Document: MarkupElement {
     /// The metadata section of the document.
     var head: Head { get }
 }
+
+extension Document {
+    /// Returns the appropriate theme attributes on the document
+    /// root element based on the site's theme configuration.
+    var themeAttribute: Attribute? {
+        let site = publishingContext.site
+
+        if site.isAutoThemeEnabled {
+            return .init(name: "ig-auto-theme-enabled", value: "true")
+        }
+
+        guard !site.hasMultipleThemes else {
+            return nil
+        }
+
+        return if site.lightTheme != nil {
+            .init(name: "bs-theme", value: "light")
+        } else if site.darkTheme != nil {
+            .init(name: "bs-theme", value: "dark")
+        } else {
+            nil
+        }
+    }
+}

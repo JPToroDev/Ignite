@@ -176,7 +176,7 @@ final class CSSManager {
             }
         }
 
-        let selector = supportsMultipleThemes ? "[data-bs-theme=\"\(theme.cssID)\"] " : ""
+        let selector = supportsMultipleThemes ? "[data-ig-theme=\"\(theme.cssID)\"] " : ""
         let styleRules = styles.map { "\($0.property): \($0.value);" }.joined(separator: " ")
 
         if mediaQueries.isEmpty {

@@ -66,8 +66,12 @@ extension PublishingContext {
             // Only create media query if we have non-empty styles
             guard !styles.isEmpty, styles.allSatisfy({ !$0.value.isEmpty }) else { return nil }
 
+            var selectors = [Ruleset.Selector]()
+            if site.hasMultipleThemes {
+                selectors.prepend(.attribute("data-ig-theme", value: theme.cssID))
+            }
             return MediaQuery(.breakpoint(.custom(minWidth))) {
-                Ruleset(.attribute("data-bs-theme", value: theme.cssID)) {
+                Ruleset(selectors) {
                     styles
                 }
             }
@@ -94,7 +98,11 @@ extension PublishingContext {
         ]
 
         return brandColors.map { variant in
-            Ruleset(.attribute("data-bs-theme", value: theme.cssID), .class(variant.className)) {
+            var selectors: [Ruleset.Selector] = [.class(variant.className)]
+            if site.hasMultipleThemes {
+                selectors.prepend(.attribute("data-ig-theme", value: theme.cssID))
+            }
+            return Ruleset(selectors) {
                 InlineStyle("--bs-btn-bg", value: variant.color.description)
                 InlineStyle("--bs-btn-border-color", value: variant.color.description)
                 InlineStyle("--bs-btn-hover-border-color", value: variant.color.weighted(.semiDark).description)

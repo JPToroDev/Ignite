@@ -29,6 +29,9 @@ public struct PlainDocument: Document {
     public func markup() -> Markup {
         var attributes = attributes
         attributes.append(customAttributes: .init(name: "lang", value: language.rawValue))
+        if let themeAttribute {
+            attributes.append(dataAttributes: themeAttribute)
+        }
 
         let bodyMarkup = body.markup()
         // Deferred head rendering to accommodate for context updates during body rendering

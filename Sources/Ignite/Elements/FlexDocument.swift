@@ -24,6 +24,9 @@ public struct FlexDocument: Document {
     public func markup() -> Markup {
         var attributes = attributes
         attributes.append(customAttributes: .init(name: "lang", value: language.rawValue))
+        if let themeAttribute {
+            attributes.append(dataAttributes: themeAttribute)
+        }
 
         var body = body
         body.attributes.append(classes: "d-flex", "flex-column", "min-vh-100")

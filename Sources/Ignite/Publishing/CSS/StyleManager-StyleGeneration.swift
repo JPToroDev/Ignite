@@ -241,7 +241,7 @@ extension StyleManager {
 
             let mediaQuery = MediaQuery(mediaFeatures) {
                 Ruleset(
-                    [.attribute("data-bs-theme^", value: theme.idPrefix),
+                    [.attribute("data-ig-theme^", value: theme.idPrefix),
                      .class(className)],
                     styles: styles
                 )
@@ -250,7 +250,7 @@ extension StyleManager {
         } else if let theme = condition.theme {
             // Theme-only rule
             let themeRuleset = Ruleset(
-                [.attribute("data-bs-theme^", value: theme.idPrefix),
+                [.attribute("data-ig-theme^", value: theme.idPrefix),
                  .class(className)],
                 styles: styles
             )

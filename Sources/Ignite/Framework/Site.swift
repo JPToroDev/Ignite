@@ -218,37 +218,6 @@ public extension Site {
     /// The default favicon being nil
     var favicon: URL? { nil }
 
-    /// The syntax highlighting themes from every site theme.
-    internal var allHighlighterThemes: OrderedSet<HighlighterTheme> {
-        var themes = OrderedSet<HighlighterTheme>()
-
-        if let theme = lightTheme?.syntaxHighlighterTheme {
-            themes.append(theme)
-        }
-        if let darkTheme = darkTheme?.syntaxHighlighterTheme {
-            themes.append(darkTheme)
-        }
-        themes.formUnion(alternateThemes.compactMap(\.syntaxHighlighterTheme))
-        themes.remove(.none)
-        return .init(themes.sorted())
-    }
-
-    /// An array of every site theme.
-    internal var allThemes: [any Theme] {
-        var themes = [any Theme]()
-        if let lightTheme = lightTheme {
-            themes.append(lightTheme)
-        }
-        if let darkTheme = darkTheme {
-            themes.append(darkTheme)
-        }
-        if darkTheme != nil, lightTheme != nil {
-            themes.append(AutoTheme())
-        }
-        themes.append(contentsOf: alternateThemes)
-        return themes
-    }
-
     /// Performs the entire publishing flow from a file in user space, e.g. main.swift
     /// or Site.swift.
     /// - Parameters:
@@ -295,4 +264,49 @@ public extension Site {
 
     /// The default implementation does nothing.
     mutating func prepare() async throws {}
+}
+
+extension Site {
+    /// The syntax highlighting themes from every site theme.
+    var allHighlighterThemes: OrderedSet<HighlighterTheme> {
+        var themes = OrderedSet<HighlighterTheme>()
+
+        if let theme = lightTheme?.syntaxHighlighterTheme {
+            themes.append(theme)
+        }
+        if let darkTheme = darkTheme?.syntaxHighlighterTheme {
+            themes.append(darkTheme)
+        }
+        themes.formUnion(alternateThemes.compactMap(\.syntaxHighlighterTheme))
+        themes.remove(.none)
+        return .init(themes.sorted())
+    }
+
+    /// An array of every site theme.
+    var allThemes: [any Theme] {
+        var themes = [any Theme]()
+        if let lightTheme = lightTheme {
+            themes.append(lightTheme)
+        }
+        if let darkTheme = darkTheme {
+            themes.append(darkTheme)
+        }
+        if darkTheme != nil, lightTheme != nil {
+            themes.append(AutoTheme())
+        }
+        themes.append(contentsOf: alternateThemes)
+        return themes
+    }
+
+    /// Whether the site uses more than one theme.
+    var hasMultipleThemes: Bool {
+        (lightTheme != nil &&  darkTheme != nil) ||
+        !alternateThemes.isEmpty
+    }
+
+    /// Whether the site adapts to the browser's color scheme,
+    /// automatically enabled when both a light and dark theme are present.
+    var isAutoThemeEnabled: Bool {
+        darkTheme != nil && lightTheme != nil
+    }
 }

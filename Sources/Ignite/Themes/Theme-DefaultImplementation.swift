@@ -166,12 +166,12 @@ extension Theme {
         let baseID = Self.idPrefix
         switch colorScheme {
         case .light where
-            baseID != "light" &&
+            !baseID.hasSuffix("light") &&
             Self.self != DefaultLightTheme.self &&
             Self.self != AutoTheme.self:
             return baseID + "-light"
         case .dark where
-            baseID != "dark" &&
+            !baseID.hasSuffix("dark") &&
             Self.self != DefaultDarkTheme.self:
             return baseID + "-dark"
         default: return baseID
