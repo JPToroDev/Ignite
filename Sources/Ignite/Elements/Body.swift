@@ -54,7 +54,7 @@ public struct Body: MarkupElement {
                 .markup()
         }
 
-        if publishingContext.hasSyntaxHighlighters == true {
+        if publishingContext.includeSyntaxHighlighterResources {
             output += Script(file: "/js/syntax-highlighting.js").markup()
         }
 
@@ -77,6 +77,10 @@ public struct Body: MarkupElement {
         }
 
         output += Script(file: "/js/ignite-core.js").markup()
+
+        if publishingContext.includeSplitViewResources {
+            output += Script(file: "/js/ignite-split-view.js").markup()
+        }
 
         if isBoundByContainer {
             attributes.append(classes: ["container"])

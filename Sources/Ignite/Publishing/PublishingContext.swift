@@ -64,11 +64,14 @@ final class PublishingContext {
     /// All the Markdown content this user has inside their Content folder.
     private(set) var allContent = [Article]()
 
+    /// Whether the site requires JS for `SplitView`.
+    var includeSplitViewResources = false
+
     /// An ordered set of syntax highlighters pulled from code blocks throughout the site.
     var syntaxHighlighters = OrderedSet<HighlighterLanguage>()
 
     /// Whether the site uses syntax highlighters.
-    var hasSyntaxHighlighters: Bool {
+    var includeSyntaxHighlighterResources: Bool {
         !syntaxHighlighters.isEmpty || !site.syntaxHighlighterConfiguration.languages.isEmpty
     }
 
@@ -237,10 +240,14 @@ final class PublishingContext {
             copy(resource: "fonts/bootstrap-icons.woff2")
         }
 
-        if hasSyntaxHighlighters {
+        if includeSyntaxHighlighterResources {
             copy(resource: "js/prism-core.js")
             copy(resource: "css/prism-plugins.css")
             copySyntaxHighlighters()
+        }
+
+        if includeSplitViewResources {
+            copy(resource: "js/ignite-split-view.js")
         }
     }
 

@@ -96,7 +96,7 @@ public struct Head: MarkupElement {
             MetaLink.standardRemoteCSS
         }
 
-        if context.hasSyntaxHighlighters, site.allHighlighterThemes.isEmpty == false {
+        if context.includeSyntaxHighlighterResources, site.allHighlighterThemes.isEmpty == false {
             MetaLink.highlighterThemeMetaLinks(for: site.allHighlighterThemes)
             MetaLink.prismPluginCSS
         }
@@ -122,10 +122,11 @@ public struct Head: MarkupElement {
 
     /// An inline script that handles theme changes immediately.
     private static var themeSwitchingScript: Script? {
-        guard let sourceURL = Bundle.module.url(forResource: "Resources/js/theme-switching", withExtension: "js"),
+        let path = "Resources/js/ignite-theme-switching"
+        guard let sourceURL = Bundle.module.url(forResource: path, withExtension: "js"),
               let contents = try? String(contentsOf: sourceURL)
         else {
-            PublishingContext.shared.addError(.missingSiteResource("js/theme-switching.js"))
+            PublishingContext.shared.addError(.missingSiteResource("js/ignite-theme-switching.js"))
             return nil
         }
         return Script(code: contents)
