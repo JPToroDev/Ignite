@@ -7,27 +7,6 @@
 
 /// A structured representation of a CSS ruleset including selectors and styles
 struct Ruleset: CSS {
-    /// Represents different types of CSS selectors
-    enum Selector {
-        case attribute(_ name: String, value: String)
-        case `class`(String)
-        case pseudoClass(String)
-        case type(String)
-
-        var description: String {
-            switch self {
-            case .attribute(let name, let value):
-                "[\(name)=\"\(value)\"]"
-            case .class(let name):
-                ".\(name)"
-            case .pseudoClass(let name):
-                ":\(name)"
-            case .type(let name):
-                name
-            }
-        }
-    }
-
     /// CSS selectors for this ruleset
     var selectors: [Selector]
 
@@ -58,7 +37,7 @@ struct Ruleset: CSS {
         if selectors.isEmpty {
             return styles.map { $0.description + ";" }.joined(separator: "\n")
         } else if !styles.isEmpty {
-            let combinedSelector = selectors.map(\.description).joined(separator: " ")
+            let combinedSelector = selectors.map(\.value).joined(separator: " ")
 
             let styleBlock = styles
                 .map { "    " + $0.description + ";" }
