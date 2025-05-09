@@ -11,9 +11,7 @@
 
 @MainActor private func fontModifier(_ font: Font, content: any HTML) -> any HTML {
     if var text = content.as(Text.self) {
-        if let style = font.style {
-            text.font = style
-        }
+        if let style = font.style { text.font = style }
         return text.attributes(getAttributes(for: font, includeStyle: false))
     }
 
