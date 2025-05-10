@@ -54,7 +54,7 @@ public struct Body: MarkupElement {
                 .markup()
         }
 
-        if publishingContext.syntaxHighlighters.isEmpty == false {
+        if publishingContext.environment.syntaxHighlighters.isEmpty == false {
             output += Script(file: "/js/syntax-highlighting.js").markup()
         }
 
@@ -78,7 +78,7 @@ public struct Body: MarkupElement {
 
         output += Script(file: "/js/ignite-core.js").markup()
 
-        for resource in publishingContext.auxiliaryResources {
+        for resource in publishingContext.environment.resources {
             output += Script(file: resource.rootRelativePath).markup()
         }
 

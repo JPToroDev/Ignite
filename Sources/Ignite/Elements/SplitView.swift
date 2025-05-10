@@ -135,7 +135,7 @@ public struct SplitView: HTML {
     /// Generates the HTML markup for this split view.
     /// - Returns: The markup representation of this split view.
     public func markup() -> Markup {
-        publishingContext.auxiliaryResources.insert(.splitViewJS)
+        publishingContext.environment.resources.insert(.splitViewJS)
         return Section {
             Section {
                 if dismissButtonVisibility == .visible {

@@ -46,7 +46,7 @@ public struct Code: InlineElement {
         let language = resolvedLanguage
 
         if let language {
-            publishingContext.syntaxHighlighters.insert(language)
+            publishingContext.environment.syntaxHighlighters.insert(language)
             var attributes = attributes
             attributes.append(classes: "language-\(language)")
             return Markup("<code\(attributes)>\(content)</code>")

@@ -22,8 +22,8 @@ private func hintData(html: String) -> [Attribute] {
     var parser = MarkdownToHTML()
 
     parser.removeTitleFromBody = true
-    parser.defaultHighlighter = config.defaultLanguage?.rawValue
-    parser.highlightInlineCode = config.highlightInlineCode
+    parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
+    parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
 
     let components = parser.parse(markdown)
     let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")

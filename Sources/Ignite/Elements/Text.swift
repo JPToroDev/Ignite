@@ -114,8 +114,8 @@ public struct Text: HTML, DropdownItem {
         var parser = MarkdownToHTML()
 
         parser.removeTitleFromBody = true
-        parser.defaultHighlighter = config.defaultLanguage?.rawValue
-        parser.highlightInlineCode = config.highlightInlineCode
+        parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
+        parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
 
         let components = parser.parse(markdown)
 
@@ -145,15 +145,15 @@ public struct Text: HTML, DropdownItem {
     /// - Parameters:
     ///   - markdown: The Markdown text to parse.
     ///   - parser: The parser to process the text.
-    public init(markup: String, parser: any ArticleRenderer.Type) {
+    public init(markup: String, parser: any ArticleRenderer) {
         do {
-            let site = PublishingContext.shared.site
-            let config = site.syntaxHighlighterConfiguration
-            var parser = site.articleRenderer
-
-            parser.removeTitleFromBody = true
-            parser.defaultHighlighter = config.defaultLanguage?.rawValue
-            parser.highlightInlineCode = config.highlightInlineCode
+            var parser = parser
+            if parser.syntaxHighlighterConfiguration == .automatic {
+                let site = PublishingContext.shared.site
+                let config = site.syntaxHighlighterConfiguration
+                parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
+                parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
+            }
 
             let components = try parser.parse(markup)
             let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")

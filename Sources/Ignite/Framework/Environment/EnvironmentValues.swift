@@ -70,6 +70,20 @@ public struct EnvironmentValues {
     /// Whether the current `Layout` uses a `FlexDocument`.
     var isUsingFlexDocument = false
 
+    /// The syntax highlighters used by the page being rendered.
+    var syntaxHighlighters = Set<HighlighterLanguage>() {
+        didSet {
+            PublishingContext.shared.syntaxHighlighters.formUnion(syntaxHighlighters)
+        }
+    }
+
+    /// Special resources required by the page being rendered.
+    var resources = Set<IgniteResource>() {
+        didSet {
+            PublishingContext.shared.auxiliaryResources.formUnion(resources)
+        }
+    }
+
     init() {
         self.articles = ArticleLoader(content: [])
         self.feedConfiguration = FeedConfiguration(mode: .full, contentCount: 0)
