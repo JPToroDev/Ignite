@@ -79,7 +79,7 @@ class MediaQueryTests: IgniteTestSuite {
 
     @Test("Theme queries", arguments: zip(
         [ThemeQuery(DefaultDarkTheme.self), ThemeQuery(DefaultLightTheme.self), ThemeQuery(AutoTheme.self)],
-        ["data-bs-theme^=\"dark\"", "data-bs-theme^=\"light\"", "data-bs-theme^=\"auto\""]))
+        ["data-ig-theme^=\"dark\"", "data-ig-theme^=\"light\"", "data-ig-theme^=\"auto\""]))
     func theme_queries_render_correctly(query: ThemeQuery, css: String) async throws {
         let output = query.condition
         #expect(output == css)
