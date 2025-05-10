@@ -176,12 +176,13 @@ extension PublishingContext {
         ]
 
         return breakpoints.map { minWidth in
-            var selectors: [Ruleset.Selector] = [.class("container")]
+            var selector: Selector = .class("container")
             if site.hasMultipleThemes {
-                selectors.prepend(.attribute("data-ig-theme", value: theme.cssID))
+                selector = .attribute("data-ig-theme", value: theme.cssID)
+                           .chaining(.class("container"))
             }
             return MediaQuery(.breakpoint(.custom(minWidth))) {
-                Ruleset(selectors) {
+                Ruleset(selector) {
                     InlineStyle(.maxWidth, value: "\(minWidth)")
                 }
             }

@@ -239,19 +239,20 @@ extension StyleManager {
                 condition: condition
             )
 
+            let selector: Selector = .anyChild(
+                .attribute("data-ig-theme^", value: theme.idPrefix),
+                .class(className))
+
             let mediaQuery = MediaQuery(mediaFeatures) {
-                Ruleset(
-                    [.attribute("data-ig-theme^", value: theme.idPrefix),
-                     .class(className)],
-                    styles: styles
-                )
+                Ruleset(selector, styles: styles)
             }
             return mediaQuery.render()
         } else if let theme = condition.theme {
             // Theme-only rule
             let themeRuleset = Ruleset(
-                [.attribute("data-ig-theme^", value: theme.idPrefix),
-                 .class(className)],
+                .anyChild(
+                    .attribute("data-ig-theme^", value: theme.idPrefix),
+                    .class(className)),
                 styles: styles
             )
             return themeRuleset.render()
@@ -281,7 +282,7 @@ extension StyleManager {
     ///   - themes: Array of themes to generate theme-specific styles for
     func generateCSS(
         style: any Style,
-        selector: Ruleset.Selector? = nil,
+        selector: Selector? = nil,
         isImportant: Bool = false,
         themes: [any Theme]
     ) -> String {
@@ -290,7 +291,7 @@ extension StyleManager {
         // Get all styles for all possible conditions
         let stylesMap = generateStylesMap(for: style, themes: themes)
 
-        let selector: Ruleset.Selector = if let selector {
+        let selector: Selector = if let selector {
             selector
         } else {
             .class(style.className)

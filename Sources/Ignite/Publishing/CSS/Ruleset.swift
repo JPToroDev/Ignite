@@ -8,48 +8,35 @@
 /// A structured representation of a CSS ruleset including selectors and styles
 struct Ruleset: CSS {
     /// CSS selectors for this ruleset
-    var selectors: [Selector]
+    var selector: Selector?
 
     /// CSS declarations
     var styles: [InlineStyle]
 
-    init(_ selectors: Selector..., styles: [InlineStyle] = []) {
-        self.selectors = selectors
+    init(_ selector: Selector?, styles: [InlineStyle] = []) {
+        self.selector = selector
         self.styles = styles
     }
 
-    init(_ selectors: [Selector], styles: [InlineStyle] = []) {
-        self.selectors = selectors
-        self.styles = styles
-    }
-
-    init(_ selectors: [Selector], @StyleBuilder styles: () -> [InlineStyle]) {
-        self.selectors = selectors
-        self.styles = styles()
-    }
-
-    init(_ selectors: Selector..., @StyleBuilder styles: () -> [InlineStyle]) {
-        self.selectors = selectors
+    init(_ selector: Selector?, @StyleBuilder styles: () -> [InlineStyle]) {
+        self.selector = selector
         self.styles = styles()
     }
 
     func render() -> String {
-        if selectors.isEmpty {
-            return styles.map { $0.description + ";" }.joined(separator: "\n")
-        } else if !styles.isEmpty {
-            let combinedSelector = selectors.map(\.value).joined(separator: " ")
-
+        guard !styles.isEmpty else { return "" }
+        if let selector {
             let styleBlock = styles
                 .map { "    " + $0.description + ";" }
                 .joined(separator: "\n")
 
             return """
-            \(combinedSelector) {
+            \(selector.value) {
             \(styleBlock)
             }
             """
         } else {
-            return ""
+            return styles.map { $0.description + ";" }.joined(separator: "\n")
         }
     }
 }

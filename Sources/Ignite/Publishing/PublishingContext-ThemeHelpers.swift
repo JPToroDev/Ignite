@@ -66,12 +66,12 @@ extension PublishingContext {
             // Only create media query if we have non-empty styles
             guard !styles.isEmpty, styles.allSatisfy({ !$0.value.isEmpty }) else { return nil }
 
-            var selectors = [Ruleset.Selector]()
+            var selector: Selector?
             if site.hasMultipleThemes {
-                selectors.prepend(.attribute("data-ig-theme", value: theme.cssID))
+                selector = .attribute("data-ig-theme", value: theme.cssID)
             }
             return MediaQuery(.breakpoint(.custom(minWidth))) {
-                Ruleset(selectors) {
+                Ruleset(selector) {
                     styles
                 }
             }
@@ -98,14 +98,14 @@ extension PublishingContext {
         ]
 
         return brandColors.map { variant in
-            var selectors: [Ruleset.Selector] = [.class(variant.className)]
+            var selector: Selector = .class(variant.className)
             if site.hasMultipleThemes {
-                selectors = [
-                    .attribute("data-ig-theme", value: theme.cssID).and(.class(variant.className))
-                    .or(.class(variant.className).with(.attribute("data-ig-theme", value: theme.cssID)))
-                ]
+                selector = .list(
+                    .attribute("data-ig-theme", value: theme.cssID).chaining(.class(variant.className)),
+                    .class(variant.className).chaining(.attribute("data-ig-theme", value: theme.cssID))
+                )
             }
-            return Ruleset(selectors) {
+            return Ruleset(selector) {
                 InlineStyle("--bs-btn-bg", value: variant.color.description)
                 InlineStyle("--bs-btn-border-color", value: variant.color.description)
                 InlineStyle("--bs-btn-hover-border-color", value: variant.color.weighted(.semiDark).description)
