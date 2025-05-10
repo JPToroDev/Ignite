@@ -15,13 +15,13 @@ import Foundation
 public protocol ArticleRenderer {
     /// Whether to remove the article's title from its body. This only applies
     /// to the first heading.
-    var removeTitleFromBody: Bool { get set }
+    var removeTitleFromBody: Bool { get }
 
     /// Whether inline code should use syntax highlighting.
-    var highlightInlineCode: Bool { get set }
+    var highlightInlineCode: Bool { get }
 
     /// The default syntax highlighter for code snippets.
-    var defaultHighlighter: HighlighterLanguage? { get set }
+    var defaultHighlighter: HighlighterLanguage? { get }
 
     /// The syntax highlighters required by the renderer.
     var highlighterLanguages: Set<HighlighterLanguage> { get }
