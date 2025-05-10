@@ -303,10 +303,4 @@ extension Site {
         (lightTheme != nil &&  darkTheme != nil) ||
         !alternateThemes.isEmpty
     }
-
-    /// Whether the site adapts to the browser's color scheme,
-    /// automatically enabled when both a light and dark theme are present.
-    var isAutoThemeEnabled: Bool {
-        darkTheme != nil && lightTheme != nil
-    }
 }

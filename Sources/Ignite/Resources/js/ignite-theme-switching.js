@@ -13,10 +13,10 @@
         const savedTheme = localStorage.getItem('current-theme');
         if (savedTheme) return savedTheme;
 
-        const autoThemeEnabled = document.documentElement.getAttribute('data-ig-auto-theme-enabled') === 'true';
-        if (autoThemeEnabled) return 'auto';
-
         const { lightThemeID, darkThemeID } = getThemeIDs();
+        // If both theme IDs are valid, use auto theme
+        if (lightThemeID && darkThemeID) return 'auto';
+
         return lightThemeID || darkThemeID;
     }
 

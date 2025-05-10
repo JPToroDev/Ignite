@@ -44,8 +44,6 @@ function igniteApplyTheme(themeID) {
     const isDarkTheme = actualThemeID.endsWith('dark');
     document.documentElement.setAttribute('data-bs-theme', isDarkTheme ? 'dark' : 'light');
 
-    document.documentElement.setAttribute('data-ig-auto-theme-enabled', themeID === 'auto' ? 'true' : 'false');
-
     igniteApplySyntaxTheme();
 }
 

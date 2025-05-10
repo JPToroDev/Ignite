@@ -21,10 +21,6 @@ extension Document {
     var themeAttribute: Attribute? {
         let site = publishingContext.site
 
-        if site.isAutoThemeEnabled {
-            return .init(name: "ig-auto-theme-enabled", value: "true")
-        }
-
         guard !site.hasMultipleThemes else {
             return nil
         }
