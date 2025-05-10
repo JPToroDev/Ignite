@@ -17,14 +17,7 @@ private func hintData(html: String) -> [Attribute] {
 }
 
 @MainActor private func hintData(markdown: String) -> [Attribute] {
-    let site = PublishingContext.shared.site
-    let config = site.syntaxHighlighterConfiguration
     var parser = MarkdownToHTML()
-
-    parser.removeTitleFromBody = true
-    parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
-    parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
-
     let components = parser.parse(markdown)
     let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
     return hintData(html: cleanedHTML)

@@ -19,12 +19,6 @@ public struct SyntaxHighlighterConfiguration: Sendable {
         public static let visible: Self = .visible(firstLine: 1, linesWrap: false)
     }
 
-    /// The programming languages to enable syntax highlighting for.
-    var languages: Set<HighlighterLanguage> {
-        didSet {
-            PublishingContext.shared.syntaxHighlighters.formUnion(languages)
-        }
-    }
 
     /// Whether and how to display line numbers.
     var lineNumberVisibility: LineNumberVisibility
@@ -48,25 +42,22 @@ public struct SyntaxHighlighterConfiguration: Sendable {
     }
 
     /// Default configuration that automatically detects languages.
-    public static let automatic: Self = .init(languages: [])
+    public static let automatic: Self = .init()
 
     /// Creates a new syntax highlighter configuration.
     /// - Parameters:
-    ///   - languages: The programming languages to enable highlighting for.
     ///   - defaultLanguage: The language automatically applied to code blocks and inline code.
     ///   - highlightInlineCode: Whether inline code should use syntax highlighting.
     ///   - lineNumberVisibility: Whether and how to display line numbers.
     ///   - firstLineNumber: The number to start counting from when showing line numbers.
     ///   - wrapLines: Whether long lines should wrap to the next line.
     public init(
-        languages: Set<HighlighterLanguage>,
         defaultLanguage: HighlighterLanguage? = nil,
         highlightInlineCode: Bool = false,
         lineNumberVisibility: LineNumberVisibility = .hidden,
         firstLineNumber: Int = 1,
         wrapLines: Bool = false,
     ) {
-        self.languages = languages
         self.defaultLanguage = defaultLanguage
         self.highlightInlineCode = highlightInlineCode
         self.lineNumberVisibility = lineNumberVisibility

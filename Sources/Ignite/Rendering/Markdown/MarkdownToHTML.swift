@@ -18,10 +18,33 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
 
     /// Whether to remove the Markdown title from its body. This only applies
     /// to the first heading.
-    public var removeTitleFromBody: Bool = true
+    public var removeTitleFromBody = true
+
+    /// The syntax highlighters required by the renderer.
+    public var highlighterLanguages = Set<HighlighterLanguage>()
+
+    /// Whether inline code should use syntax highlighting.
+    @MainActor public var highlightInlineCode: Bool = {
+        let site = PublishingContext.shared.site
+        let config = site.syntaxHighlighterConfiguration
+        return config.highlightInlineCode
+    }()
+
+    /// The default syntax highlighter for code snippets.
+    @MainActor public var defaultHighlighter: HighlighterLanguage? = {
+        let site = PublishingContext.shared.site
+        let config = site.syntaxHighlighterConfiguration
+        return config.defaultLanguage
+    }() {
+        didSet {
+            if let defaultHighlighter {
+                highlighterLanguages.insert(defaultHighlighter)
+            }
+        }
+    }
 
     /// Initializes a renderer with default values.
-    public init() {}
+    @MainActor public init() {}
 
     public mutating func parse(_ markup: String) -> ParsedArticle {
         let document = Markdown.Document(parsing: markup)
@@ -60,13 +83,16 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// - Parameter codeBlock: The code block to process.
     /// - Returns: A HTML <pre> element with <code> inside, marked with
     /// CSS to remember which language was used.
-    public func visitCodeBlock(_ codeBlock: Markdown.CodeBlock) -> String {
+    public mutating func visitCodeBlock(_ codeBlock: Markdown.CodeBlock) -> String {
         if let language = codeBlock.language {
-            #"<pre><code class="language-\#(language.lowercased())">\#(codeBlock.code)</code></pre>"#
-        } else if let defaultHighlighter = syntaxHighlighterConfiguration?.defaultHighlighter {
-            #"<pre><code class="language-\#(defaultHighlighter)">\#(codeBlock.code)</code></pre>"#
+            if let highlighter = HighlighterLanguage(rawValue: language) {
+                highlighterLanguages.insert(highlighter)
+            }
+            return #"<pre><code class="language-\#(language.lowercased())">\#(codeBlock.code)</code></pre>"#
+        } else if let defaultHighlighter {
+            return #"<pre><code class="language-\#(defaultHighlighter)">\#(codeBlock.code)</code></pre>"#
         } else {
-            #"<pre><code>\#(codeBlock.code)</code></pre>"#
+            return #"<pre><code>\#(codeBlock.code)</code></pre>"#
         }
     }
 
@@ -146,7 +172,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// - Parameter inlineCode: The inline code markup to process.
     /// - Returns: A HTML <code> tag containing the code.
     public mutating func visitInlineCode(_ inlineCode: Markdown.InlineCode) -> String {
-        if let defaultHighlighter = syntaxHighlighterConfiguration?.defaultHighlighter {
+        if let defaultHighlighter {
             #"<code class="language-\#(defaultHighlighter)">\#(inlineCode.code)</code>"#
         } else {
             "<code>\(inlineCode.code)</code>"

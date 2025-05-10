@@ -17,19 +17,15 @@ public protocol ArticleRenderer {
     /// to the first heading.
     var removeTitleFromBody: Bool { get set }
 
-    /// Controls how the renderer handles syntax highlighting.
-    /// Use `nil` to disabled syntax highlighting in an article.
-    var syntaxHighlighterConfiguration: ArticleSyntaxHighlighterConfiguration? { get }
+    /// Whether inline code should use syntax highlighting.
+    var highlightInlineCode: Bool { get set }
+
+    /// The default syntax highlighter for code snippets.
+    var defaultHighlighter: HighlighterLanguage? { get set }
+
+    /// The syntax highlighters required by the renderer.
+    var highlighterLanguages: Set<HighlighterLanguage> { get }
 
     /// Returns the processed title, description, and body of the raw markup.
     mutating func parse(_ markup: String) throws -> ParsedArticle
 }
-
-public extension ArticleRenderer {
-    /// Defaults to the same configuration used by `Site`.
-    var syntaxHighlighterConfiguration: ArticleSyntaxHighlighterConfiguration? {
-        get { .automatic }
-        set {} // swiftlint:disable:this unused_setter_value
-    }
-}
-

@@ -109,14 +109,7 @@ public struct Text: HTML, DropdownItem {
     /// Creates a new Text struct from a Markdown string.
     /// - Parameter markdown: The Markdown text to parse.
     public init(markdown: String) {
-        let site = PublishingContext.shared.site
-        let config = site.syntaxHighlighterConfiguration
         var parser = MarkdownToHTML()
-
-        parser.removeTitleFromBody = true
-        parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
-        parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
-
         let components = parser.parse(markdown)
 
         // Process each paragraph individually to preserve line breaks.
@@ -148,13 +141,6 @@ public struct Text: HTML, DropdownItem {
     public init(markup: String, parser: any ArticleRenderer) {
         do {
             var parser = parser
-            if parser.syntaxHighlighterConfiguration == .automatic {
-                let site = PublishingContext.shared.site
-                let config = site.syntaxHighlighterConfiguration
-                parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
-                parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
-            }
-
             let components = try parser.parse(markup)
             let cleanedHTML = components.body.replacing(#/<\/?p>/#, with: "")
             self.content = cleanedHTML

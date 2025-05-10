@@ -117,6 +117,13 @@ public struct Article {
         Int(ceil(Double(estimatedWordCount) / 250))
     }
 
+    /// The syntax highlighters used by this article.
+    var syntaxHighlighters = Set<HighlighterLanguage>() {
+        didSet {
+            PublishingContext.shared.syntaxHighlighters.formUnion(syntaxHighlighters)
+        }
+    }
+
     /// Keys for resources required on initialization
     static nonisolated let resourceKeys: [URLResourceKey] = [.creationDateKey, .contentModificationDateKey]
 
@@ -143,15 +150,8 @@ public struct Article {
         let processed = processMetadata(for: markdown)
 
         let site = PublishingContext.shared.site
-        let config = site.syntaxHighlighterConfiguration
         // Use whatever Markdown renderer was configured for the site we're publishing.
         var parser = site.articleRenderer
-        parser.removeTitleFromBody = true
-        if parser.syntaxHighlighterConfiguration == .automatic {
-            parser.syntaxHighlighterConfiguration?.defaultHighlighter = config.defaultLanguage?.rawValue
-            parser.syntaxHighlighterConfiguration?.highlightInlineCode = config.highlightInlineCode
-        }
-
         let components = try parser.parse(processed)
         self.text = components.body
         self.description = components.description.strippingTags()
@@ -165,6 +165,11 @@ public struct Article {
         let pathParts = path.split(separator: "/").map { String($0) } // removes empty
         if pathParts.count > 1 { // no type if not in subdirectory
             metadata["type"] = pathParts[0]
+        }
+
+        syntaxHighlighters = parser.highlighterLanguages
+        if let defaultHighlighter = parser.defaultHighlighter {
+            syntaxHighlighters.insert(defaultHighlighter)
         }
     }
 

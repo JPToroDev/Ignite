@@ -84,6 +84,8 @@ extension PublishingContext {
             pageContent: layout,
             article: article)
 
+        values.syntaxHighlighters = article.syntaxHighlighters
+
         if layout.layout.body is FlexDocument {
             values.isUsingFlexDocument = true
         }
