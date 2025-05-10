@@ -96,7 +96,7 @@ public struct Head: MarkupElement {
             MetaLink.standardRemoteCSS
         }
 
-        if context.includeSyntaxHighlighterResources, site.allHighlighterThemes.isEmpty == false {
+        if context.syntaxHighlighters.isEmpty == false {
             MetaLink.highlighterThemeMetaLinks(for: site.allHighlighterThemes)
             MetaLink.prismPluginCSS
         }

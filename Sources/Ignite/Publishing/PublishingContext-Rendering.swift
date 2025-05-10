@@ -52,7 +52,7 @@ extension PublishingContext {
             pageContent: page)
 
         if page.layout.body is FlexDocument {
-            values.isUsingFlowDocument = true
+            values.isUsingFlexDocument = true
         }
 
         let outputString = withEnvironment(values) {
@@ -85,7 +85,7 @@ extension PublishingContext {
             article: article)
 
         if layout.layout.body is FlexDocument {
-            values.isUsingFlowDocument = true
+            values.isUsingFlexDocument = true
         }
 
         let outputString = withEnvironment(values) {
@@ -135,7 +135,7 @@ extension PublishingContext {
                 category: category)
 
             if tagLayout.layout.body is FlexDocument {
-                values.isUsingFlowDocument = true
+                values.isUsingFlexDocument = true
             }
 
             let outputString = withEnvironment(values) {

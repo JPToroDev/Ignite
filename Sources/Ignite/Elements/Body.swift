@@ -54,7 +54,7 @@ public struct Body: MarkupElement {
                 .markup()
         }
 
-        if publishingContext.includeSyntaxHighlighterResources {
+        if publishingContext.syntaxHighlighters.isEmpty == false {
             output += Script(file: "/js/syntax-highlighting.js").markup()
         }
 
@@ -78,8 +78,8 @@ public struct Body: MarkupElement {
 
         output += Script(file: "/js/ignite-core.js").markup()
 
-        if publishingContext.includeSplitViewResources {
-            output += Script(file: "/js/ignite-split-view.js").markup()
+        for resource in publishingContext.auxiliaryResources {
+            output += Script(file: resource.rootRelativePath).markup()
         }
 
         if isBoundByContainer {

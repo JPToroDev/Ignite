@@ -67,8 +67,8 @@ public struct EnvironmentValues {
     /// Content that has the current tag.
     var taggedContent: [Article] = []
 
-    /// Whether the current `Layout` uses a `FlowDocument`.
-    var isUsingFlowDocument = false
+    /// Whether the current `Layout` uses a `FlexDocument`.
+    var isUsingFlexDocument = false
 
     init() {
         self.articles = ArticleLoader(content: [])

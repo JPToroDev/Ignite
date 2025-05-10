@@ -6,6 +6,7 @@
 //
 
 /// Configuration for syntax highlighting behavior in code blocks.
+@MainActor
 public struct SyntaxHighlighterConfiguration: Sendable {
     /// Controls the visibility and formatting of line numbers.
     public enum LineNumberVisibility: Sendable {
@@ -19,7 +20,11 @@ public struct SyntaxHighlighterConfiguration: Sendable {
     }
 
     /// The programming languages to enable syntax highlighting for.
-    var languages: [HighlighterLanguage]
+    var languages: Set<HighlighterLanguage> {
+        didSet {
+            PublishingContext.shared.syntaxHighlighters.formUnion(languages)
+        }
+    }
 
     /// Whether and how to display line numbers.
     var lineNumberVisibility: LineNumberVisibility
@@ -30,11 +35,17 @@ public struct SyntaxHighlighterConfiguration: Sendable {
     /// Whether long lines should wrap to the next line.
     var wrapLines: Bool
 
-    /// The language that should automatically be applied to code blocks and inline code.
-    var defaultLanguage: HighlighterLanguage?
-
     /// Whether inline code should use syntax highlighting.
     var highlightInlineCode: Bool
+
+    /// The language that should automatically be applied to code blocks and inline code.
+    var defaultLanguage: HighlighterLanguage? {
+        didSet {
+            if let defaultLanguage {
+                PublishingContext.shared.syntaxHighlighters.insert(defaultLanguage)
+            }
+        }
+    }
 
     /// Default configuration that automatically detects languages.
     public static let automatic: Self = .init(languages: [])
@@ -48,7 +59,7 @@ public struct SyntaxHighlighterConfiguration: Sendable {
     ///   - firstLineNumber: The number to start counting from when showing line numbers.
     ///   - wrapLines: Whether long lines should wrap to the next line.
     public init(
-        languages: [HighlighterLanguage],
+        languages: Set<HighlighterLanguage>,
         defaultLanguage: HighlighterLanguage? = nil,
         highlightInlineCode: Bool = false,
         lineNumberVisibility: LineNumberVisibility = .hidden,

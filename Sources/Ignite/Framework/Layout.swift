@@ -33,6 +33,6 @@ public extension Layout {
         let environment = PublishingContext.shared.environment
         return Section(environment.pageContent)
             .class("ig-main-content")
-            .class(environment.isUsingFlowDocument ? "d-flex flex-column flex-grow-1" : nil)
+            .class(environment.isUsingFlexDocument ? "d-flex flex-column flex-grow-1" : nil)
     }
 }

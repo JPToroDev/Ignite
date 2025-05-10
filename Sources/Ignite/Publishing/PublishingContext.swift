@@ -64,16 +64,11 @@ final class PublishingContext {
     /// All the Markdown content this user has inside their Content folder.
     private(set) var allContent = [Article]()
 
-    /// Whether the site requires JS for `SplitView`.
-    var includeSplitViewResources = false
-
     /// An ordered set of syntax highlighters pulled from code blocks throughout the site.
-    var syntaxHighlighters = OrderedSet<HighlighterLanguage>()
+    var syntaxHighlighters = Set<HighlighterLanguage>()
 
-    /// Whether the site uses syntax highlighters.
-    var includeSyntaxHighlighterResources: Bool {
-        !syntaxHighlighters.isEmpty || !site.syntaxHighlighterConfiguration.languages.isEmpty
-    }
+    /// Resources required only by specific `HTML` elements.
+    var auxiliaryResources = Set<IgniteResource>()
 
     /// The sitemap for this site. Yes, using an array is less efficient when
     /// using `contains()`, but it allows us to list pages in a sensible order.
@@ -240,14 +235,14 @@ final class PublishingContext {
             copy(resource: "fonts/bootstrap-icons.woff2")
         }
 
-        if includeSyntaxHighlighterResources {
+        if syntaxHighlighters.isEmpty == false {
             copy(resource: "js/prism-core.js")
             copy(resource: "css/prism-plugins.css")
             copySyntaxHighlighters()
         }
 
-        if includeSplitViewResources {
-            copy(resource: "js/ignite-split-view.js")
+        for resource in auxiliaryResources {
+            copy(resource: resource.bundleRelativePath)
         }
     }
 
