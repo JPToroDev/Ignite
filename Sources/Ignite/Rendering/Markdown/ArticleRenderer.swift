@@ -24,7 +24,7 @@ public protocol ArticleRenderer {
     var defaultHighlighter: HighlighterLanguage? { get }
 
     /// The syntax highlighters required by the renderer.
-    var highlighterLanguages: Set<HighlighterLanguage> { get }
+    var highlighterLanguages: Set<HighlighterLanguage> { get set }
 
     /// Returns the processed title, description, and body of the raw markup.
     mutating func parse(_ markup: String) throws -> ParsedArticle

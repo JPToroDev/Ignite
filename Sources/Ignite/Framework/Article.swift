@@ -168,9 +168,8 @@ public struct Article {
         }
 
         syntaxHighlighters = parser.highlighterLanguages
-        if let defaultHighlighter = parser.defaultHighlighter {
-            syntaxHighlighters.insert(defaultHighlighter)
-        }
+        // Reset languages for the next article
+        parser.highlighterLanguages = []
     }
 
     /// Determines the article title using metadata, parsed content, or the URL filename.
