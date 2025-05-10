@@ -125,9 +125,9 @@ public protocol Site: Sendable {
     /// Additional themes that can be selected by users beyond light and dark mode.
     var alternateThemes: [any Theme] { get }
 
-    ///  Controls how syntax highlighting behaves throughout your site. Languages used
-    ///  in Markdown files _must_ be included here. Languages specified in `CodeBlock`
-    ///  will be added automatically.
+    /// Controls how syntax highlighting behaves throughout your site. Languages used
+    /// in Markdown files _must_ be included here. Languages specified in `CodeBlock`
+    /// will be added automatically.
     var syntaxHighlighterConfiguration: SyntaxHighlighterConfiguration { get }
 
     /// Controls whether HTML output should be formatted with proper indentation.
