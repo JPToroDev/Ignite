@@ -1,18 +1,32 @@
 (function() {
+    function getThemeIDs() {
+        const lightThemeID = getComputedStyle(document.documentElement)
+            .getPropertyValue('--light-theme-ID')
+            .trim();
+        const darkThemeID = getComputedStyle(document.documentElement)
+            .getPropertyValue('--dark-theme-ID')
+            .trim();
+        return { lightThemeID, darkThemeID };
+    }
+
     function getThemePreference() {
-        return localStorage.getItem('current-theme') || 'auto';
+        const savedTheme = localStorage.getItem('current-theme');
+        if (savedTheme) return savedTheme;
+
+        const autoThemeEnabled = document.documentElement.getAttribute('data-ig-auto-theme-enabled') === 'true';
+        if (autoThemeEnabled) return 'auto';
+
+        const { lightThemeID, darkThemeID } = getThemeIDs();
+        return lightThemeID || darkThemeID;
     }
 
     function applyTheme(themeID) {
-        const lightThemeID = getComputedStyle(document.documentElement)
-            .getPropertyValue('--light-theme-ID')
-            .trim() || 'light';
-        const darkThemeID = getComputedStyle(document.documentElement)
-            .getPropertyValue('--dark-theme-ID')
-            .trim() || 'dark';
+        const { lightThemeID, darkThemeID } = getThemeIDs();
+        const defaultLightTheme = lightThemeID || 'light';
+        const defaultDarkTheme = darkThemeID || 'dark';
 
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const actualThemeID = themeID === 'auto' ? (prefersDark ? darkThemeID : lightThemeID) : themeID;
+        const actualThemeID = themeID === 'auto' ? (prefersDark ? defaultDarkTheme : defaultLightTheme) : themeID;
         document.documentElement.setAttribute('data-ig-theme', actualThemeID);
         const isDarkTheme = actualThemeID.endsWith('dark');
         document.documentElement.setAttribute('data-bs-theme', isDarkTheme ? 'dark' : 'light');
