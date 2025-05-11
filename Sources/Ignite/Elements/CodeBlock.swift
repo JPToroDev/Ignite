@@ -10,7 +10,7 @@
 ///
 /// - Important: If your code contains angle brackets (`<`...`>`), such as Swift generics,
 /// the prettifier will interpret these as HTML tags and break the code's formatting.
-/// To avoid this issue, either set your site’s `shouldPrettify` property to `false`,
+/// To avoid this issue, either set your site's `shouldPrettify` property to `false`,
 /// or replace `<` and `>` with their character entity references, `&lt;` and `&gt;` respectively.
 public struct CodeBlock: HTML {
     /// The content and behavior of this HTML.
@@ -120,25 +120,24 @@ public struct CodeBlock: HTML {
             fatalError(.missingDefaultSyntaxHighlighterTheme)
         }
 
-        let defaultLanguage = PublishingContext.shared.site.syntaxHighlighterConfiguration.defaultLanguage
-        let resolvedLanguage: HighlighterLanguage? = language == .automatic ? defaultLanguage : language
-        let language = resolvedLanguage
+        let resolvedLanguage = language == .automatic ? 
+            PublishingContext.shared.site.syntaxHighlighterConfiguration.defaultLanguage : language
 
-        if let language, language != .automatic {
-            publishingContext.environment.syntaxHighlighters.insert(language)
+        if let resolvedLanguage, resolvedLanguage != .automatic {
+            publishingContext.environment.syntaxHighlighters.insert(resolvedLanguage)
             return Markup("""
             <pre\(attributes)>\
-            <code class=\"language-\(language)\">\
+            <code class=\"language-\(resolvedLanguage)\">\
             \(content)\
             </code>\
             </pre>
             """)
-        } else {
-            return Markup("""
-            <pre\(attributes)>\
-            <code>\(content)</code>\
-            </pre>
-            """)
         }
+        
+        return Markup("""
+        <pre\(attributes)>\
+        <code>\(content)</code>\
+        </pre>
+        """)
     }
 }

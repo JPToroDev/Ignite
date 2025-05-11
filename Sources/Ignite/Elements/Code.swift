@@ -11,7 +11,7 @@
 ///
 /// - Important: If your code contains angle brackets (`<`...`>`), such as Swift generics,
 /// the prettifier will interpret these as HTML tags and break the code's formatting.
-/// To avoid this issue, either set your site’s `shouldPrettify` property to `false`,
+/// To avoid this issue, either set your site's `shouldPrettify` property to `false`,
 /// or replace `<` and `>` with their character entity references, `&lt;` and `&gt;` respectively.
 public struct Code: InlineElement {
     /// The content and behavior of this HTML.
@@ -42,18 +42,16 @@ public struct Code: InlineElement {
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         let config = PublishingContext.shared.site.syntaxHighlighterConfiguration
-        let defaultLanguage = config.defaultLanguage
-        let resolvedLanguage: HighlighterLanguage? = language == .automatic && config.highlightInlineCode ?
-            defaultLanguage : language
-        let language = resolvedLanguage
+        let resolvedLanguage = language == .automatic && config.highlightInlineCode ? 
+            config.defaultLanguage : language
 
-        if let language, language != .automatic {
-            publishingContext.environment.syntaxHighlighters.insert(language)
+        if let resolvedLanguage, resolvedLanguage != .automatic {
+            publishingContext.environment.syntaxHighlighters.insert(resolvedLanguage)
             var attributes = attributes
-            attributes.append(classes: "language-\(language)")
-            return Markup("<code\(attributes)>\(content)</code>")
-        } else {
+            attributes.append(classes: "language-\(resolvedLanguage)")
             return Markup("<code\(attributes)>\(content)</code>")
         }
+        
+        return Markup("<code\(attributes)>\(content)</code>")
     }
 }
