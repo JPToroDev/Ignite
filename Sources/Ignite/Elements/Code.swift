@@ -41,11 +41,13 @@ public struct Code: InlineElement {
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        let defaultLanguage = PublishingContext.shared.site.syntaxHighlighterConfiguration.defaultLanguage
-        let resolvedLanguage: HighlighterLanguage? = language == .automatic ? defaultLanguage : language
+        let config = PublishingContext.shared.site.syntaxHighlighterConfiguration
+        let defaultLanguage = config.defaultLanguage
+        let resolvedLanguage: HighlighterLanguage? = language == .automatic && config.highlightInlineCode ?
+            defaultLanguage : language
         let language = resolvedLanguage
 
-        if let language {
+        if let language, language != .automatic {
             publishingContext.environment.syntaxHighlighters.insert(language)
             var attributes = attributes
             attributes.append(classes: "language-\(language)")

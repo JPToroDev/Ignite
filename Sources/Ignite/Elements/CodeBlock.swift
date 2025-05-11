@@ -124,7 +124,7 @@ public struct CodeBlock: HTML {
         let resolvedLanguage: HighlighterLanguage? = language == .automatic ? defaultLanguage : language
         let language = resolvedLanguage
 
-        if let language {
+        if let language, language != .automatic {
             publishingContext.environment.syntaxHighlighters.insert(language)
             return Markup("""
             <pre\(attributes)>\
