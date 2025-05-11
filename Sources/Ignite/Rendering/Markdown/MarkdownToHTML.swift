@@ -89,7 +89,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
                 highlighterLanguages.insert(highlighter)
             }
             return #"<pre><code class="language-\#(language.lowercased())">\#(codeBlock.code)</code></pre>"#
-        } else if let defaultHighlighter {
+        } else if let defaultHighlighter, defaultHighlighter != .automatic {
             return #"<pre><code class="language-\#(defaultHighlighter)">\#(codeBlock.code)</code></pre>"#
         } else {
             return #"<pre><code>\#(codeBlock.code)</code></pre>"#
@@ -172,7 +172,7 @@ public struct MarkdownToHTML: ArticleRenderer, MarkupVisitor {
     /// - Parameter inlineCode: The inline code markup to process.
     /// - Returns: A HTML <code> tag containing the code.
     public mutating func visitInlineCode(_ inlineCode: Markdown.InlineCode) -> String {
-        if let defaultHighlighter, highlightInlineCode {
+        if let defaultHighlighter, defaultHighlighter != .automatic, highlightInlineCode {
             #"<code class="language-\#(defaultHighlighter)">\#(inlineCode.code)</code>"#
         } else {
             "<code>\(inlineCode.code)</code>"
