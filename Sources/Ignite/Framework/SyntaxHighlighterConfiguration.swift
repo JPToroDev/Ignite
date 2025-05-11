@@ -26,15 +26,14 @@ public struct SyntaxHighlighterConfiguration {
     /// Creates a new syntax highlighter configuration.
     /// - Parameters:
     ///   - defaultLanguage: The language automatically applied to code blocks and inline code.
-    ///   - highlightInlineCode: Whether inline code should use syntax highlighting.
     ///   - lineNumberVisibility: Whether to display line numbers.
     ///   - wrapLines: Whether long lines should wrap to the next line.
+    ///   - highlightInlineCode: Whether inline code should use syntax highlighting.
     public init(
         defaultLanguage: HighlighterLanguage? = nil,
-        highlightInlineCode: Bool = false,
         lineNumberVisibility: Visibility = .hidden,
-        firstLineNumber: Int = 1,
         wrapLines: Bool = false,
+        highlightInlineCode: Bool = false
     ) {
         self.defaultLanguage = defaultLanguage
         self.highlightInlineCode = highlightInlineCode
