@@ -41,8 +41,8 @@ public struct Code: InlineElement {
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        let config = PublishingContext.shared.site.syntaxHighlighterConfiguration
-        let resolvedLanguage = language == .automatic && config.highlightInlineCode ? 
+        let config = publishingContext.site.syntaxHighlighterConfiguration
+        let resolvedLanguage = language == .automatic && config.highlightInlineCode ?
             config.defaultLanguage : language
 
         if let resolvedLanguage, resolvedLanguage != .automatic {
@@ -51,7 +51,7 @@ public struct Code: InlineElement {
             attributes.append(classes: "language-\(resolvedLanguage)")
             return Markup("<code\(attributes)>\(content)</code>")
         }
-        
+
         return Markup("<code\(attributes)>\(content)</code>")
     }
 }
