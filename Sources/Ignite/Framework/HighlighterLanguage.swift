@@ -7,7 +7,7 @@
 
 /// The collection of syntax highlighters supported by Ignite.
 public enum HighlighterLanguage: String, Sendable {
-    case automatic = ""
+    case automatic = "none"
     case appleScript = "applescript"
     case bash = "bash"
     case c = "c" // swiftlint:disable:this identifier_name

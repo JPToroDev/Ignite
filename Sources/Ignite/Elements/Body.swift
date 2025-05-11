@@ -58,15 +58,10 @@ public struct Body: MarkupElement {
             output += Script(file: "/js/syntax-highlighting.js").markup()
         }
 
-        if case .visible(let firstLine, let shouldWrap) =
-            publishingContext.site.syntaxHighlighterConfiguration.lineNumberVisibility {
+        let config = publishingContext.site.syntaxHighlighterConfiguration
+        let lineNumberVisibility = config.lineNumberVisibility
+        if case .visible = lineNumberVisibility {
             attributes.append(classes: "line-numbers")
-            if firstLine != 1 {
-                attributes.append(dataAttributes: .init(name: "start", value: firstLine.formatted()))
-            }
-            if shouldWrap {
-                attributes.append(styles: .init(.whiteSpace, value: "pre-wrap"))
-            }
         }
 
         if output.string.contains(#"data-bs-toggle="tooltip""#) {

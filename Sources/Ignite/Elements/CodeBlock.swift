@@ -13,6 +13,17 @@
 /// To avoid this issue, either set your site's `shouldPrettify` property to `false`,
 /// or replace `<` and `>` with their character entity references, `&lt;` and `&gt;` respectively.
 public struct CodeBlock: HTML {
+    /// Controls the visibility and formatting of line numbers.
+    public enum LineNumberVisibility: Equatable, Sendable {
+        /// Shows line numbers with the specified starting number and wrapping behavior.
+        case visible(firstLine: Int)
+        /// Hides line numbers.
+        case hidden
+
+        /// Shows line numbers starting at 1 without text wrapping.
+        public static let visible: Self = .visible(firstLine: 1)
+    }
+
     /// The content and behavior of this HTML.
     public var body: some HTML { self }
 
@@ -27,6 +38,53 @@ public struct CodeBlock: HTML {
 
     /// The language of the code being shown.
     private var language: HighlighterLanguage?
+
+    /// The visibility of line numbers.
+    private var lineNumberVisibility: LineNumberVisibility?
+
+    /// Whether long lines should break to the next line.
+    private var isWrappingDisabled: Bool?
+
+    /// The lines of the code block that should be highlighted.
+    private var highlightedLineData: String?
+
+    /// The syntax highlighter configuration used by the site.
+    private let configuration = PublishingContext.shared.site.syntaxHighlighterConfiguration
+
+    /// Computes the attributes needed for line wrapping based on instance and site settings.
+    private var lineWrappingAttributes: CoreAttributes {
+        let siteWrapping = configuration.wrapLines
+        var attributes = CoreAttributes()
+
+        if (isWrappingDisabled == nil && siteWrapping) || isWrappingDisabled == false {
+            attributes.append(styles: .init(.whiteSpace, value: "pre-wrap"))
+        }
+
+        return attributes
+    }
+
+    /// Computes the attributes needed for line number display based on instance and site settings.
+    private var lineNumberAttributes: CoreAttributes {
+        let siteVisibility = configuration.lineNumberVisibility
+        var attributes = CoreAttributes()
+
+        if lineNumberVisibility == nil, siteVisibility == .visible {
+            attributes.append(classes: "line-numbers")
+        }
+
+        if case .hidden = lineNumberVisibility, siteVisibility == .visible {
+            attributes.append(classes: "no-line-numbers")
+        }
+
+        if case .visible(let firstLine) = lineNumberVisibility, siteVisibility == .hidden {
+            attributes.append(classes: "line-numbers")
+            if firstLine != 1 {
+                attributes.append(dataAttributes: .init(name: "start", value: firstLine.formatted()))
+            }
+        }
+
+        return attributes
+    }
 
     /// Creates a new `Code` instance from the given content.
     /// - Parameters:
@@ -44,8 +102,8 @@ public struct CodeBlock: HTML {
     public func highlightedLines(_ lines: Int...) -> Self {
         var copy = self
         let highlights = lines.map { "\($0)" }
-        let dataLine = highlights.joined(separator: ",")
-        copy.attributes.append(dataAttributes: .init(name: "line", value: dataLine))
+        let lineData = highlights.joined(separator: ",")
+        copy.highlightedLineData = lineData
         return copy
     }
 
@@ -55,8 +113,8 @@ public struct CodeBlock: HTML {
     public func highlightedRanges(_ ranges: ClosedRange<Int>...) -> Self {
         var copy = self
         let highlights = ranges.map { "\($0.lowerBound)-\($0.upperBound)" }
-        let dataLine = highlights.joined(separator: ",")
-        copy.attributes.append(dataAttributes: .init(name: "line", value: dataLine))
+        let lineData = highlights.joined(separator: ",")
+        copy.highlightedLineData = lineData
         return copy
     }
 
@@ -71,8 +129,8 @@ public struct CodeBlock: HTML {
         let allHighlights = singleLines + rangeLines
 
         var copy = self
-        let dataLine = allHighlights.joined(separator: ",")
-        copy.attributes.append(dataAttributes: .init(name: "line", value: dataLine))
+        let lineData = allHighlights.joined(separator: ",")
+        copy.highlightedLineData = lineData
         return copy
     }
 
@@ -80,36 +138,18 @@ public struct CodeBlock: HTML {
     /// - Parameter visibility: The visibility configuration for line numbers,
     /// including start line and text wrapping options.
     /// - Returns: A copy of this code block with the specified line number visibility.
-    public func lineNumberVisibility(_ visibility: SyntaxHighlighterConfiguration.LineNumberVisibility) -> Self {
+    public func lineNumberVisibility(_ visibility: LineNumberVisibility) -> Self {
         var copy = self
-        let siteVisibility = publishingContext.site.syntaxHighlighterConfiguration.lineNumberVisibility
+        copy.lineNumberVisibility = visibility
+        return copy
+    }
 
-        switch (siteVisibility, visibility) {
-        case (.visible, .hidden):
-            copy.attributes.append(classes: "no-line-numbers")
-
-        case (.hidden, .visible(let elementFirstLine, let elementWrapped)):
-            copy.attributes.append(classes: "line-numbers")
-
-            if elementFirstLine != 1 {
-                copy.attributes.append(dataAttributes: .init(name: "start", value: elementFirstLine.formatted()))
-            }
-            if elementWrapped {
-                copy.attributes.append(styles: .init(.whiteSpace, value: "pre-wrap"))
-            }
-
-        case (.visible(let siteFirstLine, let siteWrapped), .visible(let elementFirstLine, let elementWrapped)):
-            if elementFirstLine != siteFirstLine {
-                copy.attributes.append(dataAttributes: .init(name: "start", value: elementFirstLine.formatted()))
-            }
-            if elementWrapped != siteWrapped {
-                copy.attributes.append(styles: .init(.whiteSpace, value: elementWrapped ? "pre-wrap" : "pre"))
-            }
-
-        default:
-            break
-        }
-
+    /// Configures whether line wrapping should be disabled for this code block.
+    /// - Parameter disabled: True to disable line wrapping, false to enable it.
+    /// - Returns: A copy of this code block with the specified line wrapping setting.
+    public func lineWrappingDisabled(_ disabled: Bool) -> Self {
+        var copy = self
+        copy.isWrappingDisabled = disabled
         return copy
     }
 
@@ -120,23 +160,46 @@ public struct CodeBlock: HTML {
             fatalError(.missingDefaultSyntaxHighlighterTheme)
         }
 
-        let resolvedLanguage = language == .automatic ? 
-            PublishingContext.shared.site.syntaxHighlighterConfiguration.defaultLanguage : language
+        let siteVisibility = configuration.lineNumberVisibility
+        if lineNumberVisibility == .visible ||
+            siteVisibility == .visible ||
+            // When line numbering is disabled but highlighting and wrapping are enabled,
+            // Prism incorrectly treats wrapped portions as separate lines and displays
+            // line numbers that ignore wrapping for the highlighted lines. Loading
+            // this resource hides these erroneous line numbers to make workarounds easier.
+            (highlightedLineData != nil && isWrappingDisabled == false) {
+            // Resources must be added in markup().
+            // Adding in other methods results in adding the resource
+            // to a temporary set of environment values
+            publishingContext.environment.resources.insert(.prismLineNumberingJS)
+        }
+
+        let resolvedLanguage = language == .automatic ? configuration.defaultLanguage : language
+        var codeAttributes = lineWrappingAttributes
+        var preAttributes = attributes
+        preAttributes.merge(lineWrappingAttributes)
+        preAttributes.merge(lineNumberAttributes)
+
+        if let highlightedLineData {
+            preAttributes.append(dataAttributes: .init(name: "line", value: highlightedLineData))
+            publishingContext.environment.resources.insert(.prismLineHighlightingJS)
+        }
 
         if let resolvedLanguage, resolvedLanguage != .automatic {
             publishingContext.environment.syntaxHighlighters.insert(resolvedLanguage)
+            codeAttributes.append(classes: "language-\(resolvedLanguage)")
             return Markup("""
-            <pre\(attributes)>\
-            <code class=\"language-\(resolvedLanguage)\">\
+            <pre\(preAttributes)>\
+            <code\(codeAttributes)>\
             \(content)\
             </code>\
             </pre>
             """)
         }
-        
+
         return Markup("""
-        <pre\(attributes)>\
-        <code>\(content)</code>\
+        <pre\(preAttributes)>\
+        <code\(codeAttributes)>\(content)</code>\
         </pre>
         """)
     }
