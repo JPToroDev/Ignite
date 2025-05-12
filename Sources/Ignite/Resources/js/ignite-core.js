@@ -129,6 +129,8 @@ function igniteToggleClickAnimation(element) {
     return false;
 }
 
+// SECTION: Tables ----------------------------------------------------------------------------
+
 // This function removes rows from a table when some filter text is supplied.
 // We need to actually remove the rows to ensure that any zebra striping is
 // maintained correctly, but we need to a way to reinsert rows later on if
@@ -154,3 +156,21 @@ function igniteFilterTable(searchText, tableId) {
     tbody.innerHTML = "";
     matchingRows.forEach(row => tbody.appendChild(row));
 }
+
+// SECTION: Navigation Bars -------------------------------------------------------------------
+
+document.addEventListener('DOMContentLoaded', function() {
+  const updateNavbarHeight = () => {
+    const navbar = document.querySelector('.navbar.fixed-top');
+    if (navbar) {
+      const height = navbar.offsetHeight;
+      document.documentElement.style.setProperty('--navbar-height', height + 'px');
+    }
+  };
+
+  // Run on load
+  updateNavbarHeight();
+
+  // Run on resize
+  window.addEventListener('resize', updateNavbarHeight);
+});

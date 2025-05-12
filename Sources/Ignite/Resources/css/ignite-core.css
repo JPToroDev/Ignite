@@ -30,6 +30,9 @@
     --splitview-default-width: 250;
     --splitview-max-width: 400;
     --splitview-collapse-on-min: false;
+
+    /* NavigationBar Values */
+    --navbar-height: unset;
 }
 
 /* Auto-switching Material Classes */
