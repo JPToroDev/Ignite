@@ -52,30 +52,30 @@ final class PublishingContext {
     /// Path at which content renders. Defaults to nil.
     public var currentRenderingPath: String?
 
-    /// Any warnings that have been issued during a build.
-    private(set) var warnings = OrderedSet<String>()
-
-    /// Any errors that have been issued during a build.
-    private(set) var errors = [PublishingError]()
-
-    /// The current environment values for the application.
-    var environment = EnvironmentValues()
-
-    /// All the Markdown content this user has inside their Content folder.
-    private(set) var allContent = [Article]()
-
-    /// An ordered set of syntax highlighters pulled from code blocks throughout the site.
-    var syntaxHighlighters = Set<HighlighterLanguage>()
-
-    /// Resources required only by specific `HTML` elements.
-    var auxiliaryResources = Set<IgniteResource>()
-
     /// The sitemap for this site. Yes, using an array is less efficient when
     /// using `contains()`, but it allows us to list pages in a sensible order.
     /// (Technically speaking the order doesn't matter, but if the order changed
     /// randomly every time a build took place it would be annoying for source
     /// control!)
     private(set) var siteMap = [Location]()
+
+    /// Any warnings that have been issued during a build.
+    private(set) var warnings = OrderedSet<String>()
+
+    /// Any errors that have been issued during a build.
+    private(set) var errors = [PublishingError]()
+
+    /// All the Markdown content this user has inside their Content folder.
+    private(set) var allContent = [Article]()
+
+    /// Resources required by individual pages, rather than by the site as a whole.
+    var pageResources = Set<IgniteResource>()
+
+    /// The current environment values for the application.
+    var environment = EnvironmentValues()
+
+    /// The syntax highlighters used in code snippets throughout the site.
+    var syntaxHighlighters = Set<HighlighterLanguage>()
 
     /// Creates a new publishing context for a specific site, providing the path to
     /// one of the user's file. This then navigates upwards to find the root directory.
@@ -241,7 +241,7 @@ final class PublishingContext {
             copySyntaxHighlighters()
         }
 
-        for resource in auxiliaryResources {
+        for resource in pageResources {
             copy(resource: resource.bundleRelativePath)
         }
     }

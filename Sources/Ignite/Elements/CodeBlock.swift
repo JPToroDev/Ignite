@@ -171,7 +171,7 @@ public struct CodeBlock: HTML {
             // Resources must be added in markup().
             // Adding in other methods results in adding the resource
             // to a temporary set of environment values
-            publishingContext.environment.resources.insert(.prismLineNumberingJS)
+            publishingContext.environment.pageResources.insert(.prismLineNumberingJS)
         }
 
         let resolvedLanguage = language == .automatic ? configuration.defaultLanguage : language
@@ -182,7 +182,7 @@ public struct CodeBlock: HTML {
 
         if let highlightedLineData {
             preAttributes.append(dataAttributes: .init(name: "line", value: highlightedLineData))
-            publishingContext.environment.resources.insert(.prismLineHighlightingJS)
+            publishingContext.environment.pageResources.insert(.prismLineHighlightingJS)
         }
 
         if let resolvedLanguage, resolvedLanguage != .automatic {

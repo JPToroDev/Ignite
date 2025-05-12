@@ -73,7 +73,7 @@ public struct Body: MarkupElement {
 
         output += Script(file: "/js/ignite-core.js").markup()
 
-        for resource in publishingContext.environment.resources {
+        for resource in publishingContext.environment.pageResources {
             output += Script(file: resource.rootRelativePath).markup()
         }
 

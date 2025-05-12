@@ -78,9 +78,9 @@ public struct EnvironmentValues {
     }
 
     /// Special resources required by the page being rendered.
-    var resources = Set<IgniteResource>() {
+    var pageResources = Set<IgniteResource>() {
         didSet {
-            PublishingContext.shared.auxiliaryResources.formUnion(resources)
+            PublishingContext.shared.pageResources.formUnion(pageResources)
         }
     }
 
