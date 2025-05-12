@@ -29,14 +29,14 @@ public struct SplitView: HTML {
     /// The color of the divider when hovered.
     private var dividerHoverColor: Color?
 
-    /// The preferred width of the sidebar.
-    private var idealWidth: LengthUnit?
-
     /// The minimum width the sidebar can be resized to.
-    private var minWidth: LengthUnit?
+    private var minWidth: LengthUnit = .px(100)
+
+    /// The preferred width of the sidebar.
+    private var idealWidth: LengthUnit = .px(300)
 
     /// The maximum width the sidebar can be resized to.
-    private var maxWidth: LengthUnit?
+    private var maxWidth: LengthUnit = .px(500)
 
     /// Whether the sidebar can be dismissed by dragging.
     private var isDismissDisabled = true
@@ -99,9 +99,9 @@ public struct SplitView: HTML {
         max: LengthUnit? = nil
     ) -> Self {
         var copy = self
-        copy.minWidth = min
-        copy.idealWidth = ideal
-        copy.maxWidth = max
+        if let min { copy.minWidth = min }
+        if let ideal { copy.idealWidth = ideal }
+        if let max { copy.maxWidth = max }
         return copy
     }
 
@@ -148,15 +148,15 @@ public struct SplitView: HTML {
 
                 Section(sidebar)
                     .class("splitview-sidebar-content")
-                    .style("--splitview-min-width", minWidth?.stringValue)
-                    .style("--splitview-default-width", idealWidth?.stringValue)
-                    .style("--splitview-max-width", maxWidth?.stringValue)
+                    .style("--splitview-min-width", minWidth.stringValue)
+                    .style("--splitview-default-width", idealWidth.stringValue)
+                    .style("--splitview-max-width", maxWidth.stringValue)
             }
             .class("splitview-sidebar")
             .class("collapse", "collapse-horizontal", "show")
             .data("collapse-on-min", (!isDismissDisabled).description)
             .style(.backgroundColor, sidebarBackgroundColor?.description ?? "")
-            .style("--splitview-divider-color", dividerColor?.description)
+            .style("--splitview-divider-color", dividerColor?.description ?? "")
             .id(htmlID)
 
             Section {
@@ -164,8 +164,8 @@ public struct SplitView: HTML {
                     .class("splitview-divider-hitarea")
                     .id("splitview-divider-hitarea")
                 Section()
-                    .style("--splitview-divider-color", dividerColor?.description)
-                    .style("--splitview-divider-active-color", dividerHoverColor?.description)
+                    .style("--splitview-divider-color", dividerColor?.description ?? "")
+                    .style("--splitview-divider-active-color", dividerHoverColor?.description ?? "")
                     .class("splitview-divider-line")
             }
             .class("splitview-divider")
