@@ -51,8 +51,7 @@ extension HTML {
     ///   - property: The CSS property.
     ///   - value: The value.
     /// - Returns: The modified `HTML` element
-    func style(_ property: String, _ value: String?) -> some HTML {
-        guard let value else { return AnyHTML(self) }
+    func style(_ property: String, _ value: String) -> some HTML {
         return AnyHTML(inlineStyleModifier([.init(property, value: value)], content: self))
     }
 
