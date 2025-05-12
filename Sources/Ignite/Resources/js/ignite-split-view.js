@@ -7,11 +7,11 @@ function initializeSplitView() {
     let isDragging = false;
 
     const MIN_WIDTH = parseInt(
-        getComputedStyle(sidebar).getPropertyValue('--splitview-min-width') || '100'
+        getComputedStyle(content).getPropertyValue('--splitview-min-width') || '100'
     );
 
     const DEFAULT_WIDTH = parseInt(
-        getComputedStyle(sidebar).getPropertyValue('--splitview-default-width') || '250'
+        getComputedStyle(content).getPropertyValue('--splitview-default-width') || '250'
     );
 
     const SHOULD_COLLAPSE = sidebar.dataset.collapseOnMin === 'true';
