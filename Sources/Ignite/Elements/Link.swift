@@ -15,7 +15,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
         /// - Parameters:
         ///   - base: The underline prominence in the link's normal state.
         ///   - hover: The underline prominence when hovering over the link.
-        case underline(_ base: UnderlineProminence, hover: UnderlineProminence)
+        case underline(_ default: UnderlineProminence, hover: UnderlineProminence)
 
         /// A link that appears and behaves like a button.
         case button
