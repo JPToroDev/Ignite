@@ -90,7 +90,7 @@ extension BodyElement {
     }
 }
 
-extension StyledHTML {
+extension ElementProxy {
     /// Adjusts the edge value (margin or padding) for a view.
     /// - Parameters:
     ///   - prefix: Specifies what we are changing, e.g. "padding"

@@ -23,7 +23,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Adjusts the font weight (boldness) of this font.
     /// - Parameter weight: The new font weight.
     /// - Returns: A new instance with the updated weight.

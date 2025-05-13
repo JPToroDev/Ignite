@@ -102,7 +102,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Adds a border to this element.
     /// - Parameters:
     ///   - color: The color of the border

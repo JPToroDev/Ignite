@@ -70,7 +70,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Aligns this element using a specific alignment.
     /// - Parameter alignment: How to align this element.
     /// - Returns: A modified copy of the element with alignment applied

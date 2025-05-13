@@ -36,7 +36,7 @@ public extension NavigationItem {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Hides the view in the view hierarchy.
     func hidden() -> Self {
         self.style(.display, "none")

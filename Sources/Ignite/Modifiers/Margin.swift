@@ -147,7 +147,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Applies margins on selected sides of this element. Defaults to 20 pixels.
     /// - Parameters:
     ///   - edges: The edges where this margin should be applied.

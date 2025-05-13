@@ -17,8 +17,8 @@ public extension HTML {
 /// A modifier that sets the z-index of a styled HTML element.
 /// - Parameter index: The z-index value to apply. Higher values appear in front.
 /// - Returns: The modified styled HTML element.
-public extension StyledHTML {
-    func zIndex(_ index: Int) -> StyledHTML {
+public extension ElementProxy {
+    func zIndex(_ index: Int) -> Self {
         self.style(.zIndex, index.formatted())
     }
 }

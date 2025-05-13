@@ -101,7 +101,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Sets the line height of the element using a custom value.
     /// - Parameter height: The line height multiplier to use
     /// - Returns: The modified HTML element

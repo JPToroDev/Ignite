@@ -77,7 +77,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Rounds all edges of this object by some number of pixels.
     /// - Parameter length: An integer specifying a pixel amount to round corners with.
     /// - Returns: A modified copy of the element with corner radius applied

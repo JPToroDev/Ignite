@@ -57,7 +57,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Applies an inner shadow to this element.
     /// - Parameters:
     ///   - color: The shadow's color. Defaults to black at 33% opacity.

@@ -149,7 +149,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Applies a foreground color to the current element.
     /// - Parameter color: The style to apply, specified as a `Color` object.
     /// - Returns: The current element with the updated color applied.

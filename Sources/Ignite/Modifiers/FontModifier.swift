@@ -85,7 +85,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Adjusts the font of this text.
     /// - Parameter font: The font configuration to apply.
     /// - Returns: A new instance with the updated font.

@@ -294,7 +294,7 @@ public extension NavigationItem {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Creates a specific frame for this element, either using exact values or
     /// using minimum/maximum ranges.
     /// - Parameters:

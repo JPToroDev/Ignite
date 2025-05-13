@@ -147,7 +147,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Applies padding on selected sides of this element.
     /// - Parameters:
     ///   - edges: The edges where this padding should be applied.

@@ -30,7 +30,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Applies a text decoration style to the current element.
     /// - Parameter style: The style to apply, specified as a `TextDecoration` case.
     /// - Returns: The current element with the updated text decoration style applied.

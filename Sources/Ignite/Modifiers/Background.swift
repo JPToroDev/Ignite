@@ -67,7 +67,7 @@ public extension InlineElement {
     }
 }
 
-public extension StyledHTML {
+public extension ElementProxy {
     /// Applies a background color from a `Color` object.
     /// - Parameter color: The specific color value to use, specified as
     /// a `Color` instance.
