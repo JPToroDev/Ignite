@@ -61,15 +61,15 @@ final class StyleManager {
         }
 
         for style in buttonStyles {
-            let style = generateButtonStyles(for: style)
-            cssRules.append(style)
+            let styles = generateButtonStyles(for: style)
+            cssRules.append(contentsOf: styles)
         }
 
         return cssRules.joined(separator: "\n\n")
     }
 
     /// Generate the CSS of a button style.
-    private func generateButtonStyles(for style: any ButtonStyle) -> String {
+    private func generateButtonStyles(for style: any ButtonStyle) -> [String] {
         let buttonConfig = style.style(button: .init())
         let styles = buttonConfig.defaultStyles
         let pressedStyles = buttonConfig.pressedStyles
@@ -81,21 +81,30 @@ final class StyleManager {
         rulesets.append(defaultRules)
 
         if hoveredStyles.isEmpty == false {
-            let hoveredRules =  Ruleset(.class(style.className), styles: hoveredStyles)
+            let hoveredRules =  Ruleset(
+                .class(style.className)
+                .chaining(.pseudoClass("hover")),
+                styles: hoveredStyles)
             rulesets.append(hoveredRules)
         }
 
         // Must follow hover styles for proper cascading
         if pressedStyles.isEmpty == false {
-            let pressedRules =  Ruleset(.class(style.className), styles: pressedStyles)
+            let pressedRules =  Ruleset(
+                .class(style.className)
+                .chaining(.pseudoClass("active")),
+                styles: pressedStyles)
             rulesets.append(pressedRules)
         }
 
         if disabledStyles.isEmpty == false {
-            let disabledStyles =  Ruleset(.class(style.className), styles: disabledStyles)
+            let disabledStyles =  Ruleset(
+                .class(style.className)
+                .chaining(.pseudoClass("disabled")),
+                styles: disabledStyles)
             rulesets.append(disabledStyles)
         }
 
-        return rulesets.map { $0.render() }.joined(separator: "\n\n")
+        return rulesets.map { $0.render() }
     }
 }
