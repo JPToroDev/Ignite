@@ -12,7 +12,7 @@
 /// Example:
 /// ```swift
 /// struct MyCustomStyle: Style {
-///     func style(content: StyledHTML, environment: EnvironmentConditions) -> StyledHTML {
+///     func style(content: Content, environment: EnvironmentConditions) -> Content {
 ///         if environment.colorScheme == .dark {
 ///             content.foregroundStyle(.red)
 ///         } else {
@@ -25,19 +25,19 @@
 public protocol Style: Hashable {
     /// Resolves the style for the given HTML content and environment conditions
     /// - Parameters:
-    ///   - content: An HTML element to apply styles to
+    ///   - element: An HTML element to apply styles to
     ///   - environmentConditions: The current media query condition to resolve against
     /// - Returns: A modified HTML element with the appropriate styles applied
-    func style(content: StyledHTML, environment: EnvironmentConditions) -> StyledHTML
+    typealias Content = ElementProxy
+    func style(content: Content, environment: EnvironmentConditions) -> Content
 }
 
 extension Style {
     /// The name of the CSS class this `Style` generates,
-    /// derived from the type name minus the "Style" suffix, if present.
+    /// derived from the type name.
     var className: String {
-        let typeName = String(describing: type(of: style))
-        let baseName = typeName.hasSuffix("Style") ? typeName : typeName + "Style"
-        let className = baseName.kebabCased()
+        let typeName = String(describing: type(of: self))
+        let className = typeName.kebabCased()
         return className
     }
 }
