@@ -120,10 +120,7 @@ extension PublishingContext {
         }
 
         for theme in site.alternateThemes {
-            let styles = themeStyles(for: theme)
-            let ruleset = Ruleset(.attribute("data-ig-theme", value: theme.cssID), styles: styles)
-            let rulsetString = ruleset.render()
-            rules.append(rulsetString)
+            rules.append(themeRules(theme))
         }
 
         return rules.joined(separator: "\n\n")
@@ -154,6 +151,7 @@ extension PublishingContext {
         rules.append(contentsOf: containerMediaQueries(for: theme))
         rules.append(contentsOf: responsiveVariables(for: theme))
         rules.append(contentsOf: buttonColorVariants(for: theme))
+        rules.append(contentsOf: defaultButtonStyle(for: theme))
         return rules
     }
 
