@@ -13,7 +13,7 @@ public struct ButtonProxy: Sendable {
     // Bootstrap adds a border by default. Rather than removing the border, which
     // affects sizing, we simply make it transparent.
     /// The active styles of the button.
-    var pressedStyles = [InlineStyle]()
+    var pressedStyles = [InlineStyle(.borderColor, value: Color.clear.description)]
 
     /// The hover styles of the button.
     var hoveredStyles = [InlineStyle]()
