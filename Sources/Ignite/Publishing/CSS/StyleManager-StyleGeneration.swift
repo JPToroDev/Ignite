@@ -46,14 +46,14 @@ extension StyleManager {
     private func analyzeSingleCondition(
         from environment: EnvironmentConditions,
         matchingStyles styles: [InlineStyle],
-        using collector: StyledHTML,
+        using collector: ElementProxy,
         style: any Style
     ) -> EnvironmentConditions? {
         for query in environment.toMediaQueries() {
             let testCondition = createTestCondition(from: query)
             let testResult = style.style(content: collector, environment: testCondition)
 
-            if Array(testResult.attributes.styles) == styles {
+            if Array(testResult.styles) == styles {
                 return testCondition
             }
         }
@@ -71,12 +71,12 @@ extension StyleManager {
     private func analyzeComplexCondition(
         environment: EnvironmentConditions,
         styles: [InlineStyle],
-        using collector: StyledHTML,
+        using collector: ElementProxy,
         style: any Style,
         existingConditions uniqueConditions: [EnvironmentConditions: [InlineStyle]]
     ) -> (EnvironmentConditions, [InlineStyle])? {
         let testResult = style.style(content: collector, environment: environment)
-        guard Array(testResult.attributes.styles) == styles else { return nil }
+        guard Array(testResult.styles) == styles else { return nil }
 
         if let existingCondition = uniqueConditions.first(where: { $0.value == styles })?.key {
             return environment.conditionCount < existingCondition.conditionCount
@@ -91,7 +91,7 @@ extension StyleManager {
     private struct StyleVariationContext {
         let environment: EnvironmentConditions
         let styles: [InlineStyle]
-        let collector: StyledHTML
+        let collector: ElementProxy
         let style: any Style
         let defaultStyles: [InlineStyle]
     }
@@ -138,13 +138,13 @@ extension StyleManager {
     private func collectStyleVariations(
         for style: any Style,
         conditions allConditions: [EnvironmentConditions],
-        using collector: StyledHTML
+        using collector: ElementProxy
     ) -> [EnvironmentConditions: [InlineStyle]] {
         var tempMap: [EnvironmentConditions: [InlineStyle]] = [:]
 
         for environment in allConditions {
             let styledHTML = style.style(content: collector, environment: environment)
-            tempMap[environment] = Array(styledHTML.attributes.styles)
+            tempMap[environment] = Array(styledHTML.styles)
         }
 
         return tempMap
@@ -156,7 +156,7 @@ extension StyleManager {
     ///   - themes: Available themes to consider when generating variations
     /// - Returns: A `StyleMapResult` containing the default style and unique style variations
     private func generateStylesMap(for style: any Style, themes: [any Theme]) -> StyleMapResult {
-        let collector = StyledHTML()
+        let collector = ElementProxy()
         var uniqueConditions: [EnvironmentConditions: [InlineStyle]] = [:]
 
         // Get all possible conditions and collect styles
@@ -166,7 +166,7 @@ extension StyleManager {
         // Find the default style
         let defaultEnvironment = EnvironmentConditions()
         let defaultHTML = style.style(content: collector, environment: defaultEnvironment)
-        let defaultStyle = Array(defaultHTML.attributes.styles)
+        let defaultStyle = Array(defaultHTML.styles)
 
         // Analyze conditions that produce different styles from default
         for (environment, styles) in tempMap {
