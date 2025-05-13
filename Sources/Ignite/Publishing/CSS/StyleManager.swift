@@ -32,7 +32,7 @@ final class StyleManager {
     private struct StyleVariationContext {
         let environment: EnvironmentConditions
         let styles: [InlineStyle]
-        let collector: StyledHTML
+        let collector: ElementProxy
         let style: any Style
         let defaultStyles: [InlineStyle]
     }
