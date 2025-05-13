@@ -71,10 +71,11 @@ final class StyleManager {
     /// Generate the CSS of a button style.
     private func generateButtonStyles(for style: any ButtonStyle) -> [String] {
         let buttonConfig = style.style(button: .init())
-        let styles = buttonConfig.defaultStyles
-        let pressedStyles = buttonConfig.pressedStyles
-        let hoveredStyles = buttonConfig.hoveredStyles
-        let disabledStyles = buttonConfig.disabledStyles
+        // Make all styles !important so that they overwrite Bootstrap
+        let styles = buttonConfig.defaultStyles.map { $0.important() }
+        let pressedStyles = buttonConfig.pressedStyles.map { $0.important() }
+        let hoveredStyles = buttonConfig.hoveredStyles.map { $0.important() }
+        let disabledStyles = buttonConfig.disabledStyles.map { $0.important() }
         var rulesets = [Ruleset]()
 
         let defaultRules = Ruleset(.class(style.className), styles: styles)

@@ -13,7 +13,7 @@ public struct ButtonProxy: Sendable {
     // Bootstrap adds a border by default. Rather than removing the border, which
     // affects sizing, we simply make it transparent.
     /// The active styles of the button.
-    var pressedStyles = [InlineStyle(.borderColor, value: Color.clear.description).important()]
+    var pressedStyles = [InlineStyle]()
 
     /// The hover styles of the button.
     var hoveredStyles = [InlineStyle]()
@@ -29,13 +29,15 @@ public struct ButtonProxy: Sendable {
     ///   - disabled: The font weight when the button is disabled.
     /// - Returns: A new button with the updated font weights.
     public func fontWeight(
-        _ default: FontWeight,
+        _ default: FontWeight?,
         hovered: FontWeight? = nil,
         pressed: FontWeight? = nil,
         disabled: FontWeight? = nil
     ) -> Self {
         var copy = self
-        copy.defaultStyles.append(.init(.fontWeight, value: `default`.rawValue.formatted()))
+        if let `default` {
+            copy.defaultStyles.append(.init(.fontWeight, value: `default`.rawValue.formatted()))
+        }
         if let hovered {
             copy.hoveredStyles.append(.init(.fontWeight, value: hovered.rawValue.formatted()))
         }
@@ -128,6 +130,9 @@ public struct ButtonProxy: Sendable {
         }
         if let pressed {
             copy.pressedStyles.append(.init(.borderColor, value: pressed.description))
+        } else if `default` != nil || hovered != nil {
+            // Inherit the border color from the other states by default
+            copy.pressedStyles.removeAll(where: { $0.property == Property.borderColor.rawValue })
         }
         if let disabled {
             copy.disabledStyles.append(.init(.borderColor, value: disabled.description))
