@@ -78,6 +78,52 @@ extension PublishingContext {
         }
     }
 
+    /// Generate the default button style for a theme.
+    func defaultButtonStyle(for theme: any Theme) -> [Ruleset] {
+        guard !(theme.buttonStyle is EmptyButtonStyle) else { return [] }
+        let buttonConfig = theme.buttonStyle.style(button: .init())
+        let styles = buttonConfig.defaultStyles
+        let pressedStyles = buttonConfig.pressedStyles
+        let hoveredStyles = buttonConfig.hoveredStyles
+        let disabledStyles = buttonConfig.disabledStyles
+        var rulesets = [Ruleset]()
+
+        let defaultRules = Ruleset(
+            .anyChild(.attribute("data-ig-theme", value: theme.cssID), .class("ig-btn-default")),
+            styles: styles)
+        rulesets.append(defaultRules)
+
+        if hoveredStyles.isEmpty == false {
+            let hoveredRules = Ruleset(
+                .anyChild(
+                    .attribute("data-ig-theme", value: theme.cssID),
+                    .class("ig-btn-default").chaining(.pseudoClass("hover"))),
+                styles: hoveredStyles)
+            rulesets.append(hoveredRules)
+        }
+
+        // Must follow hover styles for proper cascading
+        if pressedStyles.isEmpty == false {
+            let pressedRules = Ruleset(
+                .anyChild(
+                    .attribute("data-ig-theme", value: theme.cssID),
+                    .class("ig-btn-default").chaining(.pseudoClass("active"))),
+                styles: pressedStyles)
+            rulesets.append(pressedRules)
+        }
+
+        if disabledStyles.isEmpty == false {
+            let disabledStyles = Ruleset(
+                .anyChild(
+                    .attribute("data-ig-theme", value: theme.cssID),
+                    .class("ig-btn-default").chaining(.pseudoClass("disabled"))),
+                styles: disabledStyles)
+            rulesets.append(disabledStyles)
+        }
+
+        return rulesets
+    }
+
     /// Generate the color variants for active buttons.
     func buttonColorVariants(for theme: any Theme) -> [Ruleset] {
         struct ButtonColorVariant {
@@ -97,7 +143,9 @@ extension PublishingContext {
             .init(variable: .dark, color: theme.offBlack, className: "btn-dark")
         ]
 
-        return brandColors.map { variant in
+        let customColors = brandColors.filter { $0.color != .default }
+
+        return customColors.map { variant in
             var selector: Selector = .class(variant.className)
             if site.hasMultipleThemes {
                 selector = .list(

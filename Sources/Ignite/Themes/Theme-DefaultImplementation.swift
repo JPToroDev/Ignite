@@ -144,6 +144,9 @@ public extension Theme {
 
     // Maximum widths
     var siteWidth: ResponsiveValues { .default }
+
+    // Styles
+    var buttonStyle: EmptyButtonStyle { EmptyButtonStyle() }
 }
 
 public extension Theme {
