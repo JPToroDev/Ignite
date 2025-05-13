@@ -9,10 +9,15 @@
 public struct ButtonProxy: Sendable {
     /// The default styles of the button.
     var defaultStyles = [InlineStyle]()
+
     /// The active styles of the button.
-    var pressedStyles = [InlineStyle]()
+    // Bootstrap adds a border by default. Rather than removing the border, which
+    // affects sizing, we simply make it transparent.
+    var pressedStyles = [InlineStyle(.borderColor, value: Color.clear.description)]
+
     /// The hover styles of the button.
     var hoveredStyles = [InlineStyle]()
+
     /// The disabled styles of the button.
     var disabledStyles = [InlineStyle]()
 
@@ -138,13 +143,15 @@ public struct ButtonProxy: Sendable {
     ///   - disabled: The border width when the button is disabled.
     /// - Returns: A new button with the updated border widths.
     public func borderWidth(
-        _ default: Double,
+        _ default: Double?,
         hovered: Double? = nil,
         pressed: Double? = nil,
         disabled: Double? = nil
     ) -> Self {
         var copy = self
-        copy.defaultStyles.append(.init(.borderWidth, value: `default`.formatted()+"px"))
+        if let `default` {
+            copy.defaultStyles.append(.init(.borderWidth, value: `default`.formatted()+"px"))
+        }
         if let hovered {
             copy.hoveredStyles.append(.init(.borderWidth, value: hovered.formatted()+"px"))
         }
@@ -165,13 +172,15 @@ public struct ButtonProxy: Sendable {
     ///   - disabled: The corner radius when the button is disabled.
     /// - Returns: A new button with the updated corner radius configurations.
     public func cornerRadius(
-        _ default: CornerRadii,
+        _ default: CornerRadii?,
         hovered: CornerRadii? = nil,
         pressed: CornerRadii? = nil,
         disabled: CornerRadii? = nil
     ) -> Self {
         var copy = self
-        copy.defaultStyles.append(.init(.borderRadius, value: `default`.css))
+        if let `default` {
+            copy.defaultStyles.append(.init(.borderRadius, value: `default`.css))
+        }
         if let hovered {
             copy.hoveredStyles.append(.init(.borderRadius, value: hovered.css))
         }
