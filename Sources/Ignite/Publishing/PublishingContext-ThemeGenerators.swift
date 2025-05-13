@@ -151,7 +151,6 @@ extension PublishingContext {
         rules.append(contentsOf: containerMediaQueries(for: theme))
         rules.append(contentsOf: responsiveVariables(for: theme))
         rules.append(contentsOf: buttonColorVariants(for: theme))
-        rules.append(contentsOf: defaultButtonStyle(for: theme))
         return rules
     }
 

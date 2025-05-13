@@ -145,6 +145,7 @@ public struct Button: InlineElement, FormItem {
     /// - Returns: A new `Button` instance with the updated style.
     public func buttonStyle(_ style: ButtonStyle) -> Self {
         var copy = self
+        StyleManager.shared.registerButtonStyle(style)
         copy.attributes.append(classes: style.className)
         return copy
     }
@@ -204,8 +205,8 @@ public struct Button: InlineElement, FormItem {
         }
 
         switch role {
-        case .default:
-            outputClasses.append("ig-btn-default")
+        case .default, .none:
+           break
         default:
             outputClasses.append("btn-\(role.rawValue)")
         }

@@ -116,11 +116,6 @@ public protocol Theme: Sendable {
     /// The color scheme for syntax highlighting
     var syntaxHighlighterTheme: HighlighterTheme { get }
 
-    associatedtype ButtonStyleType: ButtonStyle
-
-    /// The default style of buttons throughout the site.
-    var buttonStyle: ButtonStyleType { get }
-
     typealias ResponsiveValues = Ignite.ResponsiveValues<LengthUnit>
 
     /// Base font size
