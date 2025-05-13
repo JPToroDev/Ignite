@@ -8,9 +8,11 @@
 /// A protocol that defines the style of a button.
 public protocol ButtonStyle: Sendable {
     /// Styles a button according to the custom style implementation.
-    /// - Parameter button: The button to be styled.
+    /// - Parameters:
+    ///    - button: The button to be styled.
+    ///    - theme: The type of `Theme` this style applies to.
     /// - Returns: A new button with the applied style modifications.
-    func style(button: ButtonProxy) -> ButtonProxy
+    func style(button: ButtonProxy, theme: some Theme) -> ButtonProxy
 }
 
 extension ButtonStyle {

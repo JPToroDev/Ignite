@@ -6,7 +6,7 @@
 //
 
 /// A configuration that defines the visual styling properties for a button.
-public struct ButtonProxy: Sendable {
+public struct ButtonProxy: Equatable, Sendable {
     /// The default styles of the button.
     var defaultStyles = [InlineStyle]()
 
@@ -20,6 +20,11 @@ public struct ButtonProxy: Sendable {
 
     /// The disabled styles of the button.
     var disabledStyles = [InlineStyle]()
+
+    /// Whether this proxy lacks any styles.
+    var isEmpty: Bool {
+        self == ButtonProxy()
+    }
 
     /// Sets the font weight of the button text.
     /// - Parameters:

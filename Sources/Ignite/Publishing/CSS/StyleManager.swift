@@ -60,50 +60,36 @@ final class StyleManager {
             generateCSS(style: style, themes: themes)
         }
 
-        for style in buttonStyles {
-            let styles = generateButtonStyles(for: style)
-            cssRules.append(contentsOf: styles)
+        for theme in themes {
+            for style in buttonStyles {
+                let styles = generateButtonStyles(for: style, theme: theme)
+                cssRules.append(contentsOf: styles)
+            }
         }
 
         return cssRules.joined(separator: "\n\n")
     }
 
     /// Generate the CSS of a button style.
-    private func generateButtonStyles(for style: any ButtonStyle) -> [String] {
-        let buttonConfig = style.style(button: .init())
-        // Make all styles !important so that they overwrite Bootstrap
-        let styles = buttonConfig.defaultStyles.map { $0.important() }
-        let pressedStyles = buttonConfig.pressedStyles.map { $0.important() }
-        let hoveredStyles = buttonConfig.hoveredStyles.map { $0.important() }
-        let disabledStyles = buttonConfig.disabledStyles.map { $0.important() }
-        var rulesets = [Ruleset]()
+    private func generateButtonStyles(for style: any ButtonStyle, theme: Theme) -> [String] {
+        let buttonConfig = style.style(button: .init(), theme: theme)
+        guard buttonConfig.isEmpty == false else { return [] }
 
-        let defaultRules = Ruleset(.class(style.className), styles: styles)
-        rulesets.append(defaultRules)
+        let baseSelector = Selector.anyChild(
+            .attribute("data-ig-theme", value: theme.cssID),
+            .class(style.className))
 
-        if hoveredStyles.isEmpty == false {
-            let hoveredRules =  Ruleset(
-                .class(style.className)
-                .chaining(.pseudoClass("hover")),
-                styles: hoveredStyles)
-            rulesets.append(hoveredRules)
-        }
+        let styleConfigs: [(styles: [InlineStyle], pseudoClass: String?)] = [
+            (buttonConfig.defaultStyles.map { $0.important() }, nil),
+            (buttonConfig.hoveredStyles.map { $0.important() }, "hover"),
+            (buttonConfig.pressedStyles.map { $0.important() }, "active"),
+            (buttonConfig.disabledStyles.map { $0.important() }, "disabled")
+        ]
 
-        // Must follow hover styles for proper cascading
-        if pressedStyles.isEmpty == false {
-            let pressedRules =  Ruleset(
-                .class(style.className)
-                .chaining(.pseudoClass("active")),
-                styles: pressedStyles)
-            rulesets.append(pressedRules)
-        }
-
-        if disabledStyles.isEmpty == false {
-            let disabledStyles =  Ruleset(
-                .class(style.className)
-                .chaining(.pseudoClass("disabled")),
-                styles: disabledStyles)
-            rulesets.append(disabledStyles)
+        let rulesets = styleConfigs.compactMap { config -> Ruleset? in
+            guard !config.styles.isEmpty else { return nil }
+            let selector = config.pseudoClass.map { baseSelector.chaining(.pseudoClass($0)) } ?? baseSelector
+            return Ruleset(selector, styles: config.styles)
         }
 
         return rulesets.map { $0.render() }
