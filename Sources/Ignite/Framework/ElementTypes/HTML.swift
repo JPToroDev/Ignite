@@ -24,6 +24,11 @@ public extension HTML {
 }
 
 extension HTML {
+    /// The default status as a primitive element.
+    var isPrimitive: Bool {
+        Self.Body.self == Never.self
+    }
+
     /// The Bootstrap class that sizes this element in a grid.
     var columnWidth: String {
         if let width = attributes.classes.first(where: {

@@ -8,13 +8,10 @@
 /// One item inside an accordion.
 public struct Item: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The title to show for this item. Clicking this title will display the
     /// item's contents.

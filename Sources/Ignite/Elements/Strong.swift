@@ -8,13 +8,10 @@
 /// Renders text with a strong text effect, which usually means bold.
 public struct Strong: InlineElement {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The content that should be strengthened.
     var content: any InlineElement

@@ -14,13 +14,10 @@
 /// applied through modifiers like `.margin()` will be respected.
 public struct ZStack: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The alignment point for positioning elements within the stack.
     private var alignment: Alignment

@@ -12,10 +12,7 @@ public struct EmptyInlineElement: InlineElement {
     public nonisolated init() {}
 
     /// Returns self as the body content since this is an empty element
-    public var body: some InlineElement { self }
-
-    /// Whether this element belongs to the framework.
-    public var isPrimitive: Bool { true }
+    public var body: some InlineElement { fatalError() }
 
     /// Renders this element as an empty string
     /// - Returns: An empty string

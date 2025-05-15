@@ -8,13 +8,10 @@
 /// One slide in a `Carousel`.
 public struct Slide: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// An optional background image to use for this slide. This should be
     /// specified relative to the root of your site, e.g. /images/dog.jpg.

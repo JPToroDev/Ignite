@@ -8,13 +8,10 @@
 /// A text input field for collecting user information in forms.
 public struct TextField: InlineElement, FormItem {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The label text for the field
     var label: ControlLabel?

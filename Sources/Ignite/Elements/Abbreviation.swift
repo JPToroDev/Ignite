@@ -8,13 +8,10 @@
 /// Renders an abbreviation.
 public struct Abbreviation: InlineElement {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The contents of this abbreviation.
     public var contents: any InlineElement

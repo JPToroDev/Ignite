@@ -9,13 +9,10 @@
 /// This wrapper also handles unwrapping nested `AnyHTML` instances to prevent unnecessary wrapping layers.
 public struct AnyHTML: HTML {
     /// The body of this HTML element, which is itself
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The underlying HTML content, unattributed.
     var wrapped: any BodyElement

@@ -53,18 +53,18 @@ extension MarkupElement {
 private extension HTML {
     /// Whether this element represents a specific type.
     func isType(_ elementType: any MarkupElement.Type) -> Bool {
-        if let anyHTML = body as? AnyHTML {
+        if let anyHTML = self as? AnyHTML {
             type(of: anyHTML.wrapped) == elementType
         } else {
-            type(of: body) == elementType
+            type(of: self) == elementType
         }
     }
 
     /// The underlying content, conditionally cast to the specified type.
     func asType<T: MarkupElement>(_ elementType: T.Type) -> T? {
-        if let anyHTML = body as? AnyHTML, let element = anyHTML.attributedContent as? T {
+        if let anyHTML = self as? AnyHTML, let element = anyHTML.attributedContent as? T {
             element
-        } else if let element = body as? T {
+        } else if let element = self as? T {
             element
         } else {
             nil
@@ -75,9 +75,9 @@ private extension HTML {
 private extension InlineElement {
     /// The underlying content, conditionally cast to the specified type.
     func asType<T: MarkupElement>(_ elementType: T.Type) -> T? {
-        if let anyHTML = body as? AnyInlineElement, let element = anyHTML.attributedContent as? T {
+        if let anyHTML = self as? AnyInlineElement, let element = anyHTML.attributedContent as? T {
             element
-        } else if let element = body as? T {
+        } else if let element = self as? T {
             element
         } else {
             nil
@@ -86,10 +86,10 @@ private extension InlineElement {
 
     /// Whether this element represents a specific type.
     func isType(_ elementType: any MarkupElement.Type) -> Bool {
-        if let anyHTML = body as? AnyInlineElement {
+        if let anyHTML = self as? AnyInlineElement {
             type(of: anyHTML.wrapped) == elementType
         } else {
-            type(of: body) == elementType
+            type(of: self) == elementType
         }
     }
 }

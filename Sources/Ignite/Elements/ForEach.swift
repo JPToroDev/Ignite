@@ -8,19 +8,17 @@
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
 public struct ForEach<Data: Sequence>: HTML, ListableElement {
+    /// The content and behavior of this HTML.
+    public var body: some HTML { fatalError() }
+    
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The sequence of data to iterate over.
     private let data: Data
 
     /// The child elements contained within this HTML element.
     var items: [any BodyElement]
-
-    public var body: some HTML { self }
 
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:

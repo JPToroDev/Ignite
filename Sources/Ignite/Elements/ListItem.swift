@@ -10,13 +10,10 @@
 /// need a styled HTML <li> element.
 public struct ListItem: HTML, ListableElement {
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The content of this list item.
     private var content: any HTML

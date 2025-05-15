@@ -9,9 +9,6 @@ public struct Body: MarkupElement {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
-
     /// Whether this HTML uses Bootstrap's `container` class to determine page width.
     var isBoundByContainer: Bool = true
 

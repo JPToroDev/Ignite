@@ -7,11 +7,9 @@
 
 public struct ConditionalHTML<TrueContent: BodyElement, FalseContent: BodyElement>: HTML {
 
+    public var body: some HTML { fatalError() }
+
     public var attributes = CoreAttributes()
-
-    public var isPrimitive = true
-
-    public var body: some HTML { self }
 
     let storage: Storage
 

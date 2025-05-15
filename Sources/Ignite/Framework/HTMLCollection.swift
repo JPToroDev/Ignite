@@ -12,13 +12,10 @@
 /// structures into a flat, iterable collections of `HTML` elements.
 struct VariadicHTML: HTML, @preconcurrency Sequence {
     /// The content and behavior of this HTML sequence
-    var body: some HTML { self }
+    var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    var isPrimitive: Bool { true }
 
     /// The array of HTML elements contained in this sequence
     private var items: [any BodyElement] = []

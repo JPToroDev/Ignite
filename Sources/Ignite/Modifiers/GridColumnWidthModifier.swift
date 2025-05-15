@@ -7,13 +7,16 @@
 
 @MainActor private func gridColumnWidthModifier(
     _ width: ColumnWidth,
-    content: any BodyElement
-) -> AnyHTML {
-    if content.isPrimitive {
-        AnyHTML(content.class(width.className))
-    } else {
-        AnyHTML(Section(content).class(width.className))
-    }
+    content: some HTML
+) -> some HTML {
+    ModifiedHTML(content).class(width.className)
+}
+
+@MainActor private func gridColumnWidthModifier(
+    _ width: ColumnWidth,
+    content: some InlineElement
+) -> some HTML {
+    ModifiedHTML(InlineHTML(content)).class(width.className)
 }
 
 public extension HTML {

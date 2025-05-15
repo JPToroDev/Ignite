@@ -8,19 +8,17 @@
 /// A structure that creates inline content by mapping over a sequence of data.
 @MainActor
 public struct InlineForEach<Data: Sequence>: InlineElement, PassthroughElement {
+    /// The content and behavior of this HTML.
+    public var body: some InlineElement { fatalError() }
+
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The sequence of data to iterate over.
     private let data: Data
 
     /// The child elements contained within this HTML element.
     var items: InlineElementCollection
-
-    public var body: some InlineElement { self }
 
     /// Creates a new InlineForEach instance that generates inline content from a sequence.
     /// - Parameters:

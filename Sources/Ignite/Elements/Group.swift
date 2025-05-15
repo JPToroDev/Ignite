@@ -17,16 +17,14 @@
 ///         structure. If you need a containing `div` element, use
 ///         ``Section`` instead.
 public struct Group: HTML {
+    /// The content and behavior of this HTML.
+    public var body: some HTML { fatalError() }
+
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
-
     /// The child elements contained within this group.
     var content: any BodyElement
-
-    public var body: some HTML { self }
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.

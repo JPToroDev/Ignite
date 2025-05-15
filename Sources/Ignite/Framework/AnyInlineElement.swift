@@ -11,13 +11,10 @@
 /// instances to prevent unnecessary wrapping layers.
 public struct AnyInlineElement: InlineElement {
     /// The body of this HTML element, which is itself.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this element belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The underlying HTML content, unattributed.
     var wrapped: any InlineElement

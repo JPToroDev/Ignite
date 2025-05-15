@@ -13,9 +13,6 @@ public struct Head: MarkupElement {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
-
     /// Whether to include standard headers and social sharing tags
     private var includeStandardHeaders = true
 

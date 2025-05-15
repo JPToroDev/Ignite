@@ -31,6 +31,11 @@ public extension InlineElement {
 }
 
 extension InlineElement {
+    /// The default status as a primitive element.
+    var isPrimitive: Bool {
+        Self.Body.self == Never.self
+    }
+
     /// Adds an event handler to the element.
     /// - Parameters:
     ///   - name: The name of the event (e.g., "click", "mouseover")

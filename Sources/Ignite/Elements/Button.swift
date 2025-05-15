@@ -30,13 +30,10 @@ public struct Button: InlineElement, FormItem {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// Whether this button should submit a form or not. Defaults to `.plain`.
     var type = Type.plain

@@ -10,13 +10,10 @@
 /// on either `title` or `icon`.
 public struct Label: InlineElement {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The text content to display alongside the icon.
     private var title: any InlineElement

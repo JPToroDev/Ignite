@@ -8,13 +8,10 @@
 /// Lets you include arbitrary HTML on a page.
 public struct Include: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The filename you want to bring in, including its extension. This file
     /// must be in your Includes directory.

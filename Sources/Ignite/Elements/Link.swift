@@ -32,13 +32,10 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// How a `NavigationBar` displays this item at different breakpoints.
     public var navigationBarVisibility: NavigationBarVisibility = .automatic

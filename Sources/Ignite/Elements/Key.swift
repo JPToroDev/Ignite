@@ -9,13 +9,10 @@
 /// or any other text entry device
 public struct Key: InlineElement {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public let isPrimitive = true
 
     /// The code to display.
     private var content: String

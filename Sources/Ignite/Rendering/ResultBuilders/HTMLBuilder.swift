@@ -19,6 +19,13 @@ public struct HTMLBuilder {
         content
     }
 
+    /// Converts `Never` into a builder expression.
+    /// - Parameter content: The HTML element to convert
+    /// - Returns: The same HTML element, unchanged
+    public static func buildExpression(_ content: Never) -> some HTML {
+        content
+    }
+
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged

@@ -55,13 +55,10 @@ public struct List: HTML {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The current style for this list. Defaults to `.automatic`.
     private var listStyle: Style = .automatic
@@ -169,7 +166,7 @@ public struct List: HTML {
             // Any element that renders its own <li> (e.g. ForEach) should
             // be allowed to handle that itself.
             if var listableItem = item as? ListableElement ??
-            (item as? AnyHTML)?.body as? ListableElement {
+                (item as? AnyHTML)?.wrapped as? ListableElement {
                 if listStyle != .automatic {
                     listableItem.attributes.append(classes: "list-group-item")
                 }

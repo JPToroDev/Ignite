@@ -7,13 +7,10 @@
 
 struct ModifiedInlineElement<Content: InlineElement>: InlineElement {
     /// The body of this HTML element, which is itself
-    var body: some InlineElement { self }
+    var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    let isPrimitive = true
 
     /// The underlying HTML content, unattributed.
     var content: Content

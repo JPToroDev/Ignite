@@ -8,13 +8,10 @@
 /// A form label with support for various styles
 struct ControlLabel: InlineElement {
     /// The content and behavior of this HTML.
-    var body: some InlineElement { self }
+    var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    var isPrimitive: Bool { true }
 
     /// The text content of the label
     private let text: any InlineElement

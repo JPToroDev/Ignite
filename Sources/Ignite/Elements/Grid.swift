@@ -14,13 +14,10 @@
 /// by using the `columns()` modifier.
 public struct Grid: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { self }
+    public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// How many columns this should be divided into
     var columnCount: Int?

@@ -7,13 +7,11 @@
 
 public struct TupleHTML<T>: HTML {
 
+    public var body: some HTML { fatalError() }
+
     public var attributes = CoreAttributes()
 
-    public var isPrimitive = true
-
     var content: T
-
-    public var body: some HTML { self }
 
     public init(_ content: T) {
         self.content = content

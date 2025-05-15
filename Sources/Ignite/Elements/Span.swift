@@ -9,13 +9,10 @@
 /// just part of some text, for example.
 public struct Span: InlineElement, NavigationItem, FormItem {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { self }
+    public var body: some InlineElement { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// Whether this HTML belongs to the framework.
-    public var isPrimitive: Bool { true }
 
     /// The contents of this span.
     private var contents: any InlineElement
