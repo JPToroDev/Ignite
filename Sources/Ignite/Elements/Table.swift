@@ -34,10 +34,10 @@ public struct Table: HTML {
     var filterTitle: String?
 
     /// The rows that are inside this table.
-    var rows: HTMLCollection
+    var rows: VariadicHTML
 
     /// An optional array of header to use at the top of this table.
-    var header: HTMLCollection?
+    var header: VariadicHTML?
 
     /// The styling to apply to this table. Defaults to `.plain`.
     var style = Style.plain
@@ -61,7 +61,7 @@ public struct Table: HTML {
         @ElementBuilder<Row> rows: () -> [Row]
     ) {
         self.filterTitle = filterTitle
-        self.rows = HTMLCollection(rows())
+        self.rows = VariadicHTML(rows())
     }
 
     /// Creates a new `Table` instance from an element builder that returns
@@ -78,8 +78,8 @@ public struct Table: HTML {
         @HTMLBuilder header: () -> some BodyElement
     ) {
         self.filterTitle = filterTitle
-        self.rows = HTMLCollection(rows())
-        self.header = HTMLCollection(header)
+        self.rows = VariadicHTML(rows())
+        self.header = VariadicHTML(header)
     }
 
     /// Creates a new `Table` instance from a collection of items, along with a function
@@ -96,7 +96,7 @@ public struct Table: HTML {
         content: (T) -> Row
     ) {
         self.filterTitle = filterTitle
-        self.rows = HTMLCollection(items.map(content))
+        self.rows = VariadicHTML(items.map(content))
     }
 
     /// Creates a new `Table` instance from a collection of items, along with a function
@@ -115,8 +115,8 @@ public struct Table: HTML {
         @HTMLBuilder header: () -> some HTML
     ) {
         self.filterTitle = filterTitle
-        self.rows = HTMLCollection(items.map(content))
-        self.header = HTMLCollection(header)
+        self.rows = VariadicHTML(items.map(content))
+        self.header = VariadicHTML(header)
     }
 
     /// Adjusts the style of this table.

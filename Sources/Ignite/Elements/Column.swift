@@ -36,13 +36,13 @@ public struct Column: HTML {
     var verticalAlignment = VerticalAlignment.top
 
     /// The items to render inside this column.
-    var items: HTMLCollection
+    var content: any BodyElement
 
     /// Creates a new column from a page element builder of items.
     /// - Parameter items: A page element builder that returns the items
     /// for this column.
-    public init(@HTMLBuilder items: () -> some BodyElement) {
-        self.items = HTMLCollection(items)
+    public init(@HTMLBuilder content: () -> some BodyElement) {
+        self.content = content()
     }
 
     /// Adjusts how many columns in a row this column should span.
@@ -72,7 +72,7 @@ public struct Column: HTML {
             columnAttributes.append(classes: ["align-\(verticalAlignment.rawValue)"])
         }
         columnAttributes.append(customAttributes: .init(name: "colspan", value: columnSpan.formatted()))
-        let itemHTML = items.markupString()
-        return Markup("<td\(columnAttributes)>\(itemHTML)</td>")
+        let contentHTML = content.markupString()
+        return Markup("<td\(columnAttributes)>\(contentHTML)</td>")
     }
 }

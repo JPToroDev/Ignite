@@ -71,7 +71,8 @@ public struct Form: HTML, NavigationItem {
     ///   - content: A closure that returns the form's elements.
     public init(
         spacing: SpacingAmount = .medium,
-        @ElementBuilder<FormItem> content: () -> [any FormItem]
+        @ElementBuilder<FormItem>
+        content: () -> [any FormItem]
     ) {
         self.items = content()
         self.spacing = spacing
@@ -151,8 +152,7 @@ public struct Form: HTML, NavigationItem {
         .markup()
     }
 
-    @HTMLBuilder
-    private func renderTextField(_ textField: TextField) -> some HTML {
+    @HTMLBuilder private func renderTextField(_ textField: TextField) -> some HTML {
         let styledTextField = textField.size(controlSize).labelStyle(labelStyle)
         switch labelStyle {
         case .leading: styledTextField
@@ -165,7 +165,7 @@ public struct Form: HTML, NavigationItem {
     }
 
     private func renderSection(_ section: Section) -> some HTML {
-        var items = HTMLCollection([section.content]).elements
+        var items = VariadicHTML([section.content]).attributedChildren
 
         let last = items.last
 

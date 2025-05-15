@@ -27,7 +27,7 @@ public struct HStack: HTML {
     private var alignment: VerticalAlignment
 
     /// The child elements contained in the stack.
-    private var items: HTMLCollection
+    private var content: any HTML
 
     /// Creates a horizontal stack with the specified alignment, exact pixel spacing, and content.
     /// - Parameters:
@@ -37,9 +37,9 @@ public struct HStack: HTML {
     public init(
         alignment: VerticalAlignment = .center,
         spacing pixels: Int,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.content = content()
         self.alignment = alignment
         self.spacingAmount = .exact(pixels)
     }
@@ -52,15 +52,16 @@ public struct HStack: HTML {
     public init(
         alignment: VerticalAlignment = .center,
         spacing: SpacingAmount = .medium,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.content = content()
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
 
     public func markup() -> Markup {
-        let items: [any BodyElement] = items.elements.map {
+        let elements = VariadicHTML([content]).attributedChildren
+        let items: [any BodyElement] = elements.map {
             var elementAttributes = CoreAttributes()
             elementAttributes.append(classes: "mb-0")
             elementAttributes.append(classes: alignment.itemAlignmentClass)

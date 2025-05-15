@@ -134,9 +134,9 @@ public struct Card: HTML {
     var imageOpacity = 1.0
 
     var image: Image?
-    private var header: HTMLCollection
-    private var footer: HTMLCollection
-    private var items: HTMLCollection
+    private var header: any HTML
+    private var footer: any HTML
+    private var items: any HTML
 
     var cardClasses: String? {
         switch style {
@@ -151,17 +151,17 @@ public struct Card: HTML {
 
     public init(
         imageName: String? = nil,
-        @HTMLBuilder body: () -> some BodyElement,
-        @HTMLBuilder header: () -> some BodyElement = { EmptyHTML() },
-        @HTMLBuilder footer: () -> some BodyElement = { EmptyHTML() }
+        @HTMLBuilder body: () -> some HTML,
+        @HTMLBuilder header: () -> some HTML = { EmptyHTML() },
+        @HTMLBuilder footer: () -> some HTML = { EmptyHTML() }
     ) {
         if let imageName {
             self.image = Image(decorative: imageName)
         }
 
-        self.header = HTMLCollection(header)
-        self.footer = HTMLCollection(footer)
-        self.items = HTMLCollection(body)
+        self.header = header()
+        self.footer = footer()
+        self.items = body()
     }
 
     public func role(_ role: Role) -> Card {
@@ -250,6 +250,7 @@ public struct Card: HTML {
 
     private func renderItems() -> some HTML {
         Section {
+            let items = VariadicHTML([items]).attributedChildren
             ForEach(items) { item in
                 switch item {
                 case let text as Text where text.font == .body || text.font == .lead:

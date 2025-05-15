@@ -71,7 +71,7 @@ public struct List: HTML {
 
     /// The items to show in this list. This may contain any page elements,
     /// but if you need specific styling you might want to use `ListItem` objects.
-    private var items: HTMLCollection
+    private var items: VariadicHTML
 
     /// Returns the correct HTML name for this list.
     private var listElementName: String {
@@ -86,7 +86,7 @@ public struct List: HTML {
     /// an array of `HTML` objects to display in the list.
     /// - Parameter items: The content you want to display in your list.
     public init(@HTMLBuilder items: () -> some BodyElement) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
     }
 
     /// Creates a new list from a collection of items, along with a function that converts
@@ -96,7 +96,7 @@ public struct List: HTML {
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns an item representing that value in the list.
     public init<T>(_ items: any Sequence<T>, content: (T) -> some BodyElement) {
-        self.items = HTMLCollection(items.map(content))
+        self.items = VariadicHTML(items.map(content))
     }
 
     /// Adjusts the style of this list.

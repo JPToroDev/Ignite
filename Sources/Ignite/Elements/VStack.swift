@@ -42,7 +42,7 @@ public struct VStack: HTML {
     private var alignment: HorizontalAlignment.ResponsiveAlignment
 
     /// The child elements contained in the stack.
-    private var items: HTMLCollection
+    private var items: VariadicHTML
 
     /// Creates a container that stacks its subviews vertically.
     /// - Parameters:
@@ -53,9 +53,9 @@ public struct VStack: HTML {
     public init(
         alignment: HorizontalAlignment = .center,
         spacing pixels: Int? = 0,
-        @HTMLBuilder items: () -> some BodyElement
+        @HTMLBuilder items: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
         self.alignment = .responsive(alignment)
         if let pixels {
             self.spacingAmount = .exact(pixels)
@@ -70,9 +70,9 @@ public struct VStack: HTML {
     public init(
         alignment: HorizontalAlignment = .center,
         spacing: SpacingAmount,
-        @HTMLBuilder items: () -> some BodyElement
+        @HTMLBuilder items: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
         self.alignment = .responsive(alignment)
         self.spacingAmount = .semantic(spacing)
     }
@@ -88,7 +88,7 @@ public struct VStack: HTML {
         spacing pixels: Int? = 0,
         @HTMLBuilder items: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
         self.alignment = alignment
         if let pixels {
             self.spacingAmount = .exact(pixels)
@@ -105,13 +105,13 @@ public struct VStack: HTML {
         spacing: SpacingAmount,
         @HTMLBuilder items: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
 
     public func markup() -> Markup {
-        let items = items.elements.map {
+        let items = items.attributedChildren.map {
             var elementAttributes = CoreAttributes()
             if spacingAmount != nil {
                 elementAttributes.append(classes: "mb-0")

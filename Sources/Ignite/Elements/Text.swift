@@ -124,7 +124,7 @@ public struct Text: HTML, DropdownItem {
                 }
                 .map(Text.init)
 
-            self.content = HTMLCollection(paragraphs)
+            self.content = VariadicHTML(paragraphs)
             self.isMultilineMarkdown = true
         } else {
             // Remove the wrapping <p> tags since they'll be added by markup()

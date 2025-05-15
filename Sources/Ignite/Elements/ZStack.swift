@@ -26,7 +26,7 @@ public struct ZStack: HTML {
     private var alignment: Alignment
 
     /// The child elements to be stacked.
-    private var items: HTMLCollection
+    private var content: any HTML
 
     /// Creates a new `ZStack` with the specified alignment and content.
     /// - Parameters:
@@ -34,14 +34,14 @@ public struct ZStack: HTML {
     ///   - items: A closure that returns the elements to be stacked.
     public init(
         alignment: Alignment = .center,
-        @HTMLBuilder _ items: () -> some BodyElement
+        @HTMLBuilder content: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.content = content()
         self.alignment = alignment
     }
 
     public func markup() -> Markup {
-        var items = items.elements
+        var items = VariadicHTML([content]).attributedChildren
 
         items = items.enumerated().map { index, item in
             var elementAttributes = CoreAttributes()

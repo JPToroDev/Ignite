@@ -34,13 +34,17 @@ public struct Section: HTML, FormItem {
         self.content = EmptyHTML()
     }
 
+    init<T: InlineElement>(_ content: T) {
+        self.content = InlineHTML(content)
+    }
+
     init(_ content: any BodyElement) {
         self.content = content
     }
 
     /// Creates a section that renders as a `div` element.
     /// - Parameter content: The content to display within this section.
-    public init(@HTMLBuilder content: () -> some BodyElement) {
+    public init(@HTMLBuilder content: () -> some HTML) {
         self.content = content()
     }
 
@@ -48,7 +52,7 @@ public struct Section: HTML, FormItem {
     /// - Parameters:
     ///   - header: The text to display as the section's heading
     ///   - content: The content to display within this section
-    public init(_ header: String, @HTMLBuilder content: () -> some BodyElement) {
+    public init(_ header: String, @HTMLBuilder content: () -> some HTML) {
         self.content = content()
         self.header = header
     }

@@ -7,7 +7,7 @@
 
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
-public struct ForEach<Data: Sequence>: HTML, ListableElement, PassthroughElement {
+public struct ForEach<Data: Sequence>: HTML, ListableElement {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -18,7 +18,7 @@ public struct ForEach<Data: Sequence>: HTML, ListableElement, PassthroughElement
     private let data: Data
 
     /// The child elements contained within this HTML element.
-    var items: HTMLCollection
+    var items: [any BodyElement]
 
     public var body: some HTML { self }
 
@@ -31,7 +31,7 @@ public struct ForEach<Data: Sequence>: HTML, ListableElement, PassthroughElement
         @HTMLBuilder content: @escaping (Data.Element) -> some BodyElement
     ) {
         self.data = data
-        self.items = HTMLCollection(data.map(content))
+        self.items = data.map(content)
     }
 
     /// Renders the ForEach content when this isn't part of a list.

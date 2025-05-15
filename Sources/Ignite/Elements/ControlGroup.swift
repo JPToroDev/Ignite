@@ -130,7 +130,7 @@ public struct ControlGroup: HTML, FormItem {
         .markup()
     }
 
-    private func renderText(_ text: Span) -> any InlineElement {
+    private func renderText(_ text: Span) -> some InlineElement {
         text.class("input-group-text")
     }
 
@@ -142,13 +142,13 @@ public struct ControlGroup: HTML, FormItem {
         return textField
     }
 
-    private func renderButton(_ button: Button) -> any InlineElement {
+    private func renderButton(_ button: Button) -> some InlineElement {
         var button = button
         button.type = .plain
         return button
     }
 
-    private func renderDropdown(_ dropdown: Dropdown) -> any HTML {
+    private func renderDropdown(_ dropdown: Dropdown) -> some HTML {
         dropdown.configuration(.controlGroupItem)
     }
 }

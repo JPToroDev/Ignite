@@ -248,7 +248,7 @@ public struct NavigationBar: HTML {
             } else if let spacer = item.as(Spacer.self) {
                 spacer.axis(.horizontal)
             } else {
-                item
+                AnyHTML(item)
             }
         }
     }

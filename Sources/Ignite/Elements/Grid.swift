@@ -32,7 +32,7 @@ public struct Grid: HTML {
     private var alignment: Alignment = .center
 
     /// The items to display in this grid.
-    private var items: HTMLCollection
+    private var items: VariadicHTML
 
     /// Creates a new `Grid` object using a block element builder
     /// that returns an array of items to use in this grid.
@@ -43,9 +43,9 @@ public struct Grid: HTML {
     public init(
         alignment: Alignment = .center,
         spacing: Int,
-        @HTMLBuilder items: () -> some BodyElement
+        @HTMLBuilder items: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
         self.alignment = alignment
         self.spacingAmount = .exact(spacing)
     }
@@ -59,9 +59,9 @@ public struct Grid: HTML {
     public init(
         alignment: Alignment = .center,
         spacing: SpacingAmount = .medium,
-        @HTMLBuilder items: () -> some BodyElement
+        @HTMLBuilder items: () -> some HTML
     ) {
-        self.items = HTMLCollection(items)
+        self.items = VariadicHTML(items)
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
@@ -77,9 +77,10 @@ public struct Grid: HTML {
     public init<T>(
         _ items: any Sequence<T>,
         alignment: Alignment = .center,
-        spacing: Int, content: (T) -> some BodyElement
+        spacing: Int,
+        content: (T) -> some HTML
     ) {
-        self.items = HTMLCollection(items.map(content))
+        self.items = VariadicHTML(items.map(content))
         self.alignment = alignment
         self.spacingAmount = .exact(spacing)
     }
@@ -96,9 +97,9 @@ public struct Grid: HTML {
         _ items: any Sequence<T>,
         alignment: Alignment = .center,
         spacing: SpacingAmount = .medium,
-        content: (T) -> some BodyElement
+        content: (T) -> some HTML
     ) {
-        self.items = HTMLCollection(items.map(content))
+        self.items = VariadicHTML(items.map(content))
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
@@ -141,14 +142,14 @@ public struct Grid: HTML {
 
         return Section {
             ForEach(items) { item in
-                if let passthrough = item as? any PassthroughElement {
-                    handlePassthrough(passthrough, attributes: passthrough.attributes)
-                } else if let modified = item as? AnyHTML,
-                          let passthrough = modified.wrapped as? any PassthroughElement {
-                    handlePassthrough(passthrough, attributes: modified.attributes)
-                } else {
+//                if let passthrough = item as? any PassthroughElement {
+//                    handlePassthrough(passthrough, attributes: passthrough.attributes)
+//                } else if let modified = item as? AnyHTML,
+//                          let passthrough = modified.wrapped as? any PassthroughElement {
+//                    handlePassthrough(passthrough, attributes: modified.attributes)
+//                } else {
                     handleItem(item)
-                }
+//                }
             }
         }
         .attributes(gridAttributes)
@@ -177,7 +178,7 @@ public struct Grid: HTML {
     ///   - attributes: HTML attributes to apply to each element in the group.
     /// - Returns: A view containing the styled group elements.
     func handlePassthrough(_ passthrough: any PassthroughElement, attributes: CoreAttributes) -> some HTML {
-        let collection = HTMLCollection(passthrough.items.compactMap { $0 as? any HTML })
+        let collection = passthrough.items.compactMap { $0 as? any HTML }
         return ForEach(collection) { item in
             handleItem(item.attributes(attributes))
         }

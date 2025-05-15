@@ -18,10 +18,10 @@ public struct SplitView: HTML {
     public var isPrimitive: Bool { true }
 
     /// The sidebar content of the split view.
-    private var sidebar: any BodyElement
+    private var sidebar: any HTML
 
     /// The main content of the split view.
-    private var content: any BodyElement
+    private var content: any HTML
 
     /// The base color of the divider between sidebar and content.
     private var dividerColor: Color?

@@ -21,7 +21,7 @@ public struct ButtonGroup: HTML {
     private var accessibilityLabel: String
 
     /// The buttons that should be displayed in this gorup.
-    private var content: HTMLCollection
+    private var buttons: [Button]
 
     /// Creates a new `ButtonGroup` from the accessibility label and an
     /// element builder that must return the buttons to use.
@@ -31,19 +31,23 @@ public struct ButtonGroup: HTML {
     ///   - content: An element builder containing the contents for this group.
     public init(
         accessibilityLabel: String,
-        @ElementBuilder<Button> _ content: () -> [Button]
+        @ElementBuilder<Button> content: () -> [Button]
     ) {
         self.accessibilityLabel = accessibilityLabel
-        self.content = HTMLCollection(content())
+        self.buttons = content()
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        Section(content)
-            .class("btn-group")
-            .aria(.label, accessibilityLabel)
-            .customAttribute(name: "role", value: "group")
-            .markup()
+        Section {
+            ForEach(buttons) { button in
+                button
+            }
+        }
+        .class("btn-group")
+        .aria(.label, accessibilityLabel)
+        .customAttribute(name: "role", value: "group")
+        .markup()
     }
 }

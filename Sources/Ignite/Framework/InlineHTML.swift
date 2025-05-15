@@ -1,0 +1,37 @@
+//
+// InlineHTML.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
+/// A type-erasing wrapper that can hold any `HTML` content while maintaining protocol conformance.
+/// This wrapper also handles unwrapping nested `AnyHTML` instances to prevent unnecessary wrapping layers.
+struct InlineHTML<Content: InlineElement>: HTML {
+    /// The body of this HTML element, which is itself
+    var body: some HTML { self }
+
+    /// The standard set of control attributes for HTML elements.
+    var attributes = CoreAttributes()
+
+    /// Whether this HTML belongs to the framework.
+    var isPrimitive: Bool { true }
+
+    /// The underlying HTML content, unattributed.
+    var content: Content
+
+    /// Creates a new AnyHTML instance that wraps the given HTML content.
+    /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
+    /// - Parameter content: The HTML content to wrap
+    init(_ content: Content) {
+        self.content = content
+    }
+
+    /// Renders the wrapped HTML content using the given publishing context
+    /// - Returns: The rendered HTML string
+    public func markup() -> Markup {
+        var content = content
+        content.attributes.merge(attributes)
+        return content.markup()
+    }
+}
