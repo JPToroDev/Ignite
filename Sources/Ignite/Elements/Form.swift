@@ -170,7 +170,7 @@ public struct Form: HTML, NavigationItem {
         let last = items.last
 
         items = items.dropLast().map {
-            $0
+            $0.class("mb-\(spacing.rawValue)")
         }
 
         if let last {
