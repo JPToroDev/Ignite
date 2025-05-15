@@ -109,7 +109,7 @@ extension HTMLBuilder {
     /// Loads a single piece of HTML to be combined with others.
     /// - Parameter content: The HTML to load.
     /// - Returns: The original thing we read, ready to be combined.
-    public static func buildPartialBlock<Content: BodyElement>(first content: Content) -> AnyHTML {
+    public static func buildPartialBlock<Content: BodyElement>(first content: Content) -> some HTML {
         AnyHTML(content)
     }
 

@@ -48,29 +48,6 @@ extension HTML {
     var isSection: Bool {
         self.is(Section.self)
     }
-
-    /// Whether this element is a `<div>`.
-    var isContainer: Bool {
-        body.markup().string.hasPrefix("<div")
-    }
-
-    /// For primitive types, returns `self`. For custom types,
-    /// returns either `self` wrapped in `Section`, or `body`
-    /// if its a `div` tag.
-    var attributableContent: any HTML {
-        if self.isPrimitive {
-            self
-        } else if body.isPrimitive, body.isContainer {
-            // Unnecessarily adding an extra <div> can break positioning
-            // contexts and advanced flow layouts. It's not great that
-            // we lose the type information, but since everything put
-            // through a modifier becomes AnyHTML anyway, it's not any
-            // worse than what we currently have.
-            body
-        } else {
-            Section(self)
-        }
-    }
 }
 
 extension HTML {

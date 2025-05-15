@@ -8,23 +8,23 @@
 @MainActor private func ariaModifier(
     _ key: AriaType,
     value: String?,
-    content: any HTML
-) -> any HTML {
-    guard let value else { return content }
-    var copy = content.attributableContent
-    copy.attributes.aria.append(.init(name: key.rawValue, value: value))
-    return copy
+    content: some HTML
+) -> some HTML {
+    var modified = ModifiedHTML(content)
+    guard let value else { return modified }
+    modified.attributes.aria.append(.init(name: key.rawValue, value: value))
+    return modified
 }
 
 @MainActor private func ariaModifier(
     _ key: AriaType,
     value: String?,
-    content: any InlineElement
-) -> any InlineElement {
-    guard let value else { return content }
-    var copy: any InlineElement = content.isPrimitive ? content : Span(content)
-    copy.attributes.aria.append(.init(name: key.rawValue, value: value))
-    return copy
+    content: some InlineElement
+) -> some InlineElement {
+    var modified = ModifiedInlineElement(content)
+    guard let value else { return modified }
+    modified.attributes.aria.append(.init(name: key.rawValue, value: value))
+    return modified
 }
 
 public extension HTML {
@@ -34,7 +34,7 @@ public extension HTML {
     ///   - value: The ARIA attribute value
     /// - Returns: The modified `HTML` element
     func aria(_ key: AriaType, _ value: String) -> some HTML {
-        AnyHTML(ariaModifier(key, value: value, content: self))
+        ariaModifier(key, value: value, content: self)
     }
 
     /// Adds an ARIA attribute to the element.
@@ -43,7 +43,7 @@ public extension HTML {
     ///   - value: The ARIA attribute value
     /// - Returns: The modified `HTML` element
     func aria(_ key: AriaType, _ value: String?) -> some HTML {
-        AnyHTML(ariaModifier(key, value: value, content: self))
+        ariaModifier(key, value: value, content: self)
     }
 }
 
@@ -54,7 +54,7 @@ public extension InlineElement {
     ///   - value: The ARIA attribute value
     /// - Returns: The modified `HTML` element
     func aria(_ key: AriaType, _ value: String) -> some InlineElement {
-        AnyInlineElement(ariaModifier(key, value: value, content: self))
+        ariaModifier(key, value: value, content: self)
     }
 
     /// Adds an ARIA attribute to the element.
@@ -63,6 +63,6 @@ public extension InlineElement {
     ///   - value: The ARIA attribute value
     /// - Returns: The modified `InlineElement`
     func aria(_ key: AriaType, _ value: String?) -> some InlineElement {
-        AnyInlineElement(ariaModifier(key, value: value, content: self))
+        ariaModifier(key, value: value, content: self)
     }
 }

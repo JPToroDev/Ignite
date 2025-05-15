@@ -7,22 +7,22 @@
 
 @MainActor private func attributeModifier(
     _ attribute: Attribute?,
-    content: any HTML
-) -> any HTML {
-    guard let attribute else { return content }
-    var copy = content.attributableContent
-    copy.attributes.append(customAttributes: attribute)
-    return copy
+    content: some HTML
+) -> some HTML {
+    var modified = ModifiedHTML(content)
+    guard let attribute else { return modified }
+    modified.attributes.append(customAttributes: attribute)
+    return modified
 }
 
 @MainActor private func attributeModifier(
     _ attribute: Attribute?,
-    content: any InlineElement
-) -> any InlineElement {
-    guard let attribute else { return content }
-    var copy: any InlineElement = content.isPrimitive ? content : Span(content)
-    copy.attributes.append(customAttributes: attribute)
-    return copy
+    content: some InlineElement
+) -> some InlineElement {
+    var modified = ModifiedInlineElement(content)
+    guard let attribute else { return modified }
+    modified.attributes.append(customAttributes: attribute)
+    return modified
 }
 
 public extension HTML {
@@ -32,14 +32,14 @@ public extension HTML {
     ///   - value: The value of the attribute
     /// - Returns: The modified element
     func attribute(_ name: String, _ value: String) -> some HTML {
-        AnyHTML(attributeModifier(.init(name: name, value: value), content: self))
+        attributeModifier(.init(name: name, value: value), content: self)
     }
 
     /// Adds a custom boolean attribute to the element.
     /// - Parameter name: The name of the attribute
     /// - Returns: The modified element
     func attribute(_ name: String) -> some HTML {
-        AnyHTML(attributeModifier(.init(name), content: self))
+        attributeModifier(.init(name), content: self)
     }
 }
 
@@ -50,14 +50,14 @@ public extension InlineElement {
     ///   - value: The value of the attribute
     /// - Returns: The modified element
     func attribute(_ name: String, _ value: String) -> some InlineElement {
-        AnyInlineElement(attributeModifier(.init(name: name, value: value), content: self))
+        attributeModifier(.init(name: name, value: value), content: self)
     }
 
     /// Adds a custom boolean attribute to the element.
     /// - Parameter name: The name of the attribute
     /// - Returns: The modified element
     func attribute(_ name: String) -> some InlineElement {
-        AnyInlineElement(attributeModifier(.init(name), content: self))
+       attributeModifier(.init(name), content: self)
     }
 }
 
@@ -68,7 +68,7 @@ extension HTML {
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
     func customAttribute(name: String, value: String) -> some HTML {
-        AnyHTML(attributeModifier(.init(name: name, value: value), content: self))
+        attributeModifier(.init(name: name, value: value), content: self)
     }
 
     /// Adds a custom attribute to the element.
@@ -77,7 +77,7 @@ extension HTML {
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
     func customAttribute(_ attribute: Attribute?) -> some HTML {
-        AnyHTML(attributeModifier(attribute, content: self))
+        attributeModifier(attribute, content: self)
     }
 }
 
@@ -88,7 +88,7 @@ extension InlineElement {
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
     func customAttribute(name: String, value: String) -> some InlineElement {
-        AnyInlineElement(attributeModifier(.init(name: name, value: value), content: self))
+       attributeModifier(.init(name: name, value: value), content: self)
     }
 
     /// Adds a custom attribute to the element.
@@ -97,6 +97,6 @@ extension InlineElement {
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
     func customAttribute(_ attribute: Attribute?) -> some InlineElement {
-        AnyInlineElement(attributeModifier(attribute, content: self))
+        attributeModifier(attribute, content: self)
     }
 }

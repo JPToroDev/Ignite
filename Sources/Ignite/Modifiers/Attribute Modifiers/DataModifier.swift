@@ -7,21 +7,21 @@
 
 @MainActor private func dataModifier(
     _ name: String,
-    value: String, content: any HTML
-) -> any HTML {
-    var copy = content.attributableContent
-    copy.attributes.data.append(.init(name: name, value: value))
-    return copy
+    value: String, content: some HTML
+) -> some HTML {
+    var modifiedHTML = ModifiedHTML(content)
+    modifiedHTML.attributes.data.append(.init(name: name, value: value))
+    return modifiedHTML
 }
 
 @MainActor private func dataModifier(
     _ name: String,
     value: String,
-    content: any InlineElement
-) -> any InlineElement {
-    var copy: any InlineElement = content.isPrimitive ? content : Span(content)
-    copy.attributes.data.append(.init(name: name, value: value))
-    return copy
+    content: some InlineElement
+) -> some InlineElement {
+    var modifiedHTML = ModifiedInlineElement(content)
+    modifiedHTML.attributes.data.append(.init(name: name, value: value))
+    return modifiedHTML
 }
 
 public extension HTML {
@@ -31,7 +31,7 @@ public extension HTML {
     ///   - value: The value of the data attribute
     /// - Returns: The modified `HTML` element
     func data(_ name: String, _ value: String) -> some HTML {
-        AnyHTML(dataModifier(name, value: value, content: self))
+        dataModifier(name, value: value, content: self)
     }
 }
 
@@ -42,6 +42,6 @@ public extension InlineElement {
     ///   - value: The value of the data attribute
     /// - Returns: The modified `HTML` element
     func data(_ name: String, _ value: String) -> some InlineElement {
-        AnyInlineElement(dataModifier(name, value: value, content: self))
+        dataModifier(name, value: value, content: self)
     }
 }

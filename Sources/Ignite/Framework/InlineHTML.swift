@@ -7,15 +7,15 @@
 
 /// A type-erasing wrapper that can hold any `HTML` content while maintaining protocol conformance.
 /// This wrapper also handles unwrapping nested `AnyHTML` instances to prevent unnecessary wrapping layers.
-struct InlineHTML<Content: InlineElement>: HTML {
+public struct InlineHTML<Content: InlineElement>: HTML {
     /// The body of this HTML element, which is itself
-    var body: some HTML { self }
+    public var body: some HTML { self }
 
     /// The standard set of control attributes for HTML elements.
-    var attributes = CoreAttributes()
+    public var attributes = CoreAttributes()
 
     /// Whether this HTML belongs to the framework.
-    var isPrimitive: Bool { true }
+    public var isPrimitive: Bool { true }
 
     /// The underlying HTML content, unattributed.
     var content: Content

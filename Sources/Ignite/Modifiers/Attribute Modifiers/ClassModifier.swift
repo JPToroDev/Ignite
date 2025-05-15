@@ -7,27 +7,27 @@
 
 @MainActor private func classModifier(
     _ classNames: [String],
-    content: any HTML
-) -> any HTML {
-    guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
-    var copy = content.attributableContent
-    copy.attributes.append(classes: classNames)
-    return copy
+    content: some HTML
+) -> some HTML {
+    var modified = ModifiedHTML(content)
+    let safeClasses = classNames.filter({ !$0.isEmpty })
+    modified.attributes.append(classes: safeClasses)
+    return modified
 }
 
 @MainActor private func classModifier(
     _ classNames: [String],
-    content: any InlineElement
-) -> any InlineElement {
-    guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
-    var copy: any InlineElement = content.isPrimitive ? content : Span(content)
-    copy.attributes.append(classes: classNames)
-    return copy
+    content: some InlineElement
+) -> some InlineElement {
+    var modified = ModifiedInlineElement(content)
+    let safeClasses = classNames.filter({ !$0.isEmpty })
+    modified.attributes.append(classes: safeClasses)
+    return modified
 }
 
 @MainActor private func classModifier(
     _ classNames: [String],
-    content: any BodyElement
+    content: some BodyElement
 ) -> any BodyElement {
     guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
     var copy: any BodyElement = if let element = content as? any HTML {
@@ -46,7 +46,7 @@ public extension HTML {
     /// - Parameter className: The CSS class name to add
     /// - Returns: A modified copy of the element with the CSS class added
     func `class`(_ className: String) -> some HTML {
-        AnyHTML(classModifier([className], content: self))
+        classModifier([className], content: self)
     }
 
     /// Adds multiple optional CSS classes to the element.
@@ -54,23 +54,23 @@ public extension HTML {
     /// - Returns: The modified `HTML` element
     func `class`(_ newClasses: String?...) -> some HTML {
         let classes = newClasses.compactMap(\.self)
-        return AnyHTML(classModifier(classes, content: self))
+        return classModifier(classes, content: self)
     }
 
     /// Adds an array of CSS classes to the element.
     /// - Parameter newClasses: `Array` of class names to add
     /// - Returns: The modified `HTML` element
     func `class`(_ newClasses: [String]) -> some HTML {
-        AnyHTML(classModifier(newClasses, content: self))
+        classModifier(newClasses, content: self)
     }
 }
 
-public extension MarkupElement where Self: InlineElement {
+public extension InlineElement {
     /// Adds a CSS class to the HTML element
     /// - Parameter className: The CSS class name to add
     /// - Returns: A modified copy of the element with the CSS class added
     func `class`(_ className: String) -> some InlineElement {
-        AnyInlineElement(classModifier([className], content: self))
+        classModifier([className], content: self)
     }
 
     /// Adds multiple optional CSS classes to the element.
@@ -78,14 +78,14 @@ public extension MarkupElement where Self: InlineElement {
     /// - Returns: The modified HTML element
     func `class`(_ newClasses: String?...) -> some InlineElement {
         let classes = newClasses.compactMap(\.self)
-        return AnyInlineElement(classModifier(classes, content: self))
+        return classModifier(classes, content: self)
     }
 
     /// Adds an array of CSS classes to the element.
     /// - Parameter newClasses: `Array` of class names to add
     /// - Returns: The modified `HTML` element
     func `class`(_ newClasses: [String]) -> some InlineElement {
-        AnyInlineElement(classModifier(newClasses, content: self))
+        classModifier(newClasses, content: self)
     }
 }
 

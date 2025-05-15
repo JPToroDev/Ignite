@@ -19,21 +19,21 @@ public struct TupleHTML<T>: HTML {
         self.content = content
     }
 
-    var children: [any BodyElement] {
+    private var items: [any BodyElement] {
         // Use Mirror to inspect and iterate through tuple elements
         let mirror = Mirror(reflecting: content)
         return mirror.children.compactMap { child in
-            guard let element = child.value as? HTML else { return nil }
+            guard let element = child.value as? any HTML else { return nil }
             return element
         }
     }
 
-    var attributedChildren: [any BodyElement] {
-        children.map { $0.attributes(attributes) }
+    var children: [any BodyElement] {
+        items.map { $0.attributes(attributes) }
     }
 
     public func markup() -> Markup {
-        attributedChildren.map { $0.markup() }.joined()
+        children.map { $0.markup() }.joined()
     }
 }
 
@@ -42,5 +42,4 @@ extension TupleHTML: HTMLCollection {}
 @MainActor
 protocol HTMLCollection {
     var children: [any BodyElement] { get }
-    var attributedChildren: [any BodyElement] { get }
 }

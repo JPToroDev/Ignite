@@ -165,12 +165,12 @@ public struct Form: HTML, NavigationItem {
     }
 
     private func renderSection(_ section: Section) -> some HTML {
-        var items = VariadicHTML([section.content]).attributedChildren
+        var items = VariadicHTML([section.content]).children
 
         let last = items.last
 
         items = items.dropLast().map {
-            $0.class("mb-\(spacing.rawValue)")
+            $0
         }
 
         if let last {

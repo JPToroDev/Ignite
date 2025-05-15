@@ -7,20 +7,20 @@
 
 @MainActor private func inlineStyleModifier(
     _ styles: [InlineStyle],
-    content: any HTML
-) -> any HTML {
-    var copy = content.attributableContent
-    copy.attributes.append(styles: styles)
-    return copy
+    content: some HTML
+) -> some HTML {
+    var modified = ModifiedHTML(content)
+    modified.attributes.append(styles: styles)
+    return modified
 }
 
 @MainActor private func inlineStyleModifier(
     _ styles: [InlineStyle],
-    content: any InlineElement
-) -> any InlineElement {
-    var copy: any InlineElement = content.isPrimitive ? content : Span(content)
-    copy.attributes.append(styles: styles)
-    return copy
+    content: some InlineElement
+) -> some InlineElement {
+    var modified = ModifiedInlineElement(content)
+    modified.attributes.append(styles: styles)
+    return modified
 }
 
 public extension HTML {
@@ -30,7 +30,7 @@ public extension HTML {
     ///   - value: The value to set for the property
     /// - Returns: A modified copy of the element with the style property added
     func style(_ property: Property, _ value: String) -> some HTML {
-        AnyHTML(inlineStyleModifier([.init(property, value: value)], content: self))
+        inlineStyleModifier([.init(property, value: value)], content: self)
     }
 }
 
@@ -41,7 +41,7 @@ public extension InlineElement {
     ///   - value: The value to set for the property
     /// - Returns: A modified copy of the element with the style property added
     func style(_ property: Property, _ value: String) -> some InlineElement {
-        AnyInlineElement(inlineStyleModifier([.init(property, value: value)], content: self))
+        inlineStyleModifier([.init(property, value: value)], content: self)
     }
 }
 
@@ -52,7 +52,7 @@ extension HTML {
     ///   - value: The value.
     /// - Returns: The modified `HTML` element
     func style(_ property: String, _ value: String) -> some HTML {
-        return AnyHTML(inlineStyleModifier([.init(property, value: value)], content: self))
+        inlineStyleModifier([.init(property, value: value)], content: self)
     }
 
     /// Adds inline styles to the element.
@@ -60,14 +60,14 @@ extension HTML {
     /// - Returns: The modified `HTML` element
     func style(_ values: InlineStyle?...) -> some HTML {
         let styles = values.compactMap(\.self)
-        return AnyHTML(inlineStyleModifier(styles, content: self))
+        return inlineStyleModifier(styles, content: self)
     }
 
     /// Adds inline styles to the element.
     /// - Parameter styles: An array of `InlineStyle` objects
     /// - Returns: The modified `HTML` element
     func style(_ styles: [InlineStyle]) -> some HTML {
-        AnyHTML(inlineStyleModifier(styles, content: self))
+       inlineStyleModifier(styles, content: self)
     }
 }
 
@@ -78,7 +78,7 @@ extension InlineElement {
     ///   - value: The value.
     /// - Returns: The modified `InlineElement` element
     func style(_ property: String, _ value: String) -> some InlineElement {
-        AnyInlineElement(inlineStyleModifier([.init(property, value: value)], content: self))
+        inlineStyleModifier([.init(property, value: value)], content: self)
     }
 
     /// Adds inline styles to the element.
@@ -86,13 +86,13 @@ extension InlineElement {
     /// - Returns: The modified `InlineElement` element
     func style(_ values: InlineStyle?...) -> some InlineElement {
         let styles = values.compactMap(\.self)
-        return AnyInlineElement(inlineStyleModifier(styles, content: self))
+        return inlineStyleModifier(styles, content: self)
     }
 
     /// Adds inline styles to the element.
     /// - Parameter styles: An array of `InlineStyle` objects
     /// - Returns: The modified `InlineElement` element
     func style(_ styles: [InlineStyle]) -> some InlineElement {
-        AnyInlineElement(inlineStyleModifier(styles, content: self))
+        inlineStyleModifier(styles, content: self)
     }
 }

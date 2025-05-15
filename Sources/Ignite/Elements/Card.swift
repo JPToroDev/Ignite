@@ -250,7 +250,7 @@ public struct Card: HTML {
 
     private func renderItems() -> some HTML {
         Section {
-            let items = VariadicHTML([items]).attributedChildren
+            let items = VariadicHTML([items]).children
             ForEach(items) { item in
                 switch item {
                 case let text as Text where text.font == .body || text.font == .lead:

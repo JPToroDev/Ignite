@@ -60,7 +60,7 @@ public struct HStack: HTML {
     }
 
     public func markup() -> Markup {
-        let elements = VariadicHTML([content]).attributedChildren
+        let elements = VariadicHTML([content]).children
         let items: [any BodyElement] = elements.map {
             var elementAttributes = CoreAttributes()
             elementAttributes.append(classes: "mb-0")

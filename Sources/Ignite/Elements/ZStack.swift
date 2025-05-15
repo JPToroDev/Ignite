@@ -41,7 +41,7 @@ public struct ZStack: HTML {
     }
 
     public func markup() -> Markup {
-        var items = VariadicHTML([content]).attributedChildren
+        var items = VariadicHTML([content]).children
 
         items = items.enumerated().map { index, item in
             var elementAttributes = CoreAttributes()

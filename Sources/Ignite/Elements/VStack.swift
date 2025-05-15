@@ -111,7 +111,7 @@ public struct VStack: HTML {
     }
 
     public func markup() -> Markup {
-        let items = items.attributedChildren.map {
+        let items = items.children.map {
             var elementAttributes = CoreAttributes()
             if spacingAmount != nil {
                 elementAttributes.append(classes: "mb-0")

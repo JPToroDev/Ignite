@@ -21,36 +21,36 @@ struct VariadicHTML: HTML, @preconcurrency Sequence {
     var isPrimitive: Bool { true }
 
     /// The array of HTML elements contained in this sequence
-    var children: [any BodyElement] = []
+    private var items: [any BodyElement] = []
 
     /// The array of HTML elements with the container's attributes applied.
-    var attributedChildren: [any BodyElement] {
-        children.map { $0.attributes(attributes) }
+    var children: [any BodyElement] {
+        items.map { $0.attributes(attributes) }
     }
 
     /// Creates a new HTML sequence using a result builder
     /// - Parameter content: A closure that returns HTML content
     init(@HTMLBuilder _ content: () -> some BodyElement) {
         let content = content()
-        self.children = flatten(content)
+        self.items = flatten(content)
     }
 
     /// Creates a new HTML sequence from an array of elements
     /// - Parameter elements: The array of HTML elements to include
     init(_ elements: [any BodyElement]) {
-        self.children = elements.flatMap { flatten($0) }
+        self.items = elements.flatMap { flatten($0) }
     }
 
     /// Creates an iterator over the sequence's elements
     /// - Returns: An iterator that provides access to each HTML element
     func makeIterator() -> IndexingIterator<[any BodyElement]> {
-        attributedChildren.makeIterator()
+        children.makeIterator()
     }
 
     /// Renders all elements in the sequence into HTML
     /// - Returns: The combined HTML string of all elements
     func markup() -> Markup {
-        attributedChildren.map { $0.markup() }.joined()
+        children.map { $0.markup() }.joined()
     }
 
     /// Recursively flattens nested HTML content into a single array, deconstructing wrapper types.
@@ -58,9 +58,9 @@ struct VariadicHTML: HTML, @preconcurrency Sequence {
     /// - Returns: An array of unwrapped HTML elements
     private func flatten(_ content: any BodyElement) -> [any BodyElement] {
         if let anyHTML = content as? AnyHTML, let content = anyHTML.wrapped as? any HTMLCollection {
-            content.attributedChildren.flatMap { flatten($0) }
+            content.children.flatMap { flatten($0) }
         } else if let anyHTML = content as? HTMLCollection {
-            anyHTML.attributedChildren.flatMap { flatten($0) }
+            anyHTML.children.flatMap { flatten($0) }
         } else if content is EmptyHTML {
             []
         } else {
