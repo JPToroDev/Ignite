@@ -109,7 +109,7 @@ public struct Item: HTML {
             .class("accordion-header")
 
             Section {
-                Section(contents)
+                Section(AnyHTML(contents))
                     .class("accordion-body")
             }
             .id(itemID)

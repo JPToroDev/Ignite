@@ -36,37 +36,16 @@ private enum LineSpacingType {
 
 @MainActor private func lineSpacingModifier(
     _ spacing: LineSpacingType,
-    content: any HTML
-) -> any HTML {
-    if content.isText {
-        switch spacing {
-        case .exact(let spacing):
-            return content.style(.init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
-        case .semantic(let spacing):
-            return content.class("lh-\(spacing.rawValue)")
-        }
-    } else {
-        switch spacing {
-        case .exact(let spacing):
-            return Section(content.class("line-height-inherit"))
-                .style(.lineHeight, spacing.formatted(.nonLocalizedDecimal))
-        case .semantic(let spacing):
-            return Section(content.class("line-height-inherit"))
-                .class("lh-\(spacing.rawValue)")
-        }
-    }
-}
-
-@MainActor private func lineSpacingModifier(
-    _ spacing: LineSpacingType,
-    content: any InlineElement
-) -> any InlineElement {
+    content: some InlineElement
+) -> some InlineElement {
+    var modified = ModifiedInlineElement(content)
     switch spacing {
     case .exact(let spacing):
-        return content.style(.lineHeight, spacing.formatted(.nonLocalizedDecimal))
+        modified.attributes.append(styles: .init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
     case .semantic(let spacing):
-        return content.class("lh-\(spacing.rawValue)")
+        modified.attributes.append(classes: "lh-\(spacing.rawValue)")
     }
+    return modified
 }
 
 public extension HTML {
@@ -74,14 +53,14 @@ public extension HTML {
     /// - Parameter spacing: The line height multiplier to use.
     /// - Returns: The modified HTML element.
     func lineSpacing(_ spacing: Double) -> some HTML {
-        AnyHTML(lineSpacingModifier(.exact(spacing), content: self))
+        LineSpacedHTML(self, spacing: .exact(spacing))
     }
 
     /// Sets the line height of the element using a predefined Bootstrap value.
     /// - Parameter spacing: The predefined line height to use.
     /// - Returns: The modified HTML element.
     func lineSpacing(_ spacing: LineSpacing) -> some HTML {
-        AnyHTML(lineSpacingModifier(.semantic(spacing), content: self))
+        LineSpacedHTML(self, spacing: .semantic(spacing))
     }
 }
 
@@ -90,14 +69,14 @@ public extension InlineElement {
     /// - Parameter spacing: The line height multiplier to use.
     /// - Returns: The modified InlineElement element.
     func lineSpacing(_ spacing: Double) -> some InlineElement {
-        AnyInlineElement(lineSpacingModifier(.exact(spacing), content: self))
+        lineSpacingModifier(.exact(spacing), content: self)
     }
 
     /// Sets the line height of the element using a predefined Bootstrap value.
     /// - Parameter spacing: The predefined line height to use.
     /// - Returns: The modified InlineElement element.
     func lineSpacing(_ spacing: LineSpacing) -> some InlineElement {
-        AnyInlineElement(lineSpacingModifier(.semantic(spacing), content: self))
+        lineSpacingModifier(.semantic(spacing), content: self)
     }
 }
 
@@ -107,5 +86,43 @@ public extension ElementProxy {
     /// - Returns: The modified HTML element
     func lineSpacing(_ height: Double) -> Self {
         self.style(.lineHeight, String(height))
+    }
+}
+
+private struct LineSpacedHTML<Content: HTML>: HTML {
+    var attributes = CoreAttributes()
+
+    var body: some HTML { fatalError() }
+
+    var content: Content
+    var spacing: LineSpacingType
+
+    init(_ content: Content, spacing: LineSpacingType) {
+        self.content = content
+        self.spacing = spacing
+    }
+
+    func markup() -> Markup {
+        if content is any TextElement {
+            switch spacing {
+            case .exact(let spacing):
+                content.style(.init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
+                    .markup()
+            case .semantic(let spacing):
+                content.class("lh-\(spacing.rawValue)")
+                    .markup()
+            }
+        } else {
+            switch spacing {
+            case .exact(let spacing):
+                Section(content.class("line-height-inherit"))
+                    .style(.lineHeight, spacing.formatted(.nonLocalizedDecimal))
+                    .markup()
+            case .semantic(let spacing):
+                Section(content.class("line-height-inherit"))
+                    .class("lh-\(spacing.rawValue)")
+                    .markup()
+            }
+        }
     }
 }

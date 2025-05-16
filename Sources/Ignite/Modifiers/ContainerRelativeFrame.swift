@@ -10,7 +10,7 @@ public extension HTML {
     /// - Parameter alignment: How to align the content within the container. Default is `.center`.
     /// - Returns: A modified copy of the element with container-relative positioning applied.
     func containerRelativeFrame(_ alignment: Alignment = .center) -> some HTML {
-        AnyHTML(containerRelativeFrameModifer(alignment))
+        containerRelativeFrameModifer(alignment)
     }
 }
 
@@ -22,18 +22,36 @@ private let edgeAlignmentRules: [InlineStyle] = [
 ]
 
 private extension HTML {
-    func containerRelativeFrameModifer(_ alignment: Alignment) -> any HTML {
-        var frameableContent: any HTML = self
+    func containerRelativeFrameModifer(_ alignment: Alignment) -> some HTML {
+        ContainerRelativeFrame(self, alignment: alignment)
+    }
+}
+
+struct ContainerRelativeFrame<Content: HTML>: HTML {
+    var attributes = CoreAttributes()
+
+    var body: some HTML { fatalError() }
+
+    var content: Content
+    var alignment: Alignment
+
+    init(_ content: Content, alignment: Alignment) {
+        self.content = content
+        self.alignment = alignment
+    }
+
+    func markup() -> Markup {
+        let content = content
             .style(.marginBottom, "0")
             .style(alignment.itemAlignmentRules)
 
-        frameableContent = if self.isSection {
-            frameableContent
+        let finalContent: any HTML = if content.requiresPositioningContext {
+            Section(content)
         } else {
-            Section(frameableContent)
+            content
         }
 
-        return frameableContent
+        return finalContent
             .style(.display, "flex")
             .style(self.is(Image.self) ? .init(.flexDirection, value: "column") : nil)
             .style(.overflow, "hidden")
@@ -41,5 +59,6 @@ private extension HTML {
             .style(alignment.flexAlignmentRules)
             .style(.width, "100%")
             .style(.height, "100%")
+            .markup()
     }
 }

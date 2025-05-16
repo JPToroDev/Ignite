@@ -7,14 +7,14 @@
 
 /// Shows a clearly delineated box on your page, providing important information
 /// or warnings to users.
-public struct Alert: HTML {
+public struct Alert<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    var content: any HTML
+    var content: Content
 
     var role = Role.default
 
@@ -33,7 +33,7 @@ public struct Alert: HTML {
         return outputClasses
     }
 
-    public init(@HTMLBuilder content: () -> some HTML) {
+    public init(@HTMLBuilder content: () -> Content) {
         self.content = content()
     }
 

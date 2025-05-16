@@ -12,7 +12,7 @@
 ///
 /// - Note: Unlike ``Group``, modifiers applied to a `Section` affect the
 ///         containing element rather than being propagated to child elements.
-public struct Section: HTML, FormItem {
+public struct Section<Content: HTML>: HTML, FormItem {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -25,23 +25,19 @@ public struct Section: HTML, FormItem {
     /// The heading's semantic font size.
     var headerStyle: Font.Style = .title2
 
-    var content: any HTML
+    var content: Content
 
-    init() {
-        self.content = EmptyHTML()
-    }
-
-    init<T: InlineElement>(_ content: T) {
-        self.content = InlineHTML(content)
-    }
-
-    init(_ content: any HTML) {
+    init(_ content: Content) {
         self.content = content
     }
 
+    init<T: InlineElement>(_ content: T) where Content == InlineHTML<T> {
+        self.content = InlineHTML(content)
+    }
+    
     /// Creates a section that renders as a `div` element.
     /// - Parameter content: The content to display within this section.
-    public init(@HTMLBuilder content: () -> some HTML) {
+    public init(@HTMLBuilder content: () -> Content) {
         self.content = content()
     }
 
@@ -49,7 +45,7 @@ public struct Section: HTML, FormItem {
     /// - Parameters:
     ///   - header: The text to display as the section's heading
     ///   - content: The content to display within this section
-    public init(_ header: String, @HTMLBuilder content: () -> some HTML) {
+    public init(_ header: String, @HTMLBuilder content: () -> Content) {
         self.content = content()
         self.header = header
     }
@@ -70,5 +66,11 @@ public struct Section: HTML, FormItem {
             return Markup("<section\(attributes)>\(headerHTML + contentHTML)</section>")
         }
         return Markup("<div\(attributes)>\(contentHTML)</div>")
+    }
+}
+
+extension Section where Content == EmptyHTML {
+    init() {
+        self.content = EmptyHTML()
     }
 }

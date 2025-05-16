@@ -44,78 +44,33 @@ private func styles(for gradient: Gradient) -> [InlineStyle] {
      .init(.color, value: "transparent")]
 }
 
-@MainActor private func foregroundStyleModifier(
-    _ style: StyleType,
-    content: any HTML
-) -> any HTML {
-    switch style {
-    case .none:
-        content
-    case .gradient(let gradient) where content.isText:
-        content.style(styles(for: gradient))
-    case .gradient(let gradient):
-        Section(content.class("color-inherit"))
-            .style(styles(for: gradient))
-    case .string(let string) where content.isText:
-        content.style(.color, string)
-    case .string(let string):
-        Section(content.class("color-inherit"))
-            .style(.color, string)
-    case .color(let color) where content.isText:
-        content.style(.color, color.description)
-    case .color(let color):
-        Section(content.class("color-inherit"))
-            .style(.color, color.description)
-    case .style(let foregroundStyle):
-        content.class(foregroundStyle.rawValue)
-    }
-}
-
-@MainActor private func foregroundStyleModifier(
-    _ style: StyleType,
-    content: any InlineElement
-) -> any InlineElement {
-    switch style {
-    case .none:
-        content
-    case .gradient(let gradient):
-        content.style(styles(for: gradient))
-    case .string(let string):
-        content.style(.color, string)
-    case .color(let color):
-        content.style(.color, color.description)
-    case .style(let foregroundStyle):
-        content.class(foregroundStyle.rawValue)
-    }
-}
-
 public extension HTML {
     /// Applies a foreground color to the current element.
     /// - Parameter color: The style to apply, specified as a `Color` object.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ color: Color) -> some HTML {
-        AnyHTML(foregroundStyleModifier(.color(color), content: self))
+        ForegroundStyledHTML(self, style: .color(color))
     }
 
     /// Applies a foreground color to the current element.
     /// - Parameter color: The style to apply, specified as a string.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ color: String) -> some HTML {
-        AnyHTML(foregroundStyleModifier(.string(color), content: self))
+        ForegroundStyledHTML(self, style: .string(color))
     }
 
     /// Applies a foreground color to the current element.
     /// - Parameter style: The style to apply, specified as a `Color` object.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ style: ForegroundStyle) -> some HTML {
-        AnyHTML(foregroundStyleModifier(.style(style), content: self))
+        ForegroundStyledHTML(self, style: .style(style))
     }
 
     /// Applies a foreground color to the current element.
     /// - Parameter gradient: The style to apply, specified as a `Gradient` object.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ gradient: Gradient) -> some HTML {
-        AnyHTML(foregroundStyleModifier(.gradient(gradient), content: self))
+        ForegroundStyledHTML(self, style: .gradient(gradient))
     }
 }
 
@@ -124,28 +79,28 @@ public extension InlineElement {
     /// - Parameter color: The style to apply, specified as a `Color` object.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ color: Color) -> some InlineElement {
-        AnyInlineElement(foregroundStyleModifier(.color(color), content: self))
+        ForegroundStyledInlineElement(self, style: .color(color))
     }
 
     /// Applies a foreground color to the current element.
     /// - Parameter color: The style to apply, specified as a string.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ color: String) -> some InlineElement {
-        AnyInlineElement(foregroundStyleModifier(.string(color), content: self))
+        ForegroundStyledInlineElement(self, style: .string(color))
     }
 
     /// Applies a foreground color to the current element.
     /// - Parameter style: The style to apply, specified as a `Color` object.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ style: ForegroundStyle) -> some InlineElement {
-        AnyInlineElement(foregroundStyleModifier(.style(style), content: self))
+        ForegroundStyledInlineElement(self, style: .style(style))
     }
 
     /// Applies a foreground color to the current element.
     /// - Parameter gradient: The style to apply, specified as a `Gradient` object.
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ gradient: Gradient) -> some InlineElement {
-        AnyInlineElement(foregroundStyleModifier(.gradient(gradient), content: self))
+        ForegroundStyledInlineElement(self, style: .gradient(gradient))
     }
 }
 
@@ -162,5 +117,100 @@ public extension ElementProxy {
     /// - Returns: The current element with the updated color applied.
     func foregroundStyle(_ color: String) -> Self {
         self.style(.color, color)
+    }
+}
+
+private struct ForegroundStyledHTML<Content: HTML>: HTML {
+    var attributes = CoreAttributes()
+
+    var body: some HTML { fatalError() }
+
+    var content: Content
+    var style: StyleType
+
+    init(_ content: Content, style: StyleType) {
+        self.content = content
+        self.style = style
+    }
+
+    func markup() -> Markup {
+        switch style {
+        case .none:
+            content
+                .markup()
+        case .gradient(let gradient) where content is any TextElement:
+            content
+                .style(styles(for: gradient))
+                .markup()
+        case .gradient(let gradient):
+            Section(content.class("color-inherit"))
+                .style(styles(for: gradient))
+                .markup()
+        case .string(let string) where content is any TextElement:
+            content
+                .style(.color, string)
+                .markup()
+        case .string(let string):
+            Section(content.class("color-inherit"))
+                .style(.color, string)
+                .markup()
+        case .color(let color) where content is any TextElement:
+            content
+                .style(.color, color.description)
+                .markup()
+        case .color(let color):
+            Section(content.class("color-inherit"))
+                .style(.color, color.description)
+                .markup()
+        case .style(let foregroundStyle):
+            content
+                .class(foregroundStyle.rawValue)
+                .markup()
+        }
+    }
+}
+
+extension ForegroundStyledHTML: TextElement where Content: TextElement {
+    var fontStyle: FontStyle {
+        get { content.fontStyle }
+        set { content.fontStyle = newValue }
+    }
+}
+
+private struct ForegroundStyledInlineElement<Content: InlineElement>: InlineElement {
+    var attributes = CoreAttributes()
+
+    var body: some InlineElement { fatalError() }
+
+    var content: Content
+    var style: StyleType
+
+    init(_ content: Content, style: StyleType) {
+        self.content = content
+        self.style = style
+    }
+
+    func markup() -> Markup {
+        switch style {
+        case .none:
+            content
+                .markup()
+        case .gradient(let gradient):
+            content
+                .style(styles(for: gradient))
+                .markup()
+        case .string(let string):
+            content
+                .style(.color, string)
+                .markup()
+        case .color(let color):
+            content
+                .style(.color, color.description)
+                .markup()
+        case .style(let foregroundStyle):
+            content
+                .class(foregroundStyle.rawValue)
+                .markup()
+        }
     }
 }

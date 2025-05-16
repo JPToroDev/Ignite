@@ -9,16 +9,6 @@
     content.attributes(getAttributes(for: font, includeStyle: true))
 }
 
-@MainActor private func fontModifier(_ font: Font, content: any HTML) -> any HTML {
-    if var text = content.as(Text.self) {
-        if let style = font.style { text.font = style }
-        return text.attributes(getAttributes(for: font, includeStyle: false))
-    }
-
-    return Section(content.class("font-inherit"))
-        .attributes(getAttributes(for: font, includeStyle: true))
-}
-
 @MainActor private func getAttributes(for font: Font, includeStyle: Bool) -> CoreAttributes {
     var attributes = CoreAttributes()
 
@@ -55,7 +45,7 @@ public extension HTML {
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font) -> some HTML {
         registerFontIfNeeded(font)
-        return AnyHTML(fontModifier(font, content: self))
+        return FontModifiedHTML(self, font: font)
     }
 
     /// Adjusts the font of this text using responsive sizing.
@@ -63,7 +53,7 @@ public extension HTML {
     /// - Returns: A new instance with the updated font.
     func font(_ font: Font.Responsive) -> some HTML {
         registerFontIfNeeded(font.font)
-        return AnyHTML(fontModifier(font.font, content: self))
+        return FontModifiedHTML(self, font: font.font)
     }
 }
 
@@ -114,5 +104,31 @@ public extension ElementProxy {
         }
 
         return styles
+    }
+}
+
+private struct FontModifiedHTML<Content: HTML>: HTML {
+    var attributes = CoreAttributes()
+
+    var body: some HTML { fatalError() }
+
+    var content: Content
+    var font: Font
+
+    init(_ content: Content, font: Font) {
+        self.content = content
+        self.font = font
+    }
+
+    func markup() -> Markup {
+        if var text = content as? any TextElement {
+            if let style = font.style { text.fontStyle = style }
+            return text.attributes(getAttributes(for: font, includeStyle: false))
+                .markup()
+        }
+
+        return Section(content.class("font-inherit"))
+            .attributes(getAttributes(for: font, includeStyle: true))
+            .markup()
     }
 }

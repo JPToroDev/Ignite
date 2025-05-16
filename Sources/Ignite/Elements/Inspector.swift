@@ -10,7 +10,7 @@
 /// Inspectors are useful for displaying additional content, settings, or forms
 /// without navigating away from the current page. They can be positioned on any edge
 /// of the screen and support headers and scrollable content.
-public struct Inspector: HTML {
+public struct Inspector<Content: HTML, Header: HTML>: HTML {
     /// The position of the inspector on the screen.
     public enum Position: CaseIterable, Sendable {
         /// Positions the inspector on the left edge of the screen.
@@ -49,8 +49,8 @@ public struct Inspector: HTML {
     private var isExitCommandDisabled = false
 
     private let htmlID: String
-    private var content: any HTML
-    private var header: any HTML
+    private var content: Content
+    private var header: Header
 
     /// Creates a new inspector with the specified content.
     /// - Parameters:
@@ -59,8 +59,8 @@ public struct Inspector: HTML {
     ///   - header: Optional header content for the inspector.
     public init(
         id modalId: String,
-        @HTMLBuilder body: () -> some HTML,
-        @HTMLBuilder header: () -> some HTML = { EmptyHTML() }
+        @HTMLBuilder body: () -> Content,
+        @HTMLBuilder header: () -> Header = { EmptyHTML() }
     ) {
         self.htmlID = modalId
         self.content = body()

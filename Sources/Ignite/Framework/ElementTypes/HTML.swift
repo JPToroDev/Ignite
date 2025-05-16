@@ -29,6 +29,17 @@ extension HTML {
         Self.Body.self == Never.self
     }
 
+    /// Checks if this element is an empty HTML element.
+    var isEmpty: Bool {
+        markup().isEmpty
+    }
+
+    /// Whether the outermost element of this type is a `<div>`
+    /// that can position its contents.
+    var requiresPositioningContext: Bool {
+        markup().string.hasPrefix("<div") == false
+    }
+
     /// How this element should be sized in a `Grid`.
     var columnWidth: ColumnWidth {
         let prefix = "col-md-"
@@ -47,21 +58,6 @@ extension HTML {
         }
 
         return .uniform
-    }
-
-    /// Checks if this element is an empty HTML element.
-    var isEmpty: Bool {
-        self is EmptyHTML
-    }
-
-    /// A Boolean value indicating whether this represents `Text`.
-    var isText: Bool {
-        self.is(Text.self)
-    }
-
-    /// A Boolean value indicating whether this represents `Section`.
-    var isSection: Bool {
-        self.is(Section.self) || self is ModifiedHTML<Section>
     }
 }
 

@@ -27,7 +27,7 @@ public struct ControlGroup: HTML, FormItem {
     private let label: String?
 
     /// The help text displayed below the control group.
-    private var helpText: (any InlineElement)?
+    private var helpText: String?
 
     /// The collection of form items contained within this control group.
     private let items: [any FormItem]
@@ -89,19 +89,19 @@ public struct ControlGroup: HTML, FormItem {
 
         let content = Section {
             ForEach(items) { item in
-                switch item {
-                case let item as TextField:
-                    renderTextField(item)
-                case let button as Button:
-                    renderButton(button)
-                case let item as Span:
-                    renderText(item)
-                case let dropdown as Dropdown:
-                    renderDropdown(dropdown)
-                default:
+//                switch item {
+//                case let item as TextField:
+//                    renderTextField(item)
+//                case let button as Button:
+//                    renderButton(button)
+//                case let item as Span:
+//                    renderText(item)
+//                case let dropdown as Dropdown:
+//                    renderDropdown(dropdown)
+//                default:
 //                    AnyHTML(item)
                     EmptyHTML()
-                }
+//                }
             }
         }
         .attributes(attributes)
@@ -132,13 +132,13 @@ public struct ControlGroup: HTML, FormItem {
         text.class("input-group-text")
     }
 
-    private func renderTextField(_ textField: TextField) -> some InlineElement {
-        var textField = textField.labelStyle(labelStyle)
-        if labelStyle != .floating {
-            textField.label = nil
-        }
-        return textField
-    }
+//    private func renderTextField(_ textField: TextField) -> some InlineElement {
+//        var textField = textField.labelStyle(labelStyle)
+//        if labelStyle != .floating {
+//            textField.label = nil
+//        }
+//        return textField
+//    }
 
     private func renderButton(_ button: Button) -> some InlineElement {
         var button = button

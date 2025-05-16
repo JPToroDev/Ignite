@@ -7,6 +7,8 @@
 
 import Foundation
 
+protocol LinkElement {}
+
 /// A hyperlink to another resource on this site or elsewhere.
 public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// The visual style to apply to the link.
@@ -260,3 +262,5 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
         return Markup("<a\(linkAttributes)>\(contentHTML)</a>")
     }
 }
+
+extension Link: LinkElement {}

@@ -5,6 +5,10 @@
 // See LICENSE for license information.
 //
 
+protocol TextElement: HTML {
+    var fontStyle: FontStyle { get set }
+}
+
 /// A structured piece of text, such as a paragraph of heading. If you are just
 /// placing content inside a list, table, table header, and so on, you can usually
 /// just use a simple string. Using `Text` is required if you want a specific paragraph
@@ -12,7 +16,7 @@
 ///
 /// - Important: For types that accept only `InlineElement` or use `@InlineElementBuilder`,
 /// use `Span` instead of `Text`.
-public struct Text: HTML, DropdownItem {
+public struct Text<Content: InlineElement>: HTML, DropdownItem {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -20,10 +24,10 @@ public struct Text: HTML, DropdownItem {
     public var attributes = CoreAttributes()
 
     /// The font to use for this text.
-    var font = FontStyle.body
+    var fontStyle = FontStyle.body
 
     /// The content to place inside the text.
-    private var content: any InlineElement
+    private var content: Content
 
     /// Whether this text contains multiple paragraphs of Markdown content.
     private var isMultilineMarkdown = false
@@ -31,12 +35,12 @@ public struct Text: HTML, DropdownItem {
     /// Creates a new `Text` instance using an inline element builder that
     /// returns an array of the content to place into the text.
     /// - Parameter content: An array of the content to place into the text.
-    public init(@InlineElementBuilder content: () -> some InlineElement) {
+    public init(@InlineElementBuilder content: () -> Content) {
         self.content = content()
     }
 
     /// Creates a new `Text` instance from one inline element.
-    public init(_ string: some InlineElement) {
+    public init(_ string: Content) {
         self.content = string
     }
 
@@ -54,6 +58,28 @@ public struct Text: HTML, DropdownItem {
         return copy
     }
 
+    /// Renders this element using publishing context passed in.
+    /// - Returns: The HTML for this element.
+    public func markup() -> Markup {
+        if isMultilineMarkdown {
+            // HTMLCollection will pass its attributes to each child.
+            // This works fine for styles like color, but for styles like
+            // padding, we'd expect them to apply to the paragraphs
+            // collectively. So we'll wrap the paragraphs in a Section.
+            Section(content)
+                .attributes(attributes)
+                .markup()
+        } else {
+            Markup(
+                "<\(fontStyle.rawValue)\(attributes)>" +
+                content.markupString() +
+                "</\(fontStyle.rawValue)>"
+            )
+        }
+    }
+}
+
+extension Text where Content == String {
     /// Creates a new `Text` instance using "lorem ipsum" placeholder text.
     /// - Parameter placeholderLength: How many placeholder words to generate.
     public init(placeholderLength: Int) {
@@ -146,26 +172,6 @@ public struct Text: HTML, DropdownItem {
             publishingContext.addError(.failedToParseMarkup)
         }
     }
-
-    /// Renders this element using publishing context passed in.
-    /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
-        if isMultilineMarkdown {
-            // HTMLCollection will pass its attributes to each child.
-            // This works fine for styles like color, but for styles like
-            // padding, we'd expect them to apply to the paragraphs
-            // collectively. So we'll wrap the paragraphs in a Section.
-            Section(content)
-                .attributes(attributes)
-                .markup()
-        } else {
-            Markup(
-                "<\(font.rawValue)\(attributes)>" +
-                content.markupString() +
-                "</\(font.rawValue)>"
-            )
-        }
-    }
 }
 
 extension HTML {
@@ -173,13 +179,9 @@ extension HTML {
         var copy: any HTML = self
         if Font.Style.classBasedStyles.contains(font), let sizeClass = font.sizeClass {
             copy.attributes.append(classes: sizeClass)
-        } else if var text = copy as? Text {
-            text.font = font
+        } else if var text = copy as? TextElement {
+            text.fontStyle = font
             copy = text
-        } else if var anyHTML = copy as? AnyHTML, var text = anyHTML.wrapped as? Text {
-            text.font = font
-            anyHTML.wrapped = text
-            copy = anyHTML
         }
         return copy
     }
@@ -192,3 +194,5 @@ extension InlineElement {
         return copy
     }
 }
+
+extension Text: TextElement {}

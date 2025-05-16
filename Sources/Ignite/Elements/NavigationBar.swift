@@ -201,7 +201,7 @@ public struct NavigationBar: HTML {
             Tag("nav") {
                 Section {
                     if logo.isEmpty == false {
-                        Section(renderLogo(logo))
+                        Section(renderLogo(AnyInlineElement(logo)))
                             .class("me-2 me-md-auto")
                     }
 
@@ -320,7 +320,7 @@ public struct NavigationBar: HTML {
         return text
     }
 
-    private func renderLogo(_ logo: some InlineElement) -> any InlineElement {
+    private func renderLogo(_ logo: some InlineElement) -> some InlineElement {
         let logo: Link = if let link = logo.as(Link.self) {
             link
         } else {
@@ -344,7 +344,7 @@ public struct NavigationBar: HTML {
 
 fileprivate extension Link {
     func trimmingMargin() -> Self {
-        guard content.is(Text.self) else { return self }
+        guard content is any TextElement else { return self }
         var link = self
         var text = content
         text.attributes.append(classes: "mb-0")

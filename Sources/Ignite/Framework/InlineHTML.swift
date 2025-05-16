@@ -32,3 +32,5 @@ public struct InlineHTML<Content: InlineElement>: HTML {
         return content.markup()
     }
 }
+
+extension InlineHTML: ImageElement where Content == Image {}

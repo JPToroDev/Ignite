@@ -167,7 +167,7 @@ public struct Grid: HTML {
             positionClass = position
         }
 
-        return Section(item)
+        return Section(AnyHTML(item))
             .class(columnWidth.className)
             .class(positionClass)
             .class(alignment.vertical.itemAlignmentClass)

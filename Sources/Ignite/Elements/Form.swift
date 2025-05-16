@@ -88,15 +88,15 @@ public struct Form: HTML, NavigationItem {
     /// - Returns: A string containing the rendered HTML optimized for navigation contexts.
     private func renderInNavigationBar() -> Markup {
         var items = items.map {
-            if let textField = $0.as(TextField.self) {
-                textField
-                    .labelStyle(.hidden)
-                    .size(controlSize)
-            } else if $0.is(Button.self) {
+//            if let textField = $0.as(TextField.self) {
+//                textField
+//                    .labelStyle(.hidden)
+//                    .size(controlSize)
+//            } else if $0.is(Button.self) {
+//                $0
+//            } else {
                 $0
-            } else {
-                $0
-            }
+//            }
         }
 
         let last = items.last
@@ -129,20 +129,20 @@ public struct Form: HTML, NavigationItem {
 
         return Tag("form") {
             ForEach(items) { item in
-                if let textField = item.as(TextField.self) {
-                    renderTextField(textField)
-                } else if let button = item.as(Button.self) {
-                    renderButton(button)
-                } else if let group = item.as(ControlGroup.self) {
-                    renderControlGroup(group)
-                } else if let span = item.as(Span.self) {
-                    renderText(span)
-                } else if let section = item.as(Section.self) {
-                    renderSection(section)
-                } else {
+//                if let textField = item.as(TextField.self) {
+//                    renderTextField(textField)
+//                } else if let button = item.as(Button.self) {
+//                    renderButton(button)
+//                } else if let group = item.as(ControlGroup.self) {
+//                    renderControlGroup(group)
+//                } else if let span = item.as(Span.self) {
+//                    renderText(span)
+//                } else if let section = item.as(Section.self) {
+//                    renderSection(section)
+//                } else {
 //                    renderItem(item)
                     EmptyHTML()
-                }
+//                }
             }
         }
         .attributes(attributes)
@@ -150,53 +150,53 @@ public struct Form: HTML, NavigationItem {
         .markup()
     }
 
-    @HTMLBuilder private func renderTextField(_ textField: TextField) -> some HTML {
-        let styledTextField = textField.size(controlSize).labelStyle(labelStyle)
-        switch labelStyle {
-        case .leading: styledTextField
-        default: Section(styledTextField).class(getColumnClass(for: textField))
-        }
-    }
+//    @HTMLBuilder private func renderTextField(_ textField: TextField) -> some HTML {
+//        let styledTextField = textField.size(controlSize).labelStyle(labelStyle)
+//        switch labelStyle {
+//        case .leading: styledTextField
+//        default: Section(styledTextField).class(getColumnClass(for: textField))
+//        }
+//    }
 
     private func renderControlGroup(_ group: ControlGroup) -> some HTML {
         group.labelStyle(labelStyle)
     }
 
-    private func renderSection(_ section: Section) -> some HTML {
-        var items = VariadicHTML([section.content]).children
-
-        let last = items.last
-
-        items = items.dropLast().map {
-            $0.class("mb-\(spacing.rawValue)")
-        }
-
-        if let last {
-            items.append(last)
-        }
-
-        return Tag("fieldset") {
-            if let header = section.header {
-                Tag("legend") {
-                    header
-                }
-                .class(labelStyle == .leading ? "col-form-label col-sm-2" : nil)
-            }
-
-            ForEach(items) { item in
-                if let controlGroup = item.as(ControlGroup.self) {
-                    controlGroup
-                        .labelStyle(labelStyle)
-                } else if let textField = item.as(TextField.self) {
-                    textField
-                        .labelStyle(labelStyle)
-                } else {
-                    AnyHTML(item)
-                }
-            }
-        }
-        .attributes(section.attributes)
-    }
+//    private func renderSection(_ section: Section) -> some HTML {
+//        var items = VariadicHTML([section.content]).children
+//
+//        let last = items.last
+//
+//        items = items.dropLast().map {
+//            $0.class("mb-\(spacing.rawValue)")
+//        }
+//
+//        if let last {
+//            items.append(last)
+//        }
+//
+//        return Tag("fieldset") {
+//            if let header = section.header {
+//                Tag("legend") {
+//                    header
+//                }
+//                .class(labelStyle == .leading ? "col-form-label col-sm-2" : nil)
+//            }
+//
+//            ForEach(items) { item in
+//                if let controlGroup = item.as(ControlGroup.self) {
+//                    controlGroup
+//                        .labelStyle(labelStyle)
+//                } else if let textField = item.as(TextField.self) {
+//                    textField
+//                        .labelStyle(labelStyle)
+//                } else {
+//                    AnyHTML(item)
+//                }
+//            }
+//        }
+//        .attributes(section.attributes)
+//    }
 
     private func renderButton(_ button: Button) -> some HTML {
         Section {
@@ -218,7 +218,7 @@ public struct Form: HTML, NavigationItem {
     }
 
     private func renderItem(_ item: any HTML) -> some HTML {
-        Section(item)
+        Section(AnyHTML(item))
             .class("d-flex", "align-items-center")
             .class(getColumnClass(for: item))
     }

@@ -7,6 +7,8 @@
 
 import Foundation
 
+protocol ImageElement {}
+
 /// An image on your page. Can be vector (SVG) or raster (JPG, PNG, GIF).
 public struct Image: InlineElement, LazyLoadable {
     /// The content and behavior of this HTML.
@@ -211,3 +213,5 @@ private extension Image {
         return sources.isEmpty ? nil : .init(name: "srcset", value: sources)
     }
 }
+
+extension Image: ImageElement {}

@@ -6,7 +6,7 @@
 //
 
 /// A form label with support for various styles
-struct ControlLabel: InlineElement {
+struct ControlLabel<Content: InlineElement>: InlineElement {
     /// The content and behavior of this HTML.
     var body: some InlineElement { fatalError() }
 
@@ -14,11 +14,11 @@ struct ControlLabel: InlineElement {
     var attributes = CoreAttributes()
 
     /// The text content of the label
-    private let text: any InlineElement
+    private let text: Content
 
     /// Creates a new control label with the specified text content.
     /// - Parameter text: The inline element to display within the label.
-    init(_ text: any InlineElement) {
+    init(_ text: Content) {
         self.text = text
     }
 

@@ -71,7 +71,7 @@ public struct Slide: HTML {
             }
 
             Section {
-                Section(content)
+                Section(AnyHTML(content))
                     .class("carousel-caption")
             }
             .class("container")

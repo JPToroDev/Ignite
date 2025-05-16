@@ -43,3 +43,12 @@ struct ModifiedHTML<Content: HTML>: HTML {
 extension ModifiedHTML: FormItem where Content: FormItem {}
 
 extension ModifiedHTML: ListElement where Content: ListElement {}
+
+extension ModifiedHTML: TextElement where Content: TextElement {
+    var fontStyle: FontStyle {
+        get { content.fontStyle }
+        set { content.fontStyle = newValue }
+    }
+}
+
+extension ModifiedHTML: ImageElement where Content: ImageElement {}

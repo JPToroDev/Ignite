@@ -151,9 +151,9 @@ public struct Dropdown: HTML, NavigationItem, FormItem {
                             .class(publishingContext.currentRenderingPath == link.url ? "active" : nil)
                             .aria(.current, publishingContext.currentRenderingPath == link.url ? "page" : nil)
                     }
-                } else if let text = item as? Text {
+                } else if let text = item as? any TextElement {
                     ListItem {
-                        text.class("dropdown-header")
+                        AnyHTML(text).class("dropdown-header")
                     }
                 }
             }

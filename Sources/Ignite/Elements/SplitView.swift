@@ -7,7 +7,7 @@
 
 /// A resizable split view that divides content into a
 /// sidebar and main content area with an interactive divider.
-public struct SplitView: HTML {
+public struct SplitView<Sidebar: HTML, Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -15,10 +15,10 @@ public struct SplitView: HTML {
     public var attributes = CoreAttributes()
 
     /// The sidebar content of the split view.
-    private var sidebar: any HTML
+    private var sidebar: Sidebar
 
     /// The main content of the split view.
-    private var content: any HTML
+    private var content: Content
 
     /// The base color of the divider between sidebar and content.
     private var dividerColor: Color?
@@ -54,8 +54,8 @@ public struct SplitView: HTML {
     ///   - content: A closure that returns the main content.
     public init(
         id: String,
-        @HTMLBuilder sidebar: () -> some HTML,
-        @HTMLBuilder content: () -> some HTML
+        @HTMLBuilder sidebar: () -> Sidebar,
+        @HTMLBuilder content: () -> Content
     ) {
         self.htmlID = id
         self.sidebar = sidebar()
