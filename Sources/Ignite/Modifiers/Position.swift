@@ -6,7 +6,7 @@
 //
 
 /// Specific values that can be used to position this element.
-public enum Position: String {
+public enum Position: String, Sendable, CaseIterable {
     /// No specific position.
     case `default` = ""
 
