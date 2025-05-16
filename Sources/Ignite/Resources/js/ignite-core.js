@@ -156,21 +156,3 @@ function igniteFilterTable(searchText, tableId) {
     tbody.innerHTML = "";
     matchingRows.forEach(row => tbody.appendChild(row));
 }
-
-// SECTION: Navigation Bars -------------------------------------------------------------------
-
-document.addEventListener('DOMContentLoaded', function() {
-  const updateNavbarHeight = () => {
-    const navbar = document.querySelector('.navbar.fixed-top');
-    if (navbar) {
-      const height = navbar.offsetHeight;
-      document.documentElement.style.setProperty('--navbar-height', height + 'px');
-    }
-  };
-
-  // Run on load
-  updateNavbarHeight();
-
-  // Run on resize
-  window.addEventListener('resize', updateNavbarHeight);
-});
