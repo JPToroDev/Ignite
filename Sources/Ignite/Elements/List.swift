@@ -6,7 +6,7 @@
 //
 
 /// Creates a list of items, either ordered or unordered.
-public struct List: HTML {
+public struct List<Content: HTML>: HTML {
     /// The visual style to apply to a list.
     public enum Style: Sendable, CaseIterable {
         /// A basic list appearance with no styling.
@@ -82,7 +82,7 @@ public struct List: HTML {
     /// Creates a new `List` object using a page element builder that returns
     /// an array of `HTML` objects to display in the list.
     /// - Parameter items: The content you want to display in your list.
-    public init(@HTMLBuilder items: () -> some BodyElement) {
+    public init(@HTMLBuilder items: () -> Content) {
         self.items = VariadicHTML(items)
     }
 
@@ -92,7 +92,7 @@ public struct List: HTML {
     ///   - items: A sequence of items you want to convert into list items.
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns an item representing that value in the list.
-    public init<T>(_ items: any Sequence<T>, content: (T) -> some BodyElement) {
+    public init<T>(_ items: any Sequence<T>, @HTMLBuilder content: (T) -> Content) {
         self.items = VariadicHTML(items.map(content))
     }
 
@@ -162,16 +162,13 @@ public struct List: HTML {
         var output = "<\(listElementName)\(listAttributes)>"
 
         for originalItem in items {
-            var item = originalItem
             // Any element that renders its own <li> (e.g. ForEach) should
             // be allowed to handle that itself.
-            if var listableItem = item as? ListableElement ??
-                (item as? AnyHTML)?.wrapped as? ListableElement {
-                if listStyle != .automatic {
-                    listableItem.attributes.append(classes: "list-group-item")
-                }
-                output += listableItem.listMarkup().string
+            if var listItem = originalItem as? ListElement {
+                listItem.attributes.append(classes: listStyle != .automatic ? "list-group-item" : nil)
+                output += listItem.markupAsListItem().string
             } else {
+                var item = originalItem
                 let styleClass = listStyle == .automatic ? "" : " class=\"list-group-item\""
                 item.attributes.append(classes: "m-0")
                 output += "<li\(styleClass)>\(item.markupString())</li>"

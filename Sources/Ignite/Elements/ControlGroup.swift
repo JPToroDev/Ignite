@@ -99,7 +99,8 @@ public struct ControlGroup: HTML, FormItem {
                 case let dropdown as Dropdown:
                     renderDropdown(dropdown)
                 default:
-                    AnyHTML(item)
+//                    AnyHTML(item)
+                    EmptyHTML()
                 }
             }
         }

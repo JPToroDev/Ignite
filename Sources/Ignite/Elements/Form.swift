@@ -93,7 +93,7 @@ public struct Form: HTML, NavigationItem {
                     .labelStyle(.hidden)
                     .size(controlSize)
             } else if $0.is(Button.self) {
-                $0.class(controlSize.buttonClass)
+                $0
             } else {
                 $0
             }
@@ -102,7 +102,7 @@ public struct Form: HTML, NavigationItem {
         let last = items.last
 
         items = items.dropLast().map {
-            $0.class("me-2")
+            $0
         }
 
         if let last {
@@ -140,7 +140,8 @@ public struct Form: HTML, NavigationItem {
                 } else if let section = item.as(Section.self) {
                     renderSection(section)
                 } else {
-                    renderItem(item)
+//                    renderItem(item)
+                    EmptyHTML()
                 }
             }
         }
@@ -213,10 +214,10 @@ public struct Form: HTML, NavigationItem {
         For proper alignment within Form, prefer a read-only, \
         plain-text TextField over a Span.
         """)
-        return renderItem(text)
+        return renderItem(InlineHTML(text))
     }
 
-    private func renderItem(_ item: any BodyElement) -> some HTML {
+    private func renderItem(_ item: any HTML) -> some HTML {
         Section(item)
             .class("d-flex", "align-items-center")
             .class(getColumnClass(for: item))
@@ -227,7 +228,7 @@ public struct Form: HTML, NavigationItem {
     ///   - item: The HTML element to calculate the column class for.
     ///   - totalColumns: The total number of columns in the form's grid.
     /// - Returns: A string containing the appropriate Bootstrap column class.
-    private func getColumnClass(for item: any BodyElement) -> String {
+    private func getColumnClass(for item: any MarkupElement) -> String {
         if let widthClass = item.attributes.classes.first(where: { $0.starts(with: "col-md-") }),
            let width = Int(widthClass.dropFirst("col-md-".count)) {
             let bootstrapColumns = 12 * width / columnCount

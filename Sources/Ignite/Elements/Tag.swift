@@ -27,7 +27,7 @@ public struct Tag: HTML {
     ///   - content: The content to place inside the tag.
     public init(
         _ name: String,
-        @HTMLBuilder content: @escaping () -> any BodyElement
+        @HTMLBuilder content: @escaping () -> any HTML
     ) {
         self.name = name
         self.content = content()

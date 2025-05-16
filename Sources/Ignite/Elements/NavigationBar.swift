@@ -154,10 +154,10 @@ public struct NavigationBar: HTML {
         var copy = self
         switch width {
         case .viewport:
-            copy.widthClasses = ["container-fluid", copy.columnWidth]
+            copy.widthClasses = ["container-fluid", copy.columnWidth()]
         case .count(let count):
             copy.columnWidth(.count(count))
-            copy.widthClasses = ["container", copy.columnWidth]
+            copy.widthClasses = ["container", copy.columnWidth()]
         }
         return copy
     }
@@ -241,11 +241,13 @@ public struct NavigationBar: HTML {
     private func renderPinnedItems(_ items: [any NavigationItem]) -> some HTML {
         ForEach(items) { item in
             if let item = item as? any NavigationItemConfigurable {
-                AnyHTML(item.configuredAsNavigationItem(true))
+//                AnyHTML(item.configuredAsNavigationItem(true))
+                EmptyHTML()
             } else if let spacer = item.as(Spacer.self) {
                 spacer.axis(.horizontal)
             } else {
-                AnyHTML(item)
+//                AnyHTML(item)
+                EmptyHTML()
             }
         }
     }
@@ -276,11 +278,14 @@ public struct NavigationBar: HTML {
                     case let text as Span:
                         renderTextItem(text)
                     case let item as any NavigationItemConfigurable:
-                        AnyHTML(item.configuredAsNavigationItem(true))
+//                        AnyHTML(item.configuredAsNavigationItem(true))
+                        EmptyHTML()
+                        #warning("need to fix")
                     case let spacer as Spacer:
                         spacer.axis(.horizontal)
                     default:
-                        AnyHTML(item)
+//                        AnyHTML(item)
+                        EmptyHTML()
                     }
                 }
             }
@@ -315,7 +320,7 @@ public struct NavigationBar: HTML {
         return text
     }
 
-    private func renderLogo(_ logo: some InlineElement) -> any BodyElement {
+    private func renderLogo(_ logo: some InlineElement) -> any InlineElement {
         let logo: Link = if let link = logo.as(Link.self) {
             link
         } else {

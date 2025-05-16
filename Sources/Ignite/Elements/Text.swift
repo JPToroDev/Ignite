@@ -23,7 +23,7 @@ public struct Text: HTML, DropdownItem {
     var font = FontStyle.body
 
     /// The content to place inside the text.
-    private var content: any BodyElement
+    private var content: any InlineElement
 
     /// Whether this text contains multiple paragraphs of Markdown content.
     private var isMultilineMarkdown = false
@@ -31,12 +31,12 @@ public struct Text: HTML, DropdownItem {
     /// Creates a new `Text` instance using an inline element builder that
     /// returns an array of the content to place into the text.
     /// - Parameter content: An array of the content to place into the text.
-    public init(@InlineElementBuilder content: () -> any InlineElement) {
+    public init(@InlineElementBuilder content: () -> some InlineElement) {
         self.content = content()
     }
 
     /// Creates a new `Text` instance from one inline element.
-    public init(_ string: any InlineElement) {
+    public init(_ string: some InlineElement) {
         self.content = string
     }
 
@@ -121,7 +121,7 @@ public struct Text: HTML, DropdownItem {
                 }
                 .map(Text.init)
 
-            self.content = VariadicHTML(paragraphs)
+            self.content = VariadicHTML(paragraphs).markupString()
             self.isMultilineMarkdown = true
         } else {
             // Remove the wrapping <p> tags since they'll be added by markup()

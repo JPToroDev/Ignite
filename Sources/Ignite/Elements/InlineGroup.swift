@@ -14,7 +14,7 @@
 /// - Note: `InlineGroup` is particularly useful for applying shared styling or
 ///         attributes to multiple inline elements without affecting the document
 ///         structure.
-public struct InlineGroup: InlineElement, PassthroughElement {
+public struct InlineGroup: InlineElement {
     /// The content and behavior of this HTML.
     public var body: some InlineElement { fatalError() }
 

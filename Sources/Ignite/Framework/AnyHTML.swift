@@ -15,12 +15,12 @@ public struct AnyHTML: HTML {
     public var attributes = CoreAttributes()
 
     /// The underlying HTML content, unattributed.
-    var wrapped: any BodyElement
+    var wrapped: any HTML
 
     /// Creates a new AnyHTML instance that wraps the given HTML content.
     /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
     /// - Parameter content: The HTML content to wrap
-    public init(_ content: any BodyElement) {
+    public init(_ content: any HTML) {
         var content = content
         attributes.merge(content.attributes)
         content.attributes.clear()
@@ -33,7 +33,7 @@ public struct AnyHTML: HTML {
     }
 
     /// The underlying HTML content, with attributes.
-    var attributedContent: any BodyElement {
+    var attributedContent: any HTML {
         var wrapped = wrapped
         wrapped.attributes.merge(attributes)
         return wrapped

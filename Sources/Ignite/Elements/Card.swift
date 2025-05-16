@@ -254,9 +254,9 @@ public struct Card: HTML {
                     text.class("card-text")
                 case let text as Text:
                     text.class("card-title")
-                case is Link, is LinkGroup:
+                case is InlineHTML<Link>, is LinkGroup:
                     AnyHTML(item).class("card-link")
-                case let image as Image:
+                case let image as InlineHTML<Image>:
                     image.class("card-img")
                 default:
                     AnyHTML(item)

@@ -29,14 +29,6 @@ public struct HTMLBuilder {
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    static func buildExpression<Content: BodyElement>(_ content: Content) -> some BodyElement {
-        content
-    }
-
-
-    /// Converts a single HTML element into a builder expression.
-    /// - Parameter content: The HTML element to convert
-    /// - Returns: The same HTML element, unchanged
     public static func buildExpression<Content: InlineElement>(_ content: Content) -> some HTML {
         InlineHTML(content)
     }
@@ -66,8 +58,17 @@ public struct HTMLBuilder {
     /// - Returns: The wrapped HTML element
     public static func buildEither<TrueContent, FalseContent>(
         first content: TrueContent
-    ) -> ConditionalHTML<TrueContent, FalseContent> where TrueContent: BodyElement, FalseContent: BodyElement {
+    ) -> ConditionalHTML<TrueContent, FalseContent> where TrueContent: HTML, FalseContent: HTML {
         .init(storage: .trueContent(content))
+    }
+
+    /// Handles the first branch of an if/else statement.
+    /// - Parameter component: The HTML element to use if condition is true
+    /// - Returns: The wrapped HTML element
+    public static func buildEither<TrueContent, FalseContent>(
+        first content: TrueContent
+    ) -> ConditionalHTML<InlineHTML<TrueContent>, FalseContent> where TrueContent: InlineElement, FalseContent: HTML {
+        .init(storage: .trueContent(InlineHTML(content)))
     }
 
     /// Handles the second branch of an if/else statement.
@@ -75,61 +76,52 @@ public struct HTMLBuilder {
     /// - Returns: The wrapped HTML element
     public static func buildEither<TrueContent, FalseContent>(
         second content: FalseContent
-    ) -> ConditionalHTML<TrueContent, FalseContent> where TrueContent: BodyElement, FalseContent: BodyElement {
+    ) -> ConditionalHTML<TrueContent, FalseContent> where TrueContent: HTML, FalseContent: HTML {
         .init(storage: .falseContent(content))
+    }
+
+    /// Handles the second branch of an if/else statement.
+    /// - Parameter component: The HTML element to use if condition is false
+    /// - Returns: The wrapped HTML element
+    public static func buildEither<TrueContent, FalseContent>(
+        second content: FalseContent
+    ) -> ConditionalHTML<TrueContent, InlineHTML<FalseContent>> where TrueContent: HTML, FalseContent: InlineElement {
+        .init(storage: .falseContent(InlineHTML(content)))
     }
 
     /// Handles optional content in if statements.
     /// - Parameter component: An optional HTML element
     /// - Returns: Either the wrapped element or an empty element
-    public static func buildOptional<Content: BodyElement>(_ content: Content?) -> ConditionalHTML<Content, EmptyHTML> {
+    public static func buildOptional<Content: HTML>(_ content: Content?) -> ConditionalHTML<Content, EmptyHTML> {
         guard let content else {
             return buildEither(second: EmptyHTML())
         }
         return buildEither(first: content)
     }
 
+    /// Handles optional content in if statements.
+    /// - Parameter component: An optional HTML element
+    /// - Returns: Either the wrapped element or an empty element
+    public static func buildOptional<Content: InlineElement>(_ content: Content?) -> ConditionalHTML<InlineHTML<Content>, EmptyHTML> {
+        guard let content else {
+            return buildEither(second: EmptyHTML())
+        }
+        return buildEither(first: InlineHTML(content))
+    }
+
     /// Handles availability conditions in switch statements.
     /// - Parameter component: The HTML element to conditionally include
     /// - Returns: The same HTML element unchanged
-    public static func buildLimitedAvailability(_ component: some BodyElement) -> some HTML {
+    public static func buildLimitedAvailability(_ component: some HTML) -> some HTML {
         AnyHTML(component)
     }
-}
 
-/// Extension providing result builder functionality for combining multiple HTML elements
-extension HTMLBuilder {
-    /// Loads a single piece of HTML to be combined with others.
-    /// - Parameter content: The HTML to load.
-    /// - Returns: The original thing we read, ready to be combined.
-    public static func buildPartialBlock<Content: HTML>(first content: Content) -> Content {
-        content
-    }
-
-    /// Loads a single piece of HTML to be combined with others.
-    /// - Parameter content: The HTML to load.
-    /// - Returns: The original thing we read, ready to be combined.
-    public static func buildPartialBlock<Content: InlineElement>(first content: Content) -> some HTML {
-        InlineHTML(content)
-    }
-
-    /// Loads a single piece of HTML to be combined with others.
-    /// - Parameter content: The HTML to load.
-    /// - Returns: The original thing we read, ready to be combined.
-    public static func buildPartialBlock<Content: BodyElement>(first content: Content) -> some HTML {
-        AnyHTML(content)
-    }
-
-    /// Combines an exist piece of HTML with another piece.
+    /// Combines multiple pieces of HTML together.
     /// - Parameters:
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildPartialBlock
-    <C0: HTML, C1: HTML>(
-        accumulated: C0,
-        next: C1
-    ) -> some HTML {
-        TupleHTML((accumulated, next))
+    public static func buildBlock<each Content>(_ content: repeat each Content) -> TupleHTML<(repeat each Content)> {
+        TupleHTML((repeat each content))
     }
 }

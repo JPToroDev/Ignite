@@ -25,7 +25,7 @@ public struct Section: HTML, FormItem {
     /// The heading's semantic font size.
     var headerStyle: Font.Style = .title2
 
-    var content: any BodyElement
+    var content: any HTML
 
     init() {
         self.content = EmptyHTML()
@@ -35,7 +35,7 @@ public struct Section: HTML, FormItem {
         self.content = InlineHTML(content)
     }
 
-    init(_ content: any BodyElement) {
+    init(_ content: any HTML) {
         self.content = content
     }
 

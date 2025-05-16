@@ -6,7 +6,7 @@
 //
 
 /// A protocol that allows elements to be configured for placement in a navigation bar.
-protocol NavigationItemConfigurable: BodyElement {
+protocol NavigationItemConfigurable: MarkupElement {
     /// Whether this element is configured as a navigation item.
     var isNavigationItem: Bool { get set }
 

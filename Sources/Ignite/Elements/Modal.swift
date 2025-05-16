@@ -65,9 +65,9 @@ public struct Modal: HTML {
     public var attributes = CoreAttributes()
 
     private let htmlID: String
-    private var content: any BodyElement
-    private var header: any BodyElement
-    private var footer: any BodyElement
+    private var content: any HTML
+    private var header: any HTML
+    private var footer: any HTML
 
     private var isAnimationDisabled = false
     private var isScrollDisabled = true
@@ -86,9 +86,9 @@ public struct Modal: HTML {
     ///   - footer: Optional footer content for the modal.
     public init(
         id modalId: String,
-        @HTMLBuilder body: () -> some BodyElement,
-        @HTMLBuilder header: () -> some BodyElement = { EmptyHTML() },
-        @HTMLBuilder footer: () -> some BodyElement = { EmptyHTML() }
+        @HTMLBuilder body: () -> some HTML,
+        @HTMLBuilder header: () -> some HTML = { EmptyHTML() },
+        @HTMLBuilder footer: () -> some HTML = { EmptyHTML() }
     ) {
         self.htmlID = modalId
         self.content = body()

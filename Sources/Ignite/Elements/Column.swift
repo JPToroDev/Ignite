@@ -33,12 +33,12 @@ public struct Column: HTML {
     var verticalAlignment = VerticalAlignment.top
 
     /// The items to render inside this column.
-    var content: any BodyElement
+    var content: any HTML
 
     /// Creates a new column from a page element builder of items.
     /// - Parameter items: A page element builder that returns the items
     /// for this column.
-    public init(@HTMLBuilder content: () -> some BodyElement) {
+    public init(@HTMLBuilder content: () -> some HTML) {
         self.content = content()
     }
 

@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-public struct ConditionalHTML<TrueContent: BodyElement, FalseContent: BodyElement>: HTML {
+public struct ConditionalHTML<TrueContent: HTML, FalseContent: HTML>: HTML {
 
     public var body: some HTML { fatalError() }
 

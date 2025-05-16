@@ -7,7 +7,7 @@
 
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
-public struct ForEach<Data: Sequence>: HTML, ListableElement {
+public struct ForEach<Content: HTML, Data: Sequence>: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
     
@@ -18,7 +18,7 @@ public struct ForEach<Data: Sequence>: HTML, ListableElement {
     private let data: Data
 
     /// The child elements contained within this HTML element.
-    var items: [any BodyElement]
+    var items: [any HTML]
 
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:
@@ -26,7 +26,7 @@ public struct ForEach<Data: Sequence>: HTML, ListableElement {
     ///   - content: A closure that converts each element into HTML content.
     public init(
         _ data: Data,
-        @HTMLBuilder content: @escaping (Data.Element) -> some BodyElement
+        @HTMLBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.data = data
         self.items = data.map(content)
@@ -35,17 +35,21 @@ public struct ForEach<Data: Sequence>: HTML, ListableElement {
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
     public func markup() -> Markup {
-        items.map {
-            var item: any BodyElement = $0
-            item.attributes.merge(attributes)
-            return item.markup()
-        }.joined()
+        items.map { $0.attributes(attributes).markup() }.joined()
     }
+}
 
-    /// Renders the ForEach content when this isn't part of a list.
+extension ForEach: HTMLCollection {
+    var children: VariadicHTML {
+        VariadicHTML(items)
+    }
+}
+
+extension ForEach: ListElement where Content: ListElement {
+    /// Renders the ForEach content when it's part of a `List` and
+    /// its children aren't `ListItem`.
     /// - Returns: The rendered HTML string.
-    func listMarkup() -> Markup {
-        // ListableElement conformance ensures other views never wrap ForEach in <li> tags.
-        markup()
+    func markupAsListItem() -> Markup {
+        items.map { Markup("<li\(attributes)>\($0.markupString())</li>") }.joined()
     }
 }

@@ -262,7 +262,8 @@ public extension NavigationItem {
             height: height,
             minHeight: minHeight,
             maxHeight: maxHeight)
-        return self.style(dimensionStyles)
+        return self
+        #warning("need to fix")
     }
 
     /// Creates a specific frame for this element, either using exact pixel values or
@@ -290,7 +291,7 @@ public extension NavigationItem {
             height: height.map { .px($0) },
             minHeight: minHeight.map { .px($0) },
             maxHeight: maxHeight.map { .px($0) })
-        return self.style(dimensionStyles)
+        return self
     }
 }
 

@@ -17,6 +17,14 @@ public protocol MarkupElement: Sendable {
     func markup() -> Markup
 }
 
+public extension MarkupElement {
+    /// A collection of styles, classes, and attributes.
+    var attributes: CoreAttributes {
+        get { CoreAttributes() }
+        set {} // swiftlint:disable:this unused_setter_value
+    }
+}
+
 extension MarkupElement {
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup

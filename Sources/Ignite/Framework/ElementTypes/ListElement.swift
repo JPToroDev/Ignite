@@ -9,5 +9,15 @@
 @MainActor
 protocol ListElement: MarkupElement {
     /// Render this when we know for sure we're part of a `List`.
-    func listMarkup() -> Markup
+    func markupAsListItem() -> Markup
+}
+
+extension ListElement {
+    /// Renders this element inside a list.
+    /// - Returns: The HTML for this element.
+    func markupAsListItem() -> Markup {
+        // For most items, we do nothing special here,
+        // so by default, just send back the default markup.
+        markup()
+    }
 }

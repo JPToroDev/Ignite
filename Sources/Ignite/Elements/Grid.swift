@@ -75,7 +75,7 @@ public struct Grid: HTML {
         _ items: any Sequence<T>,
         alignment: Alignment = .center,
         spacing: Int,
-        content: (T) -> some HTML
+        @HTMLBuilder content: (T) -> some HTML
     ) {
         self.items = VariadicHTML(items.map(content))
         self.alignment = alignment
@@ -94,7 +94,7 @@ public struct Grid: HTML {
         _ items: any Sequence<T>,
         alignment: Alignment = .center,
         spacing: SpacingAmount = .medium,
-        content: (T) -> some HTML
+        @HTMLBuilder content: (T) -> some HTML
     ) {
         self.items = VariadicHTML(items.map(content))
         self.alignment = alignment
@@ -121,10 +121,7 @@ public struct Grid: HTML {
         // should drop down to width 1 to avoid squeezing things
         // into oblivion.
         if let columnCount {
-            gridAttributes.append(classes: [
-                "row-cols-1",
-                "row-cols-md-\(columnCount)"
-            ])
+            gridAttributes.append(classes: "row-cols-1", "row-cols-md-\(columnCount)")
         }
 
         switch spacingAmount {
@@ -139,14 +136,11 @@ public struct Grid: HTML {
 
         return Section {
             ForEach(items) { item in
-//                if let passthrough = item as? any PassthroughElement {
-//                    handlePassthrough(passthrough, attributes: passthrough.attributes)
-//                } else if let modified = item as? AnyHTML,
-//                          let passthrough = modified.wrapped as? any PassthroughElement {
-//                    handlePassthrough(passthrough, attributes: modified.attributes)
-//                } else {
-                    handleItem(item)
-//                }
+                if let variadic = item as? any HTMLCollection {
+                    wrapChildrenInColumn(variadic)
+                } else {
+                    column(item)
+                }
             }
         }
         .attributes(gridAttributes)
@@ -154,44 +148,50 @@ public struct Grid: HTML {
     }
 
     /// Removes a column class, if it exists, from the item and reassigns it to a wrapper.
-    private func handleItem(_ item: any BodyElement) -> some BodyElement {
+    private func column(_ item: any HTML) -> some HTML {
         var item = item
-        var name: String?
-        if let widthClass = item.attributes.classes.first(where: { $0.starts(with: "col-md-") }) {
-            item.attributes.remove(classes: widthClass)
-            name = scaleWidthClass(widthClass)
+
+        var columnWidth = item.columnWidth
+        if case .count(let columnCount) = columnWidth {
+            item.attributes.remove(classes: columnWidth.className)
+            let scaledWidth = scaledWidth(columnCount)
+            columnWidth = scaledWidth
         }
 
-        item = item.is(Section.self) ? item : Section(item)
+        // We need to ensure the Section wrapping a Grid item
+        // retains its child's position
+        var positionClass: String?
+        let positionClasses = Position.allCases.map(\.rawValue)
+        if let position = item.attributes.classes.first(where: { positionClasses.contains($0) }) {
+            item.attributes.remove(classes: position)
+            positionClass = position
+        }
 
-        return AnyHTML(item)
-            .class(name ?? "col")
+        return Section(item)
+            .class(columnWidth.className)
+            .class(positionClass)
             .class(alignment.vertical.itemAlignmentClass)
     }
 
     /// Renders a group of HTML elements with consistent styling and attributes.
-    /// - Parameters:
-    ///   - passthrough: The passthrough entity containing the HTML elements to render.
-    ///   - attributes: HTML attributes to apply to each element in the group.
+    /// - Parameter variadic: The passthrough entity containing the HTML elements to render.
     /// - Returns: A view containing the styled group elements.
-    func handlePassthrough(_ passthrough: any PassthroughElement, attributes: CoreAttributes) -> some HTML {
-        let collection = passthrough.items.compactMap { $0 as? any HTML }
+    func wrapChildrenInColumn(_ variadic: any HTMLCollection) -> some HTML {
+        let collection = variadic.children.map(\.self)
         return ForEach(collection) { item in
-            handleItem(item.attributes(attributes))
+            column(item)
         }
     }
 
     /// Calculates the appropriate Bootstrap column class name for a block element.
-    /// - Parameter item: The block element to calculate the class name for.
-    /// - Returns: A Bootstrap class name that represents the element's width,
-    /// scaled according to the grid's column count if needed.
-    private func scaleWidthClass(_ widthClass: String) -> String {
-        if let columnCount, let width = Int(widthClass.dropFirst("col-md-".count)) {
-            // Scale the width to be relative to the new column count
-            let scaledWidth = width * 12 / columnCount
-            return ColumnWidth.count(scaledWidth).className
+    /// - Parameter count: The number of columns.
+    /// - Returns: The scaled `ColumnWidth`.
+    private func scaledWidth(_ count: Int) -> ColumnWidth {
+        let scaledCount = if let columnCount {
+            count * 12 / columnCount
         } else {
-            return widthClass
+            count
         }
+        return ColumnWidth.count(scaledCount)
     }
 }

@@ -7,7 +7,7 @@
 
 /// Describes elements that can be placed into forms.
 /// - Warning: Do not conform to this type directly.
-public protocol FormItem: BodyElement {}
+public protocol FormItem: MarkupElement {}
 
 public extension FormItem where Self: HTML {
     /// Generates the complete `HTML` string representation of the element.

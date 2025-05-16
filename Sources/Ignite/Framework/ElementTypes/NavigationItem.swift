@@ -7,7 +7,7 @@
 
 /// Describes elements that can be placed into navigation bars.
 /// - Warning: Do not conform to this type directly.
-public protocol NavigationItem: BodyElement {
+public protocol NavigationItem: MarkupElement {
     /// How a `NavigationBar` displays this item at different breakpoints.
     var navigationBarVisibility: NavigationBarVisibility { get set }
 
@@ -71,25 +71,25 @@ extension NavigationItem where Self: HTML {
         return copy
     }
 }
-
-extension NavigationItem where Self: BodyElement {
-    /// Adds a CSS class to the HTML element
-    /// - Parameter className: The CSS class name to add
-    /// - Returns: A modified copy of the element with the CSS class added
-    func `class`(_ className: String) -> Self {
-        guard !className.isEmpty else { return self }
-        var copy = self
-        copy.attributes.append(classes: className)
-        return copy
-    }
-
-    /// Adds inline styles to the element.
-    /// - Parameter styles: An array of `InlineStyle` objects
-    /// - Returns: The modified `HTML` element
-    func style(_ styles: [InlineStyle]) -> Self {
-        guard styles.isEmpty == false else { return self }
-        var copy = self
-        copy.attributes.append(styles: styles)
-        return copy
-    }
-}
+#warning("need to fix")
+//extension NavigationItem where Self: BodyElement {
+//    /// Adds a CSS class to the HTML element
+//    /// - Parameter className: The CSS class name to add
+//    /// - Returns: A modified copy of the element with the CSS class added
+//    func `class`(_ className: String) -> Self {
+//        guard !className.isEmpty else { return self }
+//        var copy = self
+//        copy.attributes.append(classes: className)
+//        return copy
+//    }
+//
+//    /// Adds inline styles to the element.
+//    /// - Parameter styles: An array of `InlineStyle` objects
+//    /// - Returns: The modified `HTML` element
+//    func style(_ styles: [InlineStyle]) -> Self {
+//        guard styles.isEmpty == false else { return self }
+//        var copy = self
+//        copy.attributes.append(styles: styles)
+//        return copy
+//    }
+//}

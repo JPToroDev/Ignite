@@ -16,7 +16,7 @@
 ///         attributes to multiple elements without affecting the document
 ///         structure. If you need a containing `div` element, use
 ///         ``Section`` instead.
-public struct Group: HTML {
+public struct Group<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -24,21 +24,27 @@ public struct Group: HTML {
     public var attributes = CoreAttributes()
 
     /// The child elements contained within this group.
-    var content: any BodyElement
+    var content: Content
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.
-    public init(@HTMLBuilder content: () -> some HTML) {
+    public init(@HTMLBuilder content: () -> Content) {
         self.content = content()
     }
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: The HTML content to include.
-    public init(_ content: some BodyElement) {
+    public init(_ content: Content) {
         self.content = content
     }
 
     public func markup() -> Markup {
         content.attributes(attributes).markup()
+    }
+}
+
+extension Group: HTMLCollection {
+    var children: VariadicHTML {
+        VariadicHTML { content }
     }
 }

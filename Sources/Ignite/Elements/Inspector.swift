@@ -49,8 +49,8 @@ public struct Inspector: HTML {
     private var isExitCommandDisabled = false
 
     private let htmlID: String
-    private var content: any BodyElement
-    private var header: any BodyElement
+    private var content: any HTML
+    private var header: any HTML
 
     /// Creates a new inspector with the specified content.
     /// - Parameters:
@@ -59,8 +59,8 @@ public struct Inspector: HTML {
     ///   - header: Optional header content for the inspector.
     public init(
         id modalId: String,
-        @HTMLBuilder body: () -> some BodyElement,
-        @HTMLBuilder header: () -> some BodyElement = { EmptyHTML() }
+        @HTMLBuilder body: () -> some HTML,
+        @HTMLBuilder header: () -> some HTML = { EmptyHTML() }
     ) {
         self.htmlID = modalId
         self.content = body()

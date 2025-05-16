@@ -72,7 +72,7 @@ public struct Table: HTML {
     public init(
         filterTitle: String? = nil,
         @ElementBuilder<Row> rows: () -> [Row],
-        @HTMLBuilder header: () -> some BodyElement
+        @HTMLBuilder header: () -> some HTML
     ) {
         self.filterTitle = filterTitle
         self.rows = VariadicHTML(rows())

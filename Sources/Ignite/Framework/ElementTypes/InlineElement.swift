@@ -8,7 +8,7 @@
 /// An element that exists inside a block element, such as an emphasized
 /// piece of text.
 @MainActor
-public protocol InlineElement: BodyElement, CustomStringConvertible {
+public protocol InlineElement: MarkupElement, CustomStringConvertible {
     /// The type of HTML content this element contains.
     associatedtype Body: InlineElement
 

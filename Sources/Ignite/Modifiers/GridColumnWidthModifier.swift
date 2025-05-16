@@ -9,14 +9,14 @@
     _ width: ColumnWidth,
     content: some HTML
 ) -> some HTML {
-    ModifiedHTML(content).class(width.className)
+    content.class(width.className)
 }
 
 @MainActor private func gridColumnWidthModifier(
     _ width: ColumnWidth,
     content: some InlineElement
 ) -> some HTML {
-    ModifiedHTML(InlineHTML(content)).class(width.className)
+    InlineHTML(content).class(width.className)
 }
 
 public extension HTML {

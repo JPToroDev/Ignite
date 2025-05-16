@@ -25,21 +25,21 @@
     return modified
 }
 
-@MainActor private func classModifier(
-    _ classNames: [String],
-    content: some BodyElement
-) -> any BodyElement {
-    guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
-    var copy: any BodyElement = if let element = content as? any HTML {
-        classModifier(classNames, content: element)
-    } else if let element = content as? any InlineElement {
-        classModifier(classNames, content: element)
-    } else {
-        content
-    }
-    copy.attributes.append(classes: classNames)
-    return copy
-}
+//@MainActor private func classModifier(
+//    _ classNames: [String],
+//    content: some BodyElement
+//) -> any BodyElement {
+//    guard !classNames.filter({ !$0.isEmpty }).isEmpty else { return content }
+//    var copy: any BodyElement = if let element = content as? any HTML {
+//        classModifier(classNames, content: element)
+//    } else if let element = content as? any InlineElement {
+//        classModifier(classNames, content: element)
+//    } else {
+//        content
+//    }
+//    copy.attributes.append(classes: classNames)
+//    return copy
+//}
 
 public extension HTML {
     /// Adds a CSS class to the HTML element
@@ -115,22 +115,22 @@ public extension FormItem where Self: HTML {
     }
 }
 
-// These should always remain private, because for the
-// type safety of the public facing API we always want
-// to return either HTML or InlineElement.
-extension BodyElement {
-    /// Adds multiple optional CSS classes to the element.
-    /// - Parameter newClasses: Variable number of optional class names
-    /// - Returns: The modified `BodyElement`
-    func `class`(_ newClasses: String?...) -> some BodyElement {
-        let classes = newClasses.compactMap(\.self)
-        return AnyHTML(classModifier(classes, content: self))
-    }
-
-    /// Adds an array of CSS classes to the element.
-    /// - Parameter newClasses: `Array` of class names to add
-    /// - Returns: The modified `BodyElement`
-    func `class`(_ newClasses: [String]) -> some BodyElement {
-        AnyHTML(classModifier(newClasses, content: self))
-    }
-}
+//// These should always remain private, because for the
+//// type safety of the public facing API we always want
+//// to return either HTML or InlineElement.
+//extension BodyElement {
+//    /// Adds multiple optional CSS classes to the element.
+//    /// - Parameter newClasses: Variable number of optional class names
+//    /// - Returns: The modified `BodyElement`
+//    func `class`(_ newClasses: String?...) -> some BodyElement {
+//        let classes = newClasses.compactMap(\.self)
+//        return AnyHTML(classModifier(classes, content: self))
+//    }
+//
+//    /// Adds an array of CSS classes to the element.
+//    /// - Parameter newClasses: `Array` of class names to add
+//    /// - Returns: The modified `BodyElement`
+//    func `class`(_ newClasses: [String]) -> some BodyElement {
+//        AnyHTML(classModifier(newClasses, content: self))
+//    }
+//}

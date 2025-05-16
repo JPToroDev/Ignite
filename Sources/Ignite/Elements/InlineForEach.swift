@@ -7,7 +7,7 @@
 
 /// A structure that creates inline content by mapping over a sequence of data.
 @MainActor
-public struct InlineForEach<Data: Sequence>: InlineElement, PassthroughElement {
+public struct InlineForEach<Data: Sequence>: InlineElement {
     /// The content and behavior of this HTML.
     public var body: some InlineElement { fatalError() }
 

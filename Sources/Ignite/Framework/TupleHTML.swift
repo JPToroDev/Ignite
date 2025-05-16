@@ -17,7 +17,7 @@ public struct TupleHTML<T>: HTML {
         self.content = content
     }
 
-    private var items: [any BodyElement] {
+    private var items: [any HTML] {
         // Use Mirror to inspect and iterate through tuple elements
         let mirror = Mirror(reflecting: content)
         return mirror.children.compactMap { child in
@@ -26,7 +26,7 @@ public struct TupleHTML<T>: HTML {
         }
     }
 
-    var children: [any BodyElement] {
+    var children: [any HTML] {
         items.map { $0.attributes(attributes) }
     }
 
@@ -39,5 +39,6 @@ extension TupleHTML: HTMLCollection {}
 
 @MainActor
 protocol HTMLCollection {
-    var children: [any BodyElement] { get }
+    associatedtype Content: Sequence where Content.Element == any HTML
+    var children: Content { get }
 }

@@ -8,7 +8,7 @@
 /// A protocol that defines the core behavior and
 /// structure of `HTML` elements in Ignite.
 @MainActor
-public protocol HTML: BodyElement {
+public protocol HTML: MarkupElement {
     /// The type of HTML content this element contains.
     associatedtype Body: HTML
 
@@ -29,14 +29,24 @@ extension HTML {
         Self.Body.self == Never.self
     }
 
-    /// The Bootstrap class that sizes this element in a grid.
-    var columnWidth: String {
-        if let width = attributes.classes.first(where: {
-            $0.starts(with: "col-md-")
-        }) {
-            return width
+    /// How this element should be sized in a `Grid`.
+    var columnWidth: ColumnWidth {
+        let prefix = "col-md-"
+
+        if let width = attributes.classes.first(where: { $0.hasPrefix(prefix) }),
+           let count = Int(width.dropFirst(prefix.count)) {
+            return .count(count)
         }
-        return "col"
+
+        if attributes.classes.contains("col") {
+            return .uniform
+        }
+
+        if attributes.classes.contains("col-auto") {
+            return .intrinsic
+        }
+
+        return .uniform
     }
 
     /// Checks if this element is an empty HTML element.
@@ -51,7 +61,7 @@ extension HTML {
 
     /// A Boolean value indicating whether this represents `Section`.
     var isSection: Bool {
-        self.is(Section.self)
+        self.is(Section.self) || self is ModifiedHTML<Section>
     }
 }
 
@@ -78,6 +88,6 @@ extension HTML {
     /// Adjusts the number of columns assigned to this element.
     /// - Parameter width: The new number of columns to use.
     mutating func columnWidth(_ width: ColumnWidth) {
-        attributes.classes.append(width.className)
+        attributes.classes.append(width())
     }
 }

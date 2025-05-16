@@ -41,3 +41,5 @@ struct ModifiedHTML<Content: HTML>: HTML {
 }
 
 extension ModifiedHTML: FormItem where Content: FormItem {}
+
+extension ModifiedHTML: ListElement where Content: ListElement {}
