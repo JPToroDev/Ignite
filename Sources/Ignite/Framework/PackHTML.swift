@@ -1,5 +1,5 @@
 //
-// TupleHTML.swift
+// PackHTML.swift
 // Ignite
 // https://www.github.com/twostraws/Ignite
 // See LICENSE for license information.
@@ -21,15 +21,15 @@ struct PackHTML<each Content> {
 
 extension PackHTML: HTML, VariadicElement, MarkupElement, Sendable where repeat each Content: HTML {
     /// The content and behavior of this HTML.
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     var children: Children {
         var children = Children()
         for case var element in repeat each content {
             // Using the attributes() modifier will change the type to ModifiedHTML,
             // so to keep the type info, we'll modify the attributes directly
-            element.attributes.merge(attributes)
-            let child = Child(element)
+            var child = Child(element)
+            child.attributes.merge(attributes)
             children.elements.append(child)
         }
         return children
@@ -41,3 +41,5 @@ extension PackHTML: HTML, VariadicElement, MarkupElement, Sendable where repeat 
 }
 
 extension PackHTML: NavigationElement where repeat each Content: NavigationElement {}
+
+extension PackHTML: AccordionContent where repeat each Content: AccordionContent {}

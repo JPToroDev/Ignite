@@ -5,23 +5,26 @@
 // See LICENSE for license information.
 //
 
+@MainActor
+public protocol AccordionContent {}
+
 /// One item inside an accordion.
-public struct Item: HTML {
+public struct Item<Header: InlineElement, Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// The title to show for this item. Clicking this title will display the
     /// item's contents.
-    private var title: any InlineElement
+    private var title: Header
 
     /// Whether this accordion item should start open or not.
     private var startsOpen: Bool
 
     /// The contents of this accordion item.
-    private var contents: any HTML
+    private var content: Content
 
     /// Used when rendering this accordion item so that we can send change
     /// notifications back the parent accordion object.
@@ -32,7 +35,7 @@ public struct Item: HTML {
 
     /// Used when rendering this accordion item so that we can know whether
     /// opening this item should also close other items.
-    private var parentOpenMode: Accordion.OpenMode?
+    private var parentOpenMode: AccordionOpenMode?
 
     /// Creates a new `Item` object from the provided title and contents.
     /// - Parameters:
@@ -42,13 +45,13 @@ public struct Item: HTML {
     ///   - content: A block element builder that creates the contents
     ///   for this accordion item.
     public init(
-        _ header: some InlineElement,
+        _ header: Header,
         startsOpen: Bool = false,
-        @HTMLBuilder content: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
         self.title = header
         self.startsOpen = startsOpen
-        self.contents = content()
+        self.content = content()
     }
 
     /// Creates a new `Item` object from the provided title and contents.
@@ -61,11 +64,11 @@ public struct Item: HTML {
     ///   as the header for this accordion item.
     public init(
         startsOpen: Bool = false,
-        @HTMLBuilder content: () -> some HTML,
-        @InlineElementBuilder header: () -> some InlineElement
+        @HTMLBuilder content: () -> Content,
+        @InlineElementBuilder header: () -> Header
     ) {
         self.startsOpen = startsOpen
-        self.contents = content()
+        self.content = content()
         self.title = header()
     }
 
@@ -80,7 +83,7 @@ public struct Item: HTML {
 
     /// Used during rendering to assign this accordion item to a particular parent,
     /// so our open behavior works correctly.
-    func assigned(to parentID: String, openMode: Accordion.OpenMode) -> Self {
+    func assigned(to parentID: String, openMode: AccordionOpenMode) -> Self {
         var copy = self
         copy.parentID = parentID
         copy.parentOpenMode = openMode
@@ -109,7 +112,7 @@ public struct Item: HTML {
             .class("accordion-header")
 
             Section {
-                Section(AnyHTML(contents))
+                Section(content)
                     .class("accordion-body")
             }
             .id(itemID)
@@ -121,3 +124,7 @@ public struct Item: HTML {
         .markup()
     }
 }
+
+extension Item: AccordionContent {}
+
+extension Item: AccordionItemAssignable {}
