@@ -53,7 +53,7 @@ struct ContainerRelativeFrame<Content: HTML>: HTML {
 
         return finalContent
             .style(.display, "flex")
-            .style(self.is(Image.self) ? .init(.flexDirection, value: "column") : nil)
+            .style(self is any ImageElement ? .init(.flexDirection, value: "column") : nil)
             .style(.overflow, "hidden")
             .style(edgeAlignmentRules)
             .style(alignment.flexAlignmentRules)

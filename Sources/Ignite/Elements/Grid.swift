@@ -12,7 +12,7 @@
 ///
 /// **Note**: A 12-column grid is the default, but you can adjust that downwards
 /// by using the `columns()` modifier.
-public struct Grid: HTML {
+public struct Grid<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -29,7 +29,7 @@ public struct Grid: HTML {
     private var alignment: Alignment = .center
 
     /// The items to display in this grid.
-    private var items: VariadicHTML
+    var children: Children
 
     /// Creates a new `Grid` object using a block element builder
     /// that returns an array of items to use in this grid.
@@ -40,9 +40,9 @@ public struct Grid: HTML {
     public init(
         alignment: Alignment = .center,
         spacing: Int,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
-        self.items = VariadicHTML(items)
+        self.children = Children(content())
         self.alignment = alignment
         self.spacingAmount = .exact(spacing)
     }
@@ -56,9 +56,9 @@ public struct Grid: HTML {
     public init(
         alignment: Alignment = .center,
         spacing: SpacingAmount = .medium,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
-        self.items = VariadicHTML(items)
+        self.children = Children(content())
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
@@ -71,13 +71,14 @@ public struct Grid: HTML {
     ///   - spacing: The number of pixels between each element.
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns some HTML representing that value in the grid.
-    public init<T>(
-        _ items: any Sequence<T>,
+    public init<T, S: Sequence, ItemContent: HTML>(
+        _ items: S,
         alignment: Alignment = .center,
         spacing: Int,
-        @HTMLBuilder content: (T) -> some HTML
-    ) {
-        self.items = VariadicHTML(items.map(content))
+        @HTMLBuilder content: @escaping (T) -> ItemContent
+    ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+        let content = ForEach(Array(items), content: content)
+        self.children = Children(content)
         self.alignment = alignment
         self.spacingAmount = .exact(spacing)
     }
@@ -90,13 +91,14 @@ public struct Grid: HTML {
     ///   - spacing: The predefined size between each element. Defaults to `.none`
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns some HTML representing that value in the grid.
-    public init<T>(
-        _ items: any Sequence<T>,
+    public init<T, S: Sequence, ItemContent: HTML>(
+        _ items: S,
         alignment: Alignment = .center,
         spacing: SpacingAmount = .medium,
-        @HTMLBuilder content: (T) -> some HTML
-    ) {
-        self.items = VariadicHTML(items.map(content))
+        @HTMLBuilder content: @escaping (T) -> ItemContent
+    ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+        let content = ForEach(Array(items), content: content)
+        self.children = Children(content)
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
@@ -110,9 +112,46 @@ public struct Grid: HTML {
         return copy
     }
 
-    /// Renders this element using publishing context passed in.
-    /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    /// Removes a column class, if it exists, from the item and reassigns it to a wrapper.
+    private func column(_ item: some HTML) -> some HTML {
+        var item = item
+
+        var columnWidth = item.columnWidth
+        if case .count(let columnCount) = columnWidth {
+            item.attributes.remove(classes: columnWidth.className)
+            let scaledWidth = scaledWidth(columnCount)
+            columnWidth = scaledWidth
+        }
+
+        // We need to ensure the Section wrapping a Grid item
+        // retains its child's position
+        var positionClass: String?
+        let positionClasses = Position.allCases.map(\.rawValue)
+        if let position = item.attributes.classes.first(where: { positionClasses.contains($0) }) {
+            item.attributes.remove(classes: position)
+            positionClass = position
+        }
+
+        return Section(item)
+            .class(columnWidth.className)
+            .class(positionClass)
+            .class(alignment.vertical.itemAlignmentClass)
+    }
+
+    /// Calculates the appropriate Bootstrap column class name for a block element.
+    /// - Parameter count: The number of columns.
+    /// - Returns: The scaled `ColumnWidth`.
+    private func scaledWidth(_ count: Int) -> ColumnWidth {
+        let scaledCount = if let columnCount {
+            count * 12 / columnCount
+        } else {
+            count
+        }
+        return ColumnWidth.count(scaledCount)
+    }
+
+    /// The required HTML attributes for the outermost container of the `Grid.`
+    private var gridAttributes: CoreAttributes {
         var gridAttributes = attributes.appending(classes: ["row"])
         gridAttributes.append(classes: alignment.horizontal.containerAlignmentClass)
 
@@ -133,65 +172,20 @@ public struct Grid: HTML {
             gridAttributes.append(classes: "g-\(amount.rawValue)")
         default: break
         }
+        return gridAttributes
+    }
 
-        return Section {
-            ForEach(items) { item in
-                if let variadic = item as? any HTMLCollection {
-                    wrapChildrenInColumn(variadic)
-                } else {
-                    column(item)
-                }
+    /// Renders this element using publishing context passed in.
+    /// - Returns: The HTML for this element.
+    public func markup() -> Markup {
+        Section {
+            ForEach(children) { child in
+                column(child)
             }
         }
         .attributes(gridAttributes)
         .markup()
     }
-
-    /// Removes a column class, if it exists, from the item and reassigns it to a wrapper.
-    private func column(_ item: any HTML) -> some HTML {
-        var item = item
-
-        var columnWidth = item.columnWidth
-        if case .count(let columnCount) = columnWidth {
-            item.attributes.remove(classes: columnWidth.className)
-            let scaledWidth = scaledWidth(columnCount)
-            columnWidth = scaledWidth
-        }
-
-        // We need to ensure the Section wrapping a Grid item
-        // retains its child's position
-        var positionClass: String?
-        let positionClasses = Position.allCases.map(\.rawValue)
-        if let position = item.attributes.classes.first(where: { positionClasses.contains($0) }) {
-            item.attributes.remove(classes: position)
-            positionClass = position
-        }
-
-        return Section(AnyHTML(item))
-            .class(columnWidth.className)
-            .class(positionClass)
-            .class(alignment.vertical.itemAlignmentClass)
-    }
-
-    /// Renders a group of HTML elements with consistent styling and attributes.
-    /// - Parameter variadic: The passthrough entity containing the HTML elements to render.
-    /// - Returns: A view containing the styled group elements.
-    func wrapChildrenInColumn(_ variadic: any HTMLCollection) -> some HTML {
-        let collection = variadic.children.map(\.self)
-        return ForEach(collection) { item in
-            column(item)
-        }
-    }
-
-    /// Calculates the appropriate Bootstrap column class name for a block element.
-    /// - Parameter count: The number of columns.
-    /// - Returns: The scaled `ColumnWidth`.
-    private func scaledWidth(_ count: Int) -> ColumnWidth {
-        let scaledCount = if let columnCount {
-            count * 12 / columnCount
-        } else {
-            count
-        }
-        return ColumnWidth.count(scaledCount)
-    }
 }
+
+extension Grid: VariadicElement {}

@@ -38,22 +38,15 @@ public struct ZStack: HTML {
     }
 
     public func markup() -> Markup {
-        var items = VariadicHTML([content]).children
-
-        items = items.enumerated().map { index, item in
-            var elementAttributes = CoreAttributes()
-            elementAttributes.append(classes: "mb-0")
-            elementAttributes.append(styles: [
-                .init(.position, value: "relative"),
-                .init(.gridArea, value: "1/1")
-            ])
-
-            if item.attributes.get(styles: .zIndex).isEmpty {
-                elementAttributes.append(styles: .init(.zIndex, value: "\(index)"))
-            }
-
-            elementAttributes.append(styles: alignment.itemAlignmentRules)
-            return item.attributes(elementAttributes)
+        var items = [any HTML]()
+        var index = 0
+        if let collection = content as? VariadicElement {
+//            collection.forEach { child in
+//                items.append(addAttributesToChild(child, at: index))
+//                index += 1
+//            }
+        } else {
+            items.append(content)
         }
 
         var attributes = attributes
@@ -61,5 +54,21 @@ public struct ZStack: HTML {
 
         let contentHTML = items.map { $0.markupString() }.joined()
         return Markup("<div\(attributes)>\(contentHTML)</div>")
+    }
+
+    private func addAttributesToChild(_ child: some HTML, at index: Int) -> some HTML {
+        var elementAttributes = CoreAttributes()
+        elementAttributes.append(classes: "mb-0")
+        elementAttributes.append(styles: [
+            .init(.position, value: "relative"),
+            .init(.gridArea, value: "1/1")
+        ])
+
+        if child.attributes.get(styles: .zIndex).isEmpty {
+            elementAttributes.append(styles: .init(.zIndex, value: "\(index)"))
+        }
+
+        elementAttributes.append(styles: alignment.itemAlignmentRules)
+        return child.attributes(elementAttributes)
     }
 }

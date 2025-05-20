@@ -8,7 +8,7 @@
 /// Creates one item in a list. This isn't always needed, because you can place other
 /// elements directly into lists if you wish. Use `ListItem` when you specifically
 /// need a styled HTML <li> element.
-public struct ListItem<Content: HTML>: HTML, ListElement {
+public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML, ListElement {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -19,12 +19,12 @@ public struct ListItem<Content: HTML>: HTML, ListElement {
     private var content: Content
 
     /// The badge for this list item.
-    private var badge: Badge?
+    private var badge: Badge<BadgeContent>?
 
     /// Configures this list item to properly display a badge.
     /// - Parameter badge: The badge to display.
     /// - Returns: A modified list item with proper badge styling.
-    public func badge(_ badge: Badge) -> some HTML {
+    public func badge(_ badge: Badge<BadgeContent>) -> some HTML {
         var copy = self
         copy.badge = badge
         copy.class("d-flex", "justify-content-between", "align-items-center")
@@ -44,8 +44,20 @@ public struct ListItem<Content: HTML>: HTML, ListElement {
     /// Creates a new `ListItem` object using an inline element builder that
     /// returns an array of `HTML` objects to display in the list.
     /// - Parameter content: The content you want to display in your list.
-    public init(@HTMLBuilder content: () -> Content) {
+    public init(@HTMLBuilder content: () -> Content) where BadgeContent == EmptyInlineElement {
         self.content = content()
+    }
+
+    /// Creates a new `ListItem` object from a peice of HTML content.
+    /// - Parameter content: The content you want to display in your list.
+    init(_ content: Content) where BadgeContent == EmptyInlineElement {
+        self.content = content
+    }
+
+    /// Creates a new `ListItem` object from a peice of HTML content.
+    /// - Parameter content: The content you want to display in your list.
+    init<T: InlineElement>(_ content: T) where Content == InlineHTML<T>, BadgeContent == EmptyInlineElement {
+        self.content = InlineHTML(content)
     }
 
     /// Renders this element using publishing context passed in.
@@ -56,3 +68,5 @@ public struct ListItem<Content: HTML>: HTML, ListElement {
         return Markup("<li\(attributes)>\(contentHTML)\(badgeHTML)</li>")
     }
 }
+
+extension ListItem: NavigationElement where Content: NavigationElement {}

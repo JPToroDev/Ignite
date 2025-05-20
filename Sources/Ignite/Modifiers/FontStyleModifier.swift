@@ -9,7 +9,7 @@
     _ style: Font.Style,
     content: any HTML
 ) -> any HTML {
-    if content is any TextElement {
+    if content is any TextProvider {
         content.fontStyle(style)
     } else {
         content.class(style.sizeClass)

@@ -121,7 +121,7 @@ public struct HTMLBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content>(_ content: repeat each Content) -> TupleHTML<(repeat each Content)> {
-        TupleHTML((repeat each content))
+    public static func buildBlock<each Content>(_ content: repeat each Content) -> some HTML where repeat each Content: HTML {
+        PackHTML(repeat each content)
     }
 }

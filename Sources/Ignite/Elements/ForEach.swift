@@ -7,7 +7,7 @@
 
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
-public struct ForEach<Content: HTML, Data: Sequence>: HTML {
+public struct ForEach<Data: Sequence, Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
     
@@ -18,7 +18,7 @@ public struct ForEach<Content: HTML, Data: Sequence>: HTML {
     private let data: Data
 
     /// The child elements contained within this HTML element.
-    var items: [any HTML]
+    var children: Children
 
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:
@@ -29,19 +29,14 @@ public struct ForEach<Content: HTML, Data: Sequence>: HTML {
         @HTMLBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.data = data
-        self.items = data.map(content)
+        let items = data.map(content)
+        self.children = Children(items.map { Child($0) })
     }
 
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
     public func markup() -> Markup {
-        items.map { $0.attributes(attributes).markup() }.joined()
-    }
-}
-
-extension ForEach: HTMLCollection {
-    var children: VariadicHTML {
-        VariadicHTML(items)
+        children.map { $0.attributes(attributes).markup() }.joined()
     }
 }
 
@@ -50,6 +45,8 @@ extension ForEach: ListElement where Content: ListElement {
     /// its children aren't `ListItem`.
     /// - Returns: The rendered HTML string.
     func markupAsListItem() -> Markup {
-        items.map { Markup("<li\(attributes)>\($0.markupString())</li>") }.joined()
+        children.map { Markup("<li\(attributes)>\($0.markupString())</li>") }.joined()
     }
 }
+
+extension ForEach: VariadicElement {}

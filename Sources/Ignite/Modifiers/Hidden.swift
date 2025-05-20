@@ -24,7 +24,21 @@ public extension HTML {
     }
 }
 
-public extension NavigationItem {
+public extension NavigationElement where Self: HTML {
+    /// Hides the element when all specified media queries match.
+    /// - Parameter queries: One or more media queries that must all match for the element to be hidden.
+    /// - Returns: A modified copy of the element with conditional visibility.
+    func hidden(_ visibility: ResponsiveBoolean) -> Self {
+        let manager = CSSManager.shared
+        let visibilityValues = visibility.values
+        let className = manager.registerStyles(visibilityValues)
+        var copy = self
+        copy.attributes.append(classes: className)
+        return copy
+    }
+}
+
+public extension NavigationElement where Self: InlineElement {
     /// Hides the element when all specified media queries match.
     /// - Parameter queries: One or more media queries that must all match for the element to be hidden.
     /// - Returns: A modified copy of the element with conditional visibility.

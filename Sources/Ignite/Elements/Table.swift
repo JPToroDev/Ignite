@@ -31,10 +31,10 @@ public struct Table: HTML {
     var filterTitle: String?
 
     /// The rows that are inside this table.
-    var rows: VariadicHTML
+    var rows: any HTML
 
     /// An optional array of header to use at the top of this table.
-    var header: VariadicHTML?
+    var header: (any HTML)?
 
     /// The styling to apply to this table. Defaults to `.plain`.
     var style = Style.plain
@@ -58,7 +58,7 @@ public struct Table: HTML {
         @ElementBuilder<Row> rows: () -> [Row]
     ) {
         self.filterTitle = filterTitle
-        self.rows = VariadicHTML(rows())
+        self.rows = EmptyHTML()
     }
 
     /// Creates a new `Table` instance from an element builder that returns
@@ -75,8 +75,8 @@ public struct Table: HTML {
         @HTMLBuilder header: () -> some HTML
     ) {
         self.filterTitle = filterTitle
-        self.rows = VariadicHTML(rows())
-        self.header = VariadicHTML(header)
+        self.rows = EmptyHTML()
+        self.header = header()
     }
 
     /// Creates a new `Table` instance from a collection of items, along with a function
@@ -93,7 +93,7 @@ public struct Table: HTML {
         content: (T) -> Row
     ) {
         self.filterTitle = filterTitle
-        self.rows = VariadicHTML(items.map(content))
+        self.rows = EmptyHTML()
     }
 
     /// Creates a new `Table` instance from a collection of items, along with a function
@@ -112,8 +112,8 @@ public struct Table: HTML {
         @HTMLBuilder header: () -> some HTML
     ) {
         self.filterTitle = filterTitle
-        self.rows = VariadicHTML(items.map(content))
-        self.header = VariadicHTML(header)
+        self.rows = EmptyHTML()
+        self.header = header()
     }
 
     /// Adjusts the style of this table.
@@ -179,11 +179,11 @@ public struct Table: HTML {
         }
 
         if let header {
-            let headerHTML = header.map {
-                "<th>\($0.markupString())</th>"
-            }.joined()
+//            let headerHTML = header.map {
+//                "<th>\($0.markupString())</th>"
+//            }.joined()
 
-            output += "<thead><tr>\(headerHTML)</tr></thead>"
+//            output += "<thead><tr>\(headerHTML)</tr></thead>"
         }
 
         output += "<tbody>"

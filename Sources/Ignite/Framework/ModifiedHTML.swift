@@ -44,11 +44,33 @@ extension ModifiedHTML: FormItem where Content: FormItem {}
 
 extension ModifiedHTML: ListElement where Content: ListElement {}
 
-extension ModifiedHTML: TextElement where Content: TextElement {
+extension ModifiedHTML: ImageElement where Content: ImageElement {}
+
+extension ModifiedHTML: SpacerProvider where Content: SpacerProvider {
+    var spacer: Spacer { content.spacer }
+}
+
+extension ModifiedHTML: TextProvider where Content: TextProvider {
     var fontStyle: FontStyle {
         get { content.fontStyle }
         set { content.fontStyle = newValue }
     }
 }
 
-extension ModifiedHTML: ImageElement where Content: ImageElement {}
+extension ModifiedHTML: VariadicElement where Content: VariadicElement {
+    var children: Children {
+        var content = content
+        content.attributes.merge(attributes)
+        return content.children
+    }
+}
+
+extension ModifiedHTML: NavigationElement where Content: NavigationElement {}
+
+extension ModifiedHTML: DropdownElement where Content: DropdownElement {
+    func configuration(_ configuration: Dropdown.Configuration) -> Self {
+        var copy = self
+        copy.content.configuration(configuration)
+        return copy
+    }
+}

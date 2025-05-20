@@ -9,7 +9,7 @@ public extension HTML {
     /// Adds a badge to the right side of this element.
     /// - Parameter badge: The badge to display.
     /// - Returns: A list item containing the original content and badge.
-    func badge(_ badge: Badge) -> some HTML {
+    func badge<T: InlineElement>(_ badge: Badge<T>) -> some HTML {
         ListItem {
             self
             badge
@@ -22,7 +22,7 @@ public extension InlineElement {
     /// Adds a badge to the right side of this element.
     /// - Parameter badge: The badge to display.
     /// - Returns: A list item containing the original content and badge.
-    func badge(_ badge: Badge) -> some HTML {
+    func badge<T: InlineElement>(_ badge: Badge<T>) -> some HTML {
         ListItem {
             self
             badge

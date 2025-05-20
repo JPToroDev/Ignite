@@ -7,7 +7,7 @@
 
 /// A bar that sits across the top of your page to provide top-level navigation
 /// throughout your site.
-public struct NavigationBar: HTML {
+public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HTML {
     /// The color scheme for this navigation bar.
     public enum NavigationBarStyle {
         /// No specific color scheme means this bar will be rendered using
@@ -81,10 +81,10 @@ public struct NavigationBar: HTML {
 
     /// The main logo for your site, such as an image or some text. This becomes
     /// clickable to let users navigate to your homepage.
-    private let logo: any InlineElement
+    private let logo: Logo
 
     /// An array of items to show in this navigation bar.
-    private let items: [any NavigationItem]
+    private let items: Children
 
     /// The style to use when rendering this bar.
     private var style = NavigationBarStyle.automatic
@@ -92,23 +92,25 @@ public struct NavigationBar: HTML {
     /// How items in this navigation bar should be aligned
     private var itemAlignment = ItemAlignment.automatic
 
-    /// The number of controls that aren't `Spacer`,
-    /// used to determine the gap class that should be used.
-    private var visibleControlCount: Int {
-        items.filter {
-            $0.navigationBarVisibility == .always &&
-            $0.is(Spacer.self) == false
-        }.count
+    /// Creates a new `NavigationBar` instance from the `logo`, without any items.
+    /// - Parameter logo: The logo to use in the top-left edge of your bar.
+    public init(logo: Logo) where Content == EmptyHTML {
+        self.logo = logo
+        self.items = Children()
     }
 
     /// Creates a new `NavigationBar` instance from the `logo`, without any items.
-    /// - Parameters:
-    ///   - logo: The logo to use in the top-left edge of your bar.
-    public init(
-        logo: (any InlineElement)? = nil
-    ) {
-        self.logo = logo ?? EmptyInlineElement()
-        self.items = []
+    public init() where Content == EmptyHTML, Logo == EmptyInlineElement {
+        self.logo = EmptyInlineElement()
+        self.items = Children()
+    }
+
+    /// Creates a new `NavigationBar` instance from the `logo` and `items` provided.
+    /// - Parameter items: Basic navigation items like `Link` and `Span` that will be
+    ///   collapsed into a hamburger menu at small screen sizes.
+    public init(@NavigationElementBuilder items: () -> Content) where Logo == EmptyInlineElement {
+        self.logo = EmptyInlineElement()
+        self.items = Children(items())
     }
 
     /// Creates a new `NavigationBar` instance from the `logo` and `items` provided.
@@ -116,12 +118,9 @@ public struct NavigationBar: HTML {
     ///   - logo: The logo to use in the top-left edge of your bar.
     ///   - items: Basic navigation items like `Link` and `Span` that will be
     ///   collapsed into a hamburger menu at small screen sizes.
-    public init(
-        logo: (any InlineElement)? = nil,
-        @ElementBuilder<NavigationItem> items: () -> [any NavigationItem]
-    ) {
-        self.logo = logo ?? EmptyInlineElement()
-        self.items = items()
+    public init(logo: Logo, @NavigationElementBuilder items: () -> Content) where Logo == String {
+        self.logo = logo
+        self.items = Children(items())
     }
 
     /// Creates a new `NavigationBar` instance from the `logo` and `items` provided.
@@ -130,10 +129,10 @@ public struct NavigationBar: HTML {
     ///   collapsed into a hamburger menu at small screen sizes.
     ///   - logo: The logo to use in the top-left edge of your bar.
     public init(
-        @ElementBuilder<NavigationItem> items: () -> [any NavigationItem],
-        @InlineElementBuilder logo: () -> any InlineElement = { EmptyInlineElement() }
+        @NavigationElementBuilder items: () -> Content,
+        @InlineElementBuilder logo: () -> Logo = { EmptyInlineElement() }
     ) {
-        self.items = items()
+        self.items = Children(items())
         self.logo = logo()
     }
 
@@ -192,16 +191,21 @@ public struct NavigationBar: HTML {
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        // Use the child items directly so that types like Spacer() aren't concealed
-        let items = items.flatMap { ($0 as? NavigationItemGroup)?.items ?? [$0] }
-        let pinnedItems = items.filter { $0.navigationBarVisibility == .always }
-        let collapsibleItems = items.filter { $0.navigationBarVisibility == .automatic }
+        // Check if we have a NavigationItemGroup, the only variadic NavigationElement,
+        // and use its children directly so that types like Spacer() aren't concealed
+        let items = items.flatMap { ($0 as? any VariadicElement)?.children.elements ?? [$0] }
+        let navItems = items.map { $0.configuredAsNavigationItem() }
+        let pinnedItems = navItems.filter { $0.navigationBarVisibility == .always }
+        let collapsibleItems = navItems.filter { $0.navigationBarVisibility == .automatic }
+        /// The number of controls that aren't `Spacer`,
+        /// used to determine the gap class that should be used.
+        let visibleControlCount = pinnedItems.count(where: { !($0.wrapped is any SpacerProvider) })
 
         return Tag("header") {
             Tag("nav") {
                 Section {
                     if logo.isEmpty == false {
-                        Section(renderLogo(AnyInlineElement(logo)))
+                        Section(renderLogo(logo))
                             .class("me-2 me-md-auto")
                     }
 
@@ -210,7 +214,7 @@ public struct NavigationBar: HTML {
                             renderPinnedItems(pinnedItems)
                             if collapsibleItems.isEmpty == false {
                                 // Keep the toggle button on the same line
-                                // as the action items for a cleaner UI
+                                // as the pinned items for a cleaner UI
                                 renderToggleButton()
                             }
                         }
@@ -238,18 +242,8 @@ public struct NavigationBar: HTML {
         .markup()
     }
 
-    private func renderPinnedItems(_ items: [any NavigationItem]) -> some HTML {
-        ForEach(items) { item in
-            if let item = item as? any NavigationItemConfigurable {
-//                AnyHTML(item.configuredAsNavigationItem(true))
-                EmptyHTML()
-            } else if let spacer = item.as(Spacer.self) {
-                spacer.axis(.horizontal)
-            } else {
-//                AnyHTML(item)
-                EmptyHTML()
-            }
-        }
+    private func renderPinnedItems(_ items: [NavigationItem]) -> some HTML {
+        ForEach(items) { $0 }
     }
 
     private func renderToggleButton() -> some InlineElement {
@@ -266,69 +260,17 @@ public struct NavigationBar: HTML {
         .aria(.label, "Toggle navigation")
     }
 
-    private func renderCollapsibleItems(_ items: [any NavigationItem]) -> some HTML {
+    private func renderCollapsibleItems(_ items: [NavigationItem]) -> some HTML {
         Section {
-            List {
-                ForEach(items) { item in
-                    switch item {
-                    case let dropdownItem as Dropdown:
-                        renderDropdownItem(dropdownItem)
-                    case let link as Link:
-                        renderLinkItem(link)
-                    case let text as Span:
-                        renderTextItem(text)
-                    case let item as any NavigationItemConfigurable:
-//                        AnyHTML(item.configuredAsNavigationItem(true))
-                        EmptyHTML()
-                        #warning("need to fix")
-                    case let spacer as Spacer:
-                        spacer.axis(.horizontal)
-                    default:
-//                        AnyHTML(item)
-                        EmptyHTML()
-                    }
-                }
-            }
-            .class("navbar-nav", "mb-2", "mb-md-0", "col", itemAlignment.rawValue)
+            List(items) { $0 }
+                .class("navbar-nav", "mb-2", "mb-md-0", "col", itemAlignment.rawValue)
         }
         .class("collapse", "navbar-collapse")
         .id("navbarCollapse")
     }
 
-    private func renderDropdownItem(_ dropdownItem: Dropdown) -> some HTML {
-        ListItem {
-            dropdownItem.configuration(.navigationBarItem)
-        }
-        .class("nav-item", "dropdown")
-    }
-
-    private func renderLinkItem(_ link: Link) -> some HTML {
-        ListItem {
-            let isActive = publishingContext.currentRenderingPath == link.url
-            link.trimmingMargin() // Remove the default margin applied to text
-                .class(link.style == .button ? nil : "nav-link")
-                .class(isActive ? "active" : nil)
-                .aria(.current, isActive ? "page" : nil)
-                .class("text-nowrap")
-        }
-        .class("nav-item")
-    }
-
-    private func renderTextItem(_ text: Span) -> some InlineElement {
-        var text = text
-        text.attributes.append(classes: "navbar-text")
-        return text
-    }
-
     private func renderLogo(_ logo: some InlineElement) -> some InlineElement {
-        let logo: Link = if let link = logo.as(Link.self) {
-            link
-        } else {
-            Link(logo, target: "/")
-        }
-
-        return logo
-            .trimmingMargin()
+        Link(logo, target: "/")
             .class("d-inline-flex", "align-items-center")
             .class("navbar-brand")
     }
@@ -339,17 +281,6 @@ public struct NavigationBar: HTML {
         case .light: "light"
         case .dark: "dark"
         }
-    }
-}
-
-fileprivate extension Link {
-    func trimmingMargin() -> Self {
-        guard content is any TextElement else { return self }
-        var link = self
-        var text = content
-        text.attributes.append(classes: "mb-0")
-        link.content = text
-        return link
     }
 }
 

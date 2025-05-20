@@ -126,5 +126,3 @@ public struct LinkGroup: HTML {
         return Markup("<a\(linkAttributes)>\(contentHTML)</a>")
     }
 }
-
-extension LinkGroup: LinkElement {}

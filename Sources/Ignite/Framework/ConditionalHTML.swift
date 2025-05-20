@@ -5,9 +5,8 @@
 // See LICENSE for license information.
 //
 
-public struct ConditionalHTML<TrueContent: HTML, FalseContent: HTML>: HTML {
-
-    public var body: some HTML { fatalError() }
+@MainActor
+public struct ConditionalHTML<TrueContent, FalseContent> {
 
     public var attributes = CoreAttributes()
 
@@ -21,6 +20,10 @@ public struct ConditionalHTML<TrueContent: HTML, FalseContent: HTML>: HTML {
     init(storage: Storage) {
         self.storage = storage
     }
+}
+
+extension ConditionalHTML: HTML, MarkupElement, Sendable where TrueContent: HTML, FalseContent: HTML {
+    public var body: some HTML { fatalError() }
 
     public func markup() -> Markup {
         switch storage {
@@ -31,3 +34,5 @@ public struct ConditionalHTML<TrueContent: HTML, FalseContent: HTML>: HTML {
         }
     }
 }
+
+extension ConditionalHTML: NavigationElement where TrueContent: NavigationElement, FalseContent: NavigationElement {}

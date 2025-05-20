@@ -31,6 +31,10 @@ public struct Section<Content: HTML>: HTML, FormItem {
         self.content = content
     }
 
+    init() where Content == EmptyHTML {
+        self.content = EmptyHTML()
+    }
+
     init<T: InlineElement>(_ content: T) where Content == InlineHTML<T> {
         self.content = InlineHTML(content)
     }
@@ -66,11 +70,5 @@ public struct Section<Content: HTML>: HTML, FormItem {
             return Markup("<section\(attributes)>\(headerHTML + contentHTML)</section>")
         }
         return Markup("<div\(attributes)>\(contentHTML)</div>")
-    }
-}
-
-extension Section where Content == EmptyHTML {
-    init() {
-        self.content = EmptyHTML()
     }
 }

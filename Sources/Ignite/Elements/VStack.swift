@@ -10,7 +10,7 @@
 /// - Note: To ensure spacing is consistent, `VStack` strips its subviews of
 /// implicit styles, such as the bottom margin automatically applied to paragraphs.
 /// To retain these implicit styles, set `spacing` to `nil`.
-public struct VStack: HTML {
+public struct VStack<Content: HTML>: HTML {
     /// A type that represents spacing values in either exact pixels or semantic spacing amounts.
     private enum SpacingType: Equatable {
         case exact(Int), semantic(SpacingAmount)
@@ -39,7 +39,7 @@ public struct VStack: HTML {
     private var alignment: HorizontalAlignment.ResponsiveAlignment
 
     /// The child elements contained in the stack.
-    private var items: VariadicHTML
+    private var content: Content
 
     /// Creates a container that stacks its subviews vertically.
     /// - Parameters:
@@ -50,9 +50,9 @@ public struct VStack: HTML {
     public init(
         alignment: HorizontalAlignment = .center,
         spacing pixels: Int? = 0,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
-        self.items = VariadicHTML(items)
+        self.content = content()
         self.alignment = .responsive(alignment)
         if let pixels {
             self.spacingAmount = .exact(pixels)
@@ -67,9 +67,9 @@ public struct VStack: HTML {
     public init(
         alignment: HorizontalAlignment = .center,
         spacing: SpacingAmount,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
-        self.items = VariadicHTML(items)
+        self.content = content()
         self.alignment = .responsive(alignment)
         self.spacingAmount = .semantic(spacing)
     }
@@ -83,9 +83,9 @@ public struct VStack: HTML {
     public init(
         alignment: HorizontalAlignment.ResponsiveAlignment,
         spacing pixels: Int? = 0,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
-        self.items = VariadicHTML(items)
+        self.content = content()
         self.alignment = alignment
         if let pixels {
             self.spacingAmount = .exact(pixels)
@@ -100,21 +100,19 @@ public struct VStack: HTML {
     public init(
         alignment: HorizontalAlignment.ResponsiveAlignment,
         spacing: SpacingAmount,
-        @HTMLBuilder items: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
-        self.items = VariadicHTML(items)
+        self.content = content()
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
 
     public func markup() -> Markup {
-        let items = items.children.map {
-            var elementAttributes = CoreAttributes()
-            if spacingAmount != nil {
-                elementAttributes.append(classes: "mb-0")
-            }
-            elementAttributes.append(classes: alignment.itemAlignmentClasses)
-            return $0.attributes(elementAttributes)
+        var content: any HTML = content
+        if let collection = content as? VariadicElement {
+//            VariadicHTML(collection) { child in
+//                addAttributesToChild(child)
+//            }
         }
 
         var attributes = attributes
@@ -126,7 +124,16 @@ public struct VStack: HTML {
             attributes.append(classes: "gap-\(amount.rawValue)")
         }
 
-        let contentHTML = items.map { $0.markupString() }.joined()
+        let contentHTML =/* items.map { $0.markupString() }.joined()*/ ""
         return Markup("<div\(attributes)>\(contentHTML)</div>")
+    }
+
+    private func addAttributesToChild(_ child: some HTML) -> some HTML {
+        var elementAttributes = CoreAttributes()
+        if spacingAmount != nil {
+            elementAttributes.append(classes: "mb-0")
+        }
+        elementAttributes.append(classes: alignment.itemAlignmentClasses)
+        return child.attributes(elementAttributes)
     }
 }

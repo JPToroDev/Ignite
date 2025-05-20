@@ -57,16 +57,17 @@ public struct HStack: HTML {
     }
 
     public func markup() -> Markup {
-        let elements = VariadicHTML([content]).children
-        let items: [any HTML] = elements.map {
-            var elementAttributes = CoreAttributes()
-            elementAttributes.append(classes: "mb-0")
-            elementAttributes.append(classes: alignment.itemAlignmentClass)
-            if let spacer = $0.as(Spacer.self) {
-                return spacer.axis(.horizontal)
-            }
-            return $0.attributes(elementAttributes)
-        }
+        var items = [content]
+//        let elements = VariadicHTML([content]).children
+//        let items: [any HTML] = elements.map {
+//            var elementAttributes = CoreAttributes()
+//            elementAttributes.append(classes: "mb-0")
+//            elementAttributes.append(classes: alignment.itemAlignmentClass)
+//            if let spacer = $0.as(Spacer.self) {
+//                return spacer.axis(.horizontal)
+//            }
+//            return $0.attributes(elementAttributes)
+//        }
 
         var attributes = attributes
         attributes.append(classes: "hstack")

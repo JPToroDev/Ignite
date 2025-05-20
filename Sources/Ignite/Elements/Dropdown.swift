@@ -9,10 +9,15 @@
 /// Dropdown objects.
 public protocol DropdownItem: MarkupElement {}
 
+@MainActor
+protocol DropdownElement {
+    func configuration(_ configuration: Dropdown.Configuration) -> Self
+}
+
 /// Renders a button that presents a menu of information when pressed.
 /// Can be used as a free-floating element on your page, or in
 /// a `NavigationBar`.
-public struct Dropdown: HTML, NavigationItem, FormItem {
+public struct Dropdown: HTML, NavigationElement, FormItem {
     /// How the dropdown should be rendered based on its context.
     enum Configuration: Sendable {
         /// Renders as a complete standalone dropdown.
@@ -30,9 +35,6 @@ public struct Dropdown: HTML, NavigationItem, FormItem {
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
-
-    /// How a `NavigationBar` displays this item at different breakpoints.
-    public var navigationBarVisibility: NavigationBarVisibility = .automatic
 
     /// The title for this `Dropdown`.
     private var title: any InlineElement
@@ -125,16 +127,16 @@ public struct Dropdown: HTML, NavigationItem, FormItem {
         if configuration == .navigationBarItem {
             let titleAttributes = title.attributes
             let title = title.clearingAttributes()
-            let hasActiveItem = items.contains {
-                publishingContext.currentRenderingPath == ($0 as? Link)?.url
-            }
+//            let hasActiveItem = items.contains {
+//                publishingContext.currentRenderingPath == ($0 as? Link)?.url
+//            }
 
-            Link(title, target: "#")
-                .customAttribute(name: "role", value: "button")
-                .class("dropdown-toggle", "nav-link", hasActiveItem ? "active" : nil)
-                .data("bs-toggle", "dropdown")
-                .aria(.expanded, "false")
-                .attributes(titleAttributes)
+//            Link(title, target: "#")
+//                .customAttribute(name: "role", value: "button")
+//                .class("dropdown-toggle", "nav-link", hasActiveItem ? "active" : nil)
+//                .data("bs-toggle", "dropdown")
+//                .aria(.expanded, "false")
+//                .attributes(titleAttributes)
         } else {
             Button(title)
                 .class(Button.classes(forRole: role, size: size))
@@ -145,22 +147,33 @@ public struct Dropdown: HTML, NavigationItem, FormItem {
 
         List {
             ForEach(items) { item in
-                if let link = item as? Link {
-                    ListItem {
-                        link.class("dropdown-item")
-                            .class(publishingContext.currentRenderingPath == link.url ? "active" : nil)
-                            .aria(.current, publishingContext.currentRenderingPath == link.url ? "page" : nil)
-                    }
-                } else if let text = item as? any TextElement {
-                    ListItem {
-                        AnyHTML(text).class("dropdown-header")
-                    }
-                }
+//                if let link = item as? Link {
+//                    ListItem {
+//                        link.class("dropdown-item")
+//                            .class(publishingContext.currentRenderingPath == link.url ? "active" : nil)
+//                            .aria(.current, publishingContext.currentRenderingPath == link.url ? "page" : nil)
+//                    }
+//                } else if let text = item as? any TextElement {
+//                    ListItem {
+//                        AnyHTML(text).class("dropdown-header")
+//                    }
+//                }
             }
         }
         .listMarkerStyle(.unordered(.automatic))
         .class("dropdown-menu")
         .class(configuration == .lastControlGroupItem ? "dropdown-menu-end" : nil)
+    }
+}
+
+extension Dropdown: DropdownElement {}
+
+extension Dropdown: NavigationItemConfigurable {
+    func configuredAsNavigationItem() -> NavigationItem {
+        var copy = ListItem(self.configuration(.navigationBarItem))
+        copy.attributes.append(classes: "nav-item", "dropdown")
+        copy.attributes.append(styles: .init(.listStyleType, value: "none"))
+        return NavigationItem(copy)
     }
 }
 

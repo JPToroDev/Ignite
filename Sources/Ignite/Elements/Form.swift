@@ -6,7 +6,7 @@
 //
 
 /// A form container for collecting user input
-public struct Form: HTML, NavigationItem {
+public struct Form: HTML, NavigationElement {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -74,6 +74,15 @@ public struct Form: HTML, NavigationItem {
         self.items = content()
         self.spacing = spacing
         attributes.id = UUID().uuidString.truncatedHash
+    }
+
+    /// Configures this element to be placed inside a `NavigationBar`.
+    /// - Returns: A new element instance suitable for placement
+    /// inside a `NavigationBar`.
+    func configuredAsNavigationItem(_ isNavItem: Bool = true) -> Self {
+        var copy = self
+        copy.isNavigationItem = isNavItem
+        return copy
     }
 
     public func markup() -> Markup {
@@ -209,13 +218,13 @@ public struct Form: HTML, NavigationItem {
         .class(labelStyle == .floating ? "align-items-stretch" : "align-items-end")
     }
 
-    private func renderText(_ text: Span) -> some HTML {
-        print("""
-        For proper alignment within Form, prefer a read-only, \
-        plain-text TextField over a Span.
-        """)
-        return renderItem(InlineHTML(text))
-    }
+//    private func renderText(_ text: Span) -> some HTML {
+//        print("""
+//        For proper alignment within Form, prefer a read-only, \
+//        plain-text TextField over a Span.
+//        """)
+//        return renderItem(InlineHTML(text))
+//    }
 
     private func renderItem(_ item: any HTML) -> some HTML {
         Section(AnyHTML(item))
@@ -241,4 +250,10 @@ public struct Form: HTML, NavigationItem {
     }
 }
 
-extension Form: NavigationItemConfigurable {}
+extension Form: NavigationItemConfigurable {
+    func configuredAsNavigationItem() -> NavigationItem {
+        var copy = self
+        copy.isNavigationItem = true
+        return NavigationItem(copy)
+    }
+}

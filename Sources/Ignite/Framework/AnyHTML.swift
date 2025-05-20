@@ -15,26 +15,20 @@ public struct AnyHTML: HTML {
     public var attributes = CoreAttributes()
 
     /// The underlying HTML content, unattributed.
-    var wrapped: any HTML
+    private var content: any HTML
 
-    /// Creates a new AnyHTML instance that wraps the given HTML content.
-    /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
+    /// Creates a new `AnyHTML` instance that wraps the given HTML content.
     /// - Parameter content: The HTML content to wrap
-    public init(_ content: any HTML) {
-        var content = content
+    public init(_ wrapped: any HTML) {
+        var content = wrapped
         attributes.merge(content.attributes)
         content.attributes.clear()
-
-        if let anyHTML = content as? AnyHTML {
-            wrapped = anyHTML.wrapped
-        } else {
-            wrapped = content
-        }
+        self.content = content
     }
 
     /// The underlying HTML content, with attributes.
-    var attributedContent: any HTML {
-        var wrapped = wrapped
+    var wrapped: any HTML {
+        var wrapped = content
         wrapped.attributes.merge(attributes)
         return wrapped
     }
@@ -42,8 +36,6 @@ public struct AnyHTML: HTML {
     /// Renders the wrapped HTML content using the given publishing context
     /// - Returns: The rendered HTML string
     public func markup() -> Markup {
-        var wrapped = wrapped
-        wrapped.attributes.merge(attributes)
-        return wrapped.markup()
+        wrapped.markup()
     }
 }

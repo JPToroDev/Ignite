@@ -121,7 +121,7 @@ private struct FontModifiedHTML<Content: HTML>: HTML {
     }
 
     func markup() -> Markup {
-        if var text = content as? any TextElement {
+        if var text = content as? any TextProvider {
             if let style = font.style { text.fontStyle = style }
             return text.attributes(getAttributes(for: font, includeStyle: false))
                 .markup()

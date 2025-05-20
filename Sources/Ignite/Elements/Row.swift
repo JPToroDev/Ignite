@@ -14,26 +14,27 @@ public struct Row: HTML {
     public var attributes = CoreAttributes()
 
     /// The columns to display inside this row.
-    private var columns: VariadicHTML
+    private var columns: any HTML
 
     /// Create a new `Row` using a page element builder that returns the
     /// array of columns to use in this row.
     /// - Parameter columns: The columns to use in this row.
     public init(@HTMLBuilder columns: () -> some HTML) {
-        self.columns = VariadicHTML(columns)
+        self.columns = columns()
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        let output = columns.map { column in
-            if column is Column {
-                column.markup()
-            } else {
-                Markup("<td>\(column.markupString())</td>")
-            }
-        }.joined()
-        .string
+        let output = ""
+//        columns.map { column in
+//            if column is Column {
+//                column.markup()
+//            } else {
+//                Markup("<td>\(column.markupString())</td>")
+//            }
+//        }.joined()
+//        .string
 
         return Markup("<tr\(attributes)>\(output)</tr>")
     }

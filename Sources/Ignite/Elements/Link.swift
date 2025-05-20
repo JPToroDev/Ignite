@@ -7,32 +7,8 @@
 
 import Foundation
 
-protocol LinkElement {}
-
 /// A hyperlink to another resource on this site or elsewhere.
-public struct Link: InlineElement, NavigationItem, DropdownItem {
-    /// The visual style to apply to the link.
-    public enum Style: Equatable {
-        /// A link with an underline effect.
-        /// - Parameters:
-        ///   - base: The underline prominence in the link's normal state.
-        ///   - hover: The underline prominence when hovering over the link.
-        case underline(_ default: UnderlineProminence, hover: UnderlineProminence)
-
-        /// A link that appears and behaves like a button.
-        case button
-
-        /// Creates an underline-style link with uniform prominence for both normal and hover states.
-        /// - Parameter prominence: The underline prominence to use for both states.
-        /// - Returns: A `LinkStyle` with identical base and hover prominence.
-        public static func underline(_ prominence: UnderlineProminence) -> Self {
-            .underline(prominence, hover: prominence)
-        }
-
-        /// The default link style with heavy underline prominence.
-        public static var automatic: Style { .underline(.heavy, hover: .heavy) }
-    }
-
+public struct Link<Content: InlineElement>: InlineElement, NavigationElement, DropdownItem {
     /// The content and behavior of this HTML.
     public var body: some InlineElement { fatalError() }
 
@@ -43,13 +19,13 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     public var navigationBarVisibility: NavigationBarVisibility = .automatic
 
     /// The content to display inside this link.
-    var content: any InlineElement
+    var content: Content
 
     /// The location to which this link should direct users.
     var url: String
 
     /// The style for this link. Defaults to `.automatic`.
-    var style = Style.automatic
+    var style = LinkStyle.automatic
 
     /// When rendered with the `.button` style, this controls the button's size.
     var size = Button.Size.medium
@@ -85,7 +61,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// - Parameters:
     ///   - content: The user-facing content to show inside the `Link`.
     ///   - target: The URL you want to link to.
-    public init(_ content: any InlineElement, target: String) {
+    public init(_ content: Content, target: String) {
         self.content = content
         self.url = target
     }
@@ -95,7 +71,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// - Parameters:
     ///   - content: The user-facing content to show inside the `Link`.
     ///   - target: The URL you want to link to.
-    public init(target: String, @InlineElementBuilder content: () -> some InlineElement) {
+    public init(target: String, @InlineElementBuilder content: () -> Content) {
         self.content = content()
         self.url = target
     }
@@ -107,7 +83,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     ///   - content: The user-facing content to show inside the `Link`.
     public init(
         target article: Article,
-        @InlineElementBuilder content: @escaping () -> some InlineElement
+        @InlineElementBuilder content: @escaping () -> Content
     ) {
         self.content = content()
         self.url = article.path
@@ -118,7 +94,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// - Parameters:
     ///   - content: The user-facing content to show inside the `Link`.
     ///   - target: The `Page` you want to link to.
-    public init(_ content: some InlineElement, target: any StaticPage) {
+    public init(_ content: Content, target: any StaticPage) {
         self.content = content
         self.url = target.path
     }
@@ -128,7 +104,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// - Parameters:
     ///   - content: The user-facing content to show inside the `Link`.
     ///   - target: The URL you want to link to.
-    public init(_ content: String, target: URL) {
+    public init(_ content: String, target: URL) where Content == String {
         self.content = content
         self.url = target.absoluteString
     }
@@ -138,7 +114,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// - Parameters:
     ///    - content: The user-facing content to show inside the `Link`.
     ///    - article: A piece of content from your site.
-    public init(_ content: String, target: Article) {
+    public init(_ content: String, target: Article) where Content == String {
         self.content = content
         self.url = target.path
     }
@@ -146,7 +122,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// Convenience initializer that creates a new `Link` instance using the
     /// title and path of the `Article` instance you provide.
     /// - Parameter article: A piece of content from your site.
-    public init(_ article: Article) {
+    public init(_ article: Article) where Content == String {
         self.content = article.title
         self.url = article.path
     }
@@ -186,7 +162,7 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     /// Adjusts the style of this link.
     /// - Parameter style: The new style.
     /// - Returns: A new `Link` instance with the updated style.
-    public func linkStyle(_ style: Style) -> Self {
+    public func linkStyle(_ style: LinkStyle) -> Self {
         var copy = self
         copy.style = style
 
@@ -263,4 +239,42 @@ public struct Link: InlineElement, NavigationItem, DropdownItem {
     }
 }
 
-extension Link: LinkElement {}
+extension Link: NavigationItemConfigurable {
+    func configuredAsNavigationItem() -> NavigationItem {
+        let isActive = PublishingContext.shared.currentRenderingPath == self.url
+        let isButton = style == .button
+        var link = self
+        link.attributes.append(classes: isButton ? nil : "nav-link")
+        link.attributes.append(classes: isActive ? "active" : nil)
+        link.attributes.append(classes: "text-nowrap")
+        if isActive {
+            link.attributes.append(aria: .aria(.current, value: "page"))
+        }
+        var listItem = ListItem(link)
+        listItem.attributes.append(classes: "nav-item")
+        listItem.attributes.append(styles: .init(.listStyleType, value: "none"))
+        return NavigationItem(listItem)
+    }
+}
+
+/// The visual style to apply to the link.
+public enum LinkStyle: Equatable {
+    /// A link with an underline effect.
+    /// - Parameters:
+    ///   - base: The underline prominence in the link's normal state.
+    ///   - hover: The underline prominence when hovering over the link.
+    case underline(_ default: UnderlineProminence, hover: UnderlineProminence)
+
+    /// A link that appears and behaves like a button.
+    case button
+
+    /// Creates an underline-style link with uniform prominence for both normal and hover states.
+    /// - Parameter prominence: The underline prominence to use for both states.
+    /// - Returns: A `LinkStyle` with identical base and hover prominence.
+    public static func underline(_ prominence: UnderlineProminence) -> Self {
+        .underline(prominence, hover: prominence)
+    }
+
+    /// The default link style with heavy underline prominence.
+    public static var automatic: Self { .underline(.heavy, hover: .heavy) }
+}

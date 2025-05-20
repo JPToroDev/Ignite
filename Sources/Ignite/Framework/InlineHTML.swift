@@ -34,3 +34,11 @@ public struct InlineHTML<Content: InlineElement>: HTML {
 }
 
 extension InlineHTML: ImageElement where Content == Image {}
+
+extension InlineHTML: NavigationElement where Content: NavigationElement {}
+
+extension InlineHTML: NavigationItemConfigurable where Content: NavigationItemConfigurable {
+    func configuredAsNavigationItem() -> NavigationItem {
+        content.configuredAsNavigationItem()
+    }
+}

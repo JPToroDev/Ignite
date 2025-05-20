@@ -148,21 +148,21 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
     private func renderItems() -> some HTML {
         Section {
-            let items = VariadicHTML([items]).children
-            ForEach(items) { item in
-                switch item {
-                case let text as any TextElement where text.fontStyle == .body || text.fontStyle == .lead:
-                    AnyHTML(text).class("card-text")
-                case is any TextElement:
-                    AnyHTML(item).class("card-title")
-                case is any LinkElement:
-                    AnyHTML(item).class("card-link")
-                case is any ImageElement:
-                    AnyHTML(item).class("card-img")
-                default:
-                    AnyHTML(item)
-                }
-            }
+//            let items = VariadicHTML([items]).children
+//            ForEach(items) { item in
+//                switch item {
+//                case let text as any TextElement where text.fontStyle == .body || text.fontStyle == .lead:
+//                    AnyHTML(text).class("card-text")
+//                case is any TextElement:
+//                    AnyHTML(item).class("card-title")
+//                case is any LinkElement:
+//                    AnyHTML(item).class("card-link")
+//                case is any ImageElement:
+//                    AnyHTML(item).class("card-img")
+//                default:
+//                    AnyHTML(item)
+//                }
+//            }
         }
         .class(contentPosition.bodyClasses)
     }
@@ -174,7 +174,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 }
 
 public extension Card where Content == EmptyHTML {
-    public init(
+    init(
         imageName: String? = nil,
         @HTMLBuilder header: () -> Header = { EmptyHTML() },
         @HTMLBuilder footer: () -> Footer = { EmptyHTML() }
@@ -190,7 +190,7 @@ public extension Card where Content == EmptyHTML {
 }
 
 public extension Card where Footer == EmptyHTML {
-    public init(
+    init(
         imageName: String? = nil,
         @HTMLBuilder body: () -> Content,
         @HTMLBuilder header: () -> Header = { EmptyHTML() }
@@ -206,7 +206,7 @@ public extension Card where Footer == EmptyHTML {
 }
 
 public extension Card where Header == EmptyHTML, Footer == EmptyHTML {
-    public init(
+    init(
         imageName: String? = nil,
         @HTMLBuilder body: () -> Content
     ) {

@@ -279,32 +279,32 @@ public struct Article {
         case plain
     }
 
-    /// Creates an array of links for the article's tags
-    /// - Parameter style: The visual style to use for the tag links. Defaults to `.automatic`
-    /// - Returns: An array of `Link` objects for each tag, or `nil` if the article has no tags
-    public func tagLinks(style: TagLinkStyle = .automatic) -> [Link]? {
-        guard let tags = metadata["tags"] as? String else { return nil }
-
-        let targets: [(name: String, path: String)] = tags.splitAndTrim().map { tag in
-            let tagPath = tag.convertedToSlug()
-            return (name: tag, path: "/tags/\(tagPath)")
-        }
-
-        guard !targets.isEmpty else { return nil }
-
-        return targets.map { target in
-            if style == .automatic {
-                Link(target: target.path) {
-                    Badge(target.name)
-                        .role(.primary)
-                }
-                .relationship(.tag)
-            } else {
-                Link(target.name, target: target.path)
-                    .relationship(.tag)
-            }
-        }
-    }
+//    /// Creates an array of links for the article's tags
+//    /// - Parameter style: The visual style to use for the tag links. Defaults to `.automatic`
+//    /// - Returns: An array of `Link` objects for each tag, or `nil` if the article has no tags
+//    public func tagLinks(style: TagLinkStyle = .automatic) -> [Link]? {
+//        guard let tags = metadata["tags"] as? String else { return nil }
+//
+//        let targets: [(name: String, path: String)] = tags.splitAndTrim().map { tag in
+//            let tagPath = tag.convertedToSlug()
+//            return (name: tag, path: "/tags/\(tagPath)")
+//        }
+//
+//        guard !targets.isEmpty else { return nil }
+//
+//        return targets.map { target in
+//            if style == .automatic {
+//                Link(target: target.path) {
+//                    Badge(target.name)
+//                        .role(.primary)
+//                }
+//                .relationship(.tag)
+//            } else {
+//                Link(target.name, target: target.path)
+//                    .relationship(.tag)
+//            }
+//        }
+//    }
 }
 
 extension Article {

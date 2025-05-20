@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-protocol TextElement: HTML {
+protocol TextProvider: HTML {
     var fontStyle: FontStyle { get set }
 }
 
@@ -147,7 +147,7 @@ extension Text where Content == String {
                 }
                 .map(Text.init)
 
-            self.content = VariadicHTML(paragraphs).markupString()
+            self.content = paragraphs.map { $0.markupString() }.joined()
             self.isMultilineMarkdown = true
         } else {
             // Remove the wrapping <p> tags since they'll be added by markup()
@@ -179,7 +179,7 @@ extension HTML {
         var copy: any HTML = self
         if Font.Style.classBasedStyles.contains(font), let sizeClass = font.sizeClass {
             copy.attributes.append(classes: sizeClass)
-        } else if var text = copy as? TextElement {
+        } else if var text = copy as? any TextProvider {
             text.fontStyle = font
             copy = text
         }
@@ -195,4 +195,4 @@ extension InlineElement {
     }
 }
 
-extension Text: TextElement {}
+extension Text: TextProvider {}

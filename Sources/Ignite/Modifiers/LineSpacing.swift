@@ -103,7 +103,7 @@ private struct LineSpacedHTML<Content: HTML>: HTML {
     }
 
     func markup() -> Markup {
-        if content is any TextElement {
+        if content is any TextProvider {
             switch spacing {
             case .exact(let spacing):
                 content.style(.init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))

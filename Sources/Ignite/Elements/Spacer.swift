@@ -6,7 +6,7 @@
 //
 
 /// Creates vertical space of a specific value.
-public struct Spacer: HTML, NavigationItem {
+public struct Spacer: HTML, NavigationElement {
     /// The content and behavior of this HTML.
     public var body: some HTML { fatalError() }
 
@@ -70,5 +70,19 @@ public struct Spacer: HTML, NavigationItem {
         } else {
             fatalError("Unknown spacing amount: \(String(describing: spacingAmount))")
         }
+    }
+}
+
+protocol SpacerProvider: HTML {
+    var spacer: Spacer { get }
+}
+
+extension Spacer: SpacerProvider {
+    var spacer: Spacer { self }
+}
+
+extension Spacer: NavigationItemConfigurable {
+    func configuredAsNavigationItem() -> NavigationItem {
+        NavigationItem(self.axis(.horizontal))
     }
 }

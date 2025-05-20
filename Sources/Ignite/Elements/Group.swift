@@ -24,27 +24,23 @@ public struct Group<Content: HTML>: HTML {
     public var attributes = CoreAttributes()
 
     /// The child elements contained within this group.
-    var content: Content
+    var children: Children
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.
     public init(@HTMLBuilder content: () -> Content) {
-        self.content = content()
+        self.children = Children(content())
     }
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: The HTML content to include.
     public init(_ content: Content) {
-        self.content = content
+        self.children = Children(content)
     }
 
     public func markup() -> Markup {
-        content.attributes(attributes).markup()
+        children.map { $0.attributes(attributes) .markup() }.joined()
     }
 }
 
-extension Group: HTMLCollection {
-    var children: VariadicHTML {
-        VariadicHTML { content }
-    }
-}
+extension Group: VariadicElement {}

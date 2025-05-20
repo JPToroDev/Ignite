@@ -128,9 +128,9 @@ public struct ControlGroup: HTML, FormItem {
         .markup()
     }
 
-    private func renderText(_ text: Span) -> some InlineElement {
-        text.class("input-group-text")
-    }
+//    private func renderText(_ text: Span) -> some InlineElement {
+//        text.class("input-group-text")
+//    }
 
 //    private func renderTextField(_ textField: TextField) -> some InlineElement {
 //        var textField = textField.labelStyle(labelStyle)
