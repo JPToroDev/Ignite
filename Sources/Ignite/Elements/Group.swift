@@ -39,7 +39,7 @@ public struct Group<Content: HTML>: HTML {
     }
 
     public func markup() -> Markup {
-        children.map { $0.attributes(attributes) .markup() }.joined()
+        children.map { $0.attributes(attributes).markup() }.joined()
     }
 }
 
