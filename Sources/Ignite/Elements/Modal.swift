@@ -9,70 +9,22 @@
 ///
 /// Modals are presented with a backdrop and can be customized with different sizes, positions, and behaviors.
 /// They support headers and footers, and can be made scrollable for longer content.
-public struct Modal: HTML {
-    /// The size of the modal dialog.
-    ///
-    /// The height is determined by the content, while the width is fixed based on the selected size.
-    public enum Size: CaseIterable, Sendable {
-        /// A modal dialog with a small max-width of 300px.
-        case small
-
-        /// A modal dialog with a medium max-width of 500px.
-        case medium
-
-        /// A modal dialog with a large max-width of 800px.
-        case large
-
-        /// A modal dialog with an extra large max-width of 1140px.
-        case xLarge
-
-        /// A fullscreen modal dialog covering the entire viewport.
-        case fullscreen
-
-        /// The HTML class name for the modal size.
-        var htmlClass: String? {
-            switch self {
-            case .small: "modal-sm"
-            case .medium: nil
-            case .large: "modal-lg"
-            case .xLarge: "modal-xl"
-            case .fullscreen: "modal-fullscreen"
-            }
-        }
-    }
-
-    /// The vertical position of the modal dialog on the screen.
-    public enum Position: CaseIterable, Sendable {
-        /// Positions the modal at the top of the screen.
-        case top
-
-        /// Positions the modal in the center of the screen.
-        case center
-
-        /// The HTML class name for the modal position.
-        var htmlName: String? {
-            switch self {
-            case .top: nil
-            case .center: "modal-dialog-centered"
-            }
-        }
-    }
-
+public struct Modal<Header: HTML, Footer: HTML, Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     private let htmlID: String
-    private var content: any HTML
-    private var header: any HTML
-    private var footer: any HTML
+    private var content: Content
+    private var header: Header
+    private var footer: Footer
 
     private var isAnimationDisabled = false
     private var isScrollDisabled = true
-    private var size = Size.medium
-    private var position = Position.center
+    private var size = ModalSize.medium
+    private var position = ModalPosition.center
     private var prefersDefaultFocus = true
     private var isExitCommandDisabled = false
     private var isBackgroundTintDisabled = false
@@ -86,12 +38,12 @@ public struct Modal: HTML {
     ///   - footer: Optional footer content for the modal.
     public init(
         id modalId: String,
-        @HTMLBuilder body: () -> some HTML,
-        @HTMLBuilder header: () -> some HTML = { EmptyHTML() },
-        @HTMLBuilder footer: () -> some HTML = { EmptyHTML() }
+        @HTMLBuilder content: () -> Content,
+        @HTMLBuilder header: () -> Header = { EmptyHTML() },
+        @HTMLBuilder footer: () -> Footer = { EmptyHTML() }
     ) {
         self.htmlID = modalId
-        self.content = body()
+        self.content = content()
         self.header = header()
         self.footer = footer()
     }
@@ -99,7 +51,7 @@ public struct Modal: HTML {
     /// Adjusts the size of the modal dialog.
     /// - Parameter size: The desired size for the modal.
     /// - Returns: A new `Modal` instance with the updated size.
-    public func size(_ size: Size) -> Self {
+    public func size(_ size: ModalSize) -> Self {
         var copy = self
         copy.size = size
         return copy
@@ -117,7 +69,7 @@ public struct Modal: HTML {
     /// Sets the vertical position of the modal on the screen.
     /// - Parameter position: The desired vertical position.
     /// - Returns: A new `Modal` instance with the updated position.
-    public func modalPosition(_ position: Position) -> Self {
+    public func modalPosition(_ position: ModalPosition) -> Self {
         var copy = self
         copy.position = position
         return copy
