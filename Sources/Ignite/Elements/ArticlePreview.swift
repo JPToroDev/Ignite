@@ -66,16 +66,9 @@ public struct ArticlePreview: HTML {
             }
             .font(.title2)
         } footer: {
-//            let tagLinks = article.tagLinks()
-//
-//            if let tagLinks {
-//                Section {
-//                    ForEach(tagLinks) { link in
-//                        link
-//                    }
-//                }
-//                .style(.marginTop, "-5px")
-//            }
+            Section {
+                article.tagLinks()
+            }
         }
     }
 }
