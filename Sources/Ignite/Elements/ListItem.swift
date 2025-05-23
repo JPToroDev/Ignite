@@ -10,7 +10,7 @@
 /// need a styled HTML <li> element.
 public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML, ListElement {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -24,10 +24,10 @@ public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML, ListEl
     /// Configures this list item to properly display a badge.
     /// - Parameter badge: The badge to display.
     /// - Returns: A modified list item with proper badge styling.
-    public func badge(_ badge: Badge<BadgeContent>) -> some HTML {
+    public func badge(_ badge: Badge<BadgeContent>) -> Self {
         var copy = self
         copy.badge = badge
-        copy.class("d-flex", "justify-content-between", "align-items-center")
+        copy.attributes.append(classes: "d-flex", "justify-content-between", "align-items-center")
         return copy
     }
 
