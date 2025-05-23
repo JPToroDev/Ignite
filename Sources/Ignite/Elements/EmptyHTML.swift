@@ -12,7 +12,7 @@ public struct EmptyHTML: HTML {
     public nonisolated init() {}
 
     /// Returns self as the body content since this is an empty element
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// Renders this element as an empty string
     /// - Returns: An empty string
