@@ -18,29 +18,46 @@
 ///         ``Section`` instead.
 public struct Group<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// The child elements contained within this group.
-    var children: Children
+    var content: Content
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.
     public init(@HTMLBuilder content: () -> Content) {
-        self.children = Children(content())
+        self.content = content()
     }
 
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: The HTML content to include.
     public init(_ content: Content) {
-        self.children = Children(content)
+        self.content = content
     }
 
     public func markup() -> Markup {
-        children.map { $0.attributes(attributes).markup() }.joined()
+        Children(content).map { $0.attributes(attributes).markup() }.joined()
     }
 }
 
-extension Group: VariadicElement {}
+extension Group: VariadicElement {
+    var children: Children { .init(content) }
+}
+
+extension Group: ColumnProvider where Content: ColumnProvider {}
+
+extension Group: TextProvider where Content: TextProvider {
+    var fontStyle: FontStyle {
+        get { content.fontStyle }
+        set { content.fontStyle = newValue }
+    }
+}
+
+extension Group: SpacerProvider where Content: SpacerProvider {
+    var spacer: Spacer { content.spacer }
+}
+
+extension Group: LinkProvider where Content: LinkProvider {}
