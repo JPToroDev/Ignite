@@ -6,28 +6,9 @@
 //
 
 /// A collection of slides the user can swipe through.
-public struct Carousel: HTML {
-    /// Whether moving between slides should cause movement or a crossfade.
-    public enum CarouselStyle: Equatable {
-        /// Slides should move.
-        case move(_ duration: Double, curve: TimingCurve = .easeInOut)
-
-        /// Slides should crossfade.
-        case crossfade(_ duration: Double, curve: TimingCurve = .easeInOut)
-
-        /// The default slide movement transition with 1-second duration and ease-in-out curve.
-        public static var move: CarouselStyle {
-            .move(1, curve: .easeInOut)
-        }
-
-        /// The default crossfade transition with 1-second duration and ease-in-out curve.
-        public static var crossfade: CarouselStyle {
-            .crossfade(1, curve: .easeInOut)
-        }
-    }
-
+public struct Carousel<Slides: SlideElement>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -37,13 +18,13 @@ public struct Carousel: HTML {
     private let carouselID = "carousel\(UUID().uuidString.truncatedHash)"
 
     /// The collection of slides to show inside this carousel.
-    var items: [Slide]
+    private var slides: Children
 
     /// The animation style used to move between slides.
-    var style: CarouselStyle = .move
+    private var style: CarouselStyle = .move
 
     /// The amount of time, in seconds, a slide is shown before the next appears.
-    var duration: Double?
+    private var duration: Double?
 
     /// A computed property that determines if the carousel uses crossfade transitions.
     private var doesCrossfade: Bool {
@@ -57,8 +38,8 @@ public struct Carousel: HTML {
     /// Creates a new carousel from an element builder that generates slides.
     /// - Parameter items: An element builder that returns an array of
     ///   slides to place in this carousel.
-    public init(@ElementBuilder<Slide> _ items: () -> [Slide]) {
-        self.items = items()
+    public init(@SlideElementBuilder slides: () -> Slides) {
+        self.slides = Children(slides())
     }
 
     /// Creates a new carousel from a collection of items, along with a function that converts
@@ -67,8 +48,12 @@ public struct Carousel: HTML {
     ///   - items: A sequence of items you want to convert into slides.
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns a slide representing that value in the carousel.
-    public init<T>(_ items: any Sequence<T>, content: (T) -> Slide) {
-        self.items = items.map(content)
+    public init<T, S: Sequence, SlideContent: SlideElement>(
+        _ items: S,
+        @SlideElementBuilder slides: @escaping (T) -> SlideContent
+    ) where S.Element == T, Slides == ForEach<Array<T>, SlideContent> {
+        let items = items.map(slides).compactMap { $0 as? any HTML }
+        self.slides = Children(items.map { Child($0) })
     }
 
     /// Adjusts the style of this carousel.
@@ -111,7 +96,7 @@ public struct Carousel: HTML {
     public func markup() -> Markup {
         Section {
             Section {
-                ForEach(0 ..< items.count) { index in
+                ForEach(0 ..< slides.elements.count) { index in
                     Button()
                         .data("bs-target", "#\(carouselID)")
                         .data("bs-slide-to", String(index))
@@ -123,8 +108,9 @@ public struct Carousel: HTML {
             .class("carousel-indicators")
 
             Section {
-                ForEach(items.enumerated()) { index, item in
-                    item.assigned(at: index)
+                ForEach(slides.enumerated()) { index, item in
+                    item
+//                        .assigned(at: index)
                         .style(slideTransition(for: style))
                 }
             }

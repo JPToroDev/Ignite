@@ -1,3 +1,10 @@
+//
+// CarouselStyle.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
 /// Whether moving between slides should cause movement or a crossfade.
 public enum CarouselStyle: Equatable {
     /// Slides should move.

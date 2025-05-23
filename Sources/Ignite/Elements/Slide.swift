@@ -5,10 +5,13 @@
 // See LICENSE for license information.
 //
 
+@MainActor
+public protocol SlideElement {}
+
 /// One slide in a `Carousel`.
-public struct Slide: HTML {
+public struct Slide<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -18,7 +21,7 @@ public struct Slide: HTML {
     var background: String?
 
     /// Other items to display inside this slide.
-    var content: any HTML
+    var content: Content
 
     /// How opaque the background image should be. Use values lower than 1.0
     /// to progressively dim the background image.
@@ -28,7 +31,7 @@ public struct Slide: HTML {
     /// - Parameter background: An optional background image to use for
     /// this slide. This should be specified relative to the root of your
     /// site, e.g. /images/dog.jpg.
-    public init(background: String) {
+    public init(background: String) where Content == EmptyHTML {
         self.background = background
         self.content = EmptyHTML()
     }
@@ -41,7 +44,7 @@ public struct Slide: HTML {
     /// site, e.g. /images/dog.jpg.
     /// - Parameter content: Other items to place inside this slide, which will
     /// be placed on top of the background image.
-    public init(background: String? = nil, @HTMLBuilder content: () -> some HTML) {
+    public init(background: String? = nil, @HTMLBuilder content: () -> Content) {
         self.background = background
         self.content = content()
     }
@@ -88,3 +91,5 @@ public struct Slide: HTML {
         content.attributes(attributes).markup()
     }
 }
+
+extension Slide: SlideElement {}
