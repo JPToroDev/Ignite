@@ -40,24 +40,6 @@ public struct NavigationElementBuilder {
         NavigationItem(content)
     }
 
-    /// Handles the first branch of an if/else statement.
-    /// - Parameter component: The HTML element to use if condition is true
-    /// - Returns: The wrapped HTML element
-    public static func buildEither<TrueContent, FalseContent>(
-        first content: TrueContent
-    ) -> ConditionalHTML<TrueContent, FalseContent> where TrueContent: NavigationElement, FalseContent: NavigationElement {
-        .init(storage: .trueContent(content))
-    }
-
-    /// Handles the second branch of an if/else statement.
-    /// - Parameter component: The HTML element to use if condition is false
-    /// - Returns: The wrapped HTML element
-    public static func buildEither<TrueContent, FalseContent>(
-        second content: FalseContent
-    ) -> ConditionalHTML<TrueContent, FalseContent> where TrueContent: NavigationElement, FalseContent: NavigationElement {
-        .init(storage: .falseContent(content))
-    }
-
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
