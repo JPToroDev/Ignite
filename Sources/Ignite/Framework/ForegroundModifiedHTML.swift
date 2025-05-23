@@ -8,7 +8,7 @@
 /// A type that applies foreground styling to HTML content.
 struct ForegroundModifiedHTML<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()
@@ -64,6 +64,8 @@ struct ForegroundModifiedHTML<Content: HTML>: HTML {
         }
     }
 }
+
+extension ForegroundModifiedHTML: ColumnProvider where Content: ColumnProvider {}
 
 extension ForegroundModifiedHTML: TextProvider where Content: TextProvider {
     var fontStyle: FontStyle {
