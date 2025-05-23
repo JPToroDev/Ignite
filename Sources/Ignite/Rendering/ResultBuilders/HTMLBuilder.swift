@@ -22,9 +22,7 @@ public struct HTMLBuilder {
     /// Converts `Never` into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildExpression(_ content: Never) -> some HTML {
-        content
-    }
+    public static func buildExpression(_ content: Never) -> Never {}
 
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
@@ -38,6 +36,11 @@ public struct HTMLBuilder {
     public static func buildBlock() -> some HTML {
         EmptyHTML()
     }
+
+    /// Passes through a single HTML element unchanged.
+    /// - Parameter content: The HTML element to pass through
+    /// - Returns: The same HTML element
+    public static func buildBlock(_ content: Never) -> Never {}
 
     /// Passes through a single HTML element unchanged.
     /// - Parameter content: The HTML element to pass through

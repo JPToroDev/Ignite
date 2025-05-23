@@ -32,6 +32,11 @@ public struct InlineElementBuilder {
         content
     }
 
+    /// Passes through a single inline element unchanged.
+    /// - Parameter content: The inline element to pass through
+    /// - Returns: The same inline element
+    public static func buildBlock(_ content: Never) -> Never {}
+
     /// Handles array transformations in the builder.
     /// - Parameter components: Array of inline elements
     /// - Returns: A flattened HTML element
