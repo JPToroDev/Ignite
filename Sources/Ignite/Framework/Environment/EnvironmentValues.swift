@@ -122,7 +122,8 @@ public struct EnvironmentValues {
         site: any Site,
         allContent: [Article],
         pageMetadata: PageMetadata,
-        pageContent: any LayoutContent
+        pageContent: any LayoutContent,
+        httpError: HTTPError = EmptyHTTPError()
     ) {
         self.decode = DecodeAction(sourceDirectory: sourceDirectory)
         self.articles = ArticleLoader(content: allContent)
@@ -134,6 +135,7 @@ public struct EnvironmentValues {
         self.builtInIconsEnabled = site.builtInIconsEnabled
         self.timeZone = site.timeZone
         self.page = pageMetadata
+        self.httpError = httpError
 
         self.site = SiteMetadata(
             name: site.name,
