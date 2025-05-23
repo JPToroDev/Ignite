@@ -9,7 +9,6 @@ body {
     line-height: var(--bs-body-line-height, 1.5);
     color: var(--bs-body-color);
     background-color: var(--bs-body-bg);
-    margin-top: var(--navbar-height);
 }
 
 /* Link styles */
