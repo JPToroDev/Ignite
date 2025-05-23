@@ -110,7 +110,7 @@ public extension ElementProxy {
 private struct FontModifiedHTML<Content: HTML>: HTML {
     var attributes = CoreAttributes()
 
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     var content: Content
     var font: Font
@@ -121,7 +121,7 @@ private struct FontModifiedHTML<Content: HTML>: HTML {
     }
 
     func markup() -> Markup {
-        if var text = content as? any TextProvider {
+        if var text = content as? any TextProvider & HTML {
             if let style = font.style { text.fontStyle = style }
             return text.attributes(getAttributes(for: font, includeStyle: false))
                 .markup()

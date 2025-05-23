@@ -9,18 +9,19 @@
     _ style: Font.Style,
     content: any HTML
 ) -> any HTML {
-    if content is any TextProvider {
-        content.fontStyle(style)
+    if var provider = content as? any TextProvider & HTML {
+        provider.fontStyle = style
+        return provider
     } else {
-        content.class(style.sizeClass)
+        return content.class(style.sizeClass)
     }
 }
 
 @MainActor private func fontStyleModifier(
     _ style: Font.Style,
-    content: any InlineElement
-) -> any InlineElement {
-    content.fontStyle(style)
+    content: some InlineElement
+) -> some InlineElement {
+    content.class(style.sizeClass)
 }
 
 public extension HTML {
