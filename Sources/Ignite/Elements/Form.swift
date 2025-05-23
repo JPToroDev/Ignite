@@ -8,7 +8,7 @@
 /// A form container for collecting user input
 public struct Form: HTML, NavigationElement {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -207,16 +207,16 @@ public struct Form: HTML, NavigationElement {
 //        .attributes(section.attributes)
 //    }
 
-    private func renderButton(_ button: Button) -> some HTML {
-        Section {
-            button
-                .class(controlSize.buttonClass)
-                .class(labelStyle == .leading ? nil : "w-100")
-        }
-        .class(getColumnClass(for: button))
-        .class("d-flex")
-        .class(labelStyle == .floating ? "align-items-stretch" : "align-items-end")
-    }
+//    private func renderButton(_ button: Button) -> some HTML {
+//        Section {
+//            button
+//                .class(controlSize.buttonClass)
+//                .class(labelStyle == .leading ? nil : "w-100")
+//        }
+//        .class(getColumnClass(for: button))
+//        .class("d-flex")
+//        .class(labelStyle == .floating ? "align-items-stretch" : "align-items-end")
+//    }
 
 //    private func renderText(_ text: Span) -> some HTML {
 //        print("""

@@ -11,7 +11,8 @@ public protocol DropdownItem: MarkupElement {}
 
 @MainActor
 protocol DropdownElement {
-    func configuration(_ configuration: Dropdown.Configuration) -> Self
+    associatedtype Content: HTML
+    func configuration(_ configuration: Dropdown.Configuration) -> Content
 }
 
 /// Renders a button that presents a menu of information when pressed.
@@ -31,7 +32,7 @@ public struct Dropdown: HTML, NavigationElement, FormItem {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -43,7 +44,7 @@ public struct Dropdown: HTML, NavigationElement, FormItem {
     private var items: [any DropdownItem]
 
     /// How large this dropdown should be drawn. Defaults to `.medium`.
-    private var size = Button.Size.medium
+    private var size = ButtonSize.medium
 
     /// How this dropdown should be styled on the screen. Defaults to `.defaut`.
     private var role = Role.default
@@ -81,7 +82,7 @@ public struct Dropdown: HTML, NavigationElement, FormItem {
     /// Adjusts the size of this dropdown.
     /// - Parameter size: The new size.
     /// - Returns: A new `Dropdown` instance with the updated size.
-    public func dropdownSize(_ size: Button.Size) -> Self {
+    public func dropdownSize(_ size: ButtonSize) -> Self {
         var copy = self
         copy.size = size
         return copy
@@ -138,11 +139,11 @@ public struct Dropdown: HTML, NavigationElement, FormItem {
 //                .aria(.expanded, "false")
 //                .attributes(titleAttributes)
         } else {
-            Button(title)
-                .class(Button.classes(forRole: role, size: size))
-                .class("dropdown-toggle")
-                .data("bs-toggle", "dropdown")
-                .aria(.expanded, "false")
+//            Button(title)
+//                .class(size.classes(forRole: role))
+//                .class("dropdown-toggle")
+//                .data("bs-toggle", "dropdown")
+//                .aria(.expanded, "false")
         }
 
         List {

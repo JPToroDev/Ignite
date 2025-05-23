@@ -18,7 +18,7 @@ public struct ControlGroup: HTML, FormItem {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -140,11 +140,11 @@ public struct ControlGroup: HTML, FormItem {
 //        return textField
 //    }
 
-    private func renderButton(_ button: Button) -> some InlineElement {
-        var button = button
-        button.type = .plain
-        return button
-    }
+//    private func renderButton(_ button: Button) -> some InlineElement {
+//        var button = button
+//        button.type = .plain
+//        return button
+//    }
 
     private func renderDropdown(_ dropdown: Dropdown) -> some HTML {
         dropdown.configuration(.controlGroupItem)
