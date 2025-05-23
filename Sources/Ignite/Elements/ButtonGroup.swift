@@ -7,9 +7,9 @@
 
 /// A container that automatically adjusts the styling for buttons it contains so
 /// that they sit more neatly together.
-public struct ButtonGroup: HTML {
+public struct ButtonGroup<Content: ButtonElement>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -18,7 +18,7 @@ public struct ButtonGroup: HTML {
     private var accessibilityLabel: String
 
     /// The buttons that should be displayed in this gorup.
-    private var buttons: [Button]
+    private var buttons: Children
 
     /// Creates a new `ButtonGroup` from the accessibility label and an
     /// element builder that must return the buttons to use.
@@ -28,10 +28,10 @@ public struct ButtonGroup: HTML {
     ///   - content: An element builder containing the contents for this group.
     public init(
         accessibilityLabel: String,
-        @ElementBuilder<Button> content: () -> [Button]
+        @ButtonElementBuilder content: () -> Content
     ) {
         self.accessibilityLabel = accessibilityLabel
-        self.buttons = content()
+        self.buttons = Children(content())
     }
 
     /// Renders this element using publishing context passed in.

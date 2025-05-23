@@ -5,7 +5,6 @@
 // See LICENSE for license information.
 //
 
-
 /// Whether this button is just clickable, or whether its submits a form.
 public enum ButtonType {
     /// This button does not submit a form.

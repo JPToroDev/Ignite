@@ -5,41 +5,22 @@
 // See LICENSE for license information.
 //
 
+@MainActor
+public protocol ButtonElement {}
+
 /// A clickable button with a label and styling.
-public struct Button: InlineElement, FormItem {
-    /// Controls the display size of buttons. Medium is the default.
-    public enum Size: String, CaseIterable {
-        case small, medium, large
-    }
-
-    /// Whether this button is just clickable, or whether its submits a form.
-    public enum `Type` {
-        /// This button does not submit a form.
-        case plain
-
-        /// This button submits a form.
-        case submit
-
-        /// The HTML type attribute for this button.
-        var htmlName: String {
-            switch self {
-            case .plain: "button"
-            case .submit: "submit"
-            }
-        }
-    }
-
+public struct Button<Label: InlineElement>: InlineElement, FormItem {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// Whether this button should submit a form or not. Defaults to `.plain`.
-    var type = Type.plain
+    var type = ButtonType.plain
 
     /// How large this button should be drawn. Defaults to `.medium`.
-    var size = Size.medium
+    var size = ButtonSize.medium
 
     /// How this button should be styled on the screen. Defaults to `.default`.
     var role = Role.default
@@ -55,20 +36,20 @@ public struct Button: InlineElement, FormItem {
 
     /// Creates a button with no label. Used in some situations where
     /// exact styling is performed by Bootstrap, e.g. in Carousel.
-    public init() {
+    public init() where Label == EmptyInlineElement {
         self.label = EmptyInlineElement()
     }
 
     /// Creates a button with a label.
     /// - Parameter label: The label text to display on this button.
-    public init(_ label: some InlineElement) {
+    public init(_ label: Label) {
         self.label = label
     }
 
     /// Creates a button from a more complex piece of HTML.
     /// - Parameter label: An inline element builder of all the content
     /// for this button.
-    public init(@InlineElementBuilder label: () -> some InlineElement) {
+    public init(@InlineElementBuilder label: () -> Label) {
         self.label = label()
     }
 
@@ -81,7 +62,7 @@ public struct Button: InlineElement, FormItem {
         _ title: String,
         systemImage: String? = nil,
         @ActionBuilder actions: () -> [Action] = { [] }
-    ) {
+    ) where Label == String {
         self.label = title
         self.systemImage = systemImage
         addEvent(name: "onclick", actions: actions())
@@ -96,7 +77,7 @@ public struct Button: InlineElement, FormItem {
         _ title: String,
         systemImage: String? = nil,
         action: any Action
-    ) {
+    ) where Label == String {
         self.label = title
         self.systemImage = systemImage
         dataAttributes(for: action)
@@ -109,7 +90,7 @@ public struct Button: InlineElement, FormItem {
     ///   - label: The label text to display on this button.
     public init(
         @ActionBuilder actions: () -> [Action],
-        @InlineElementBuilder label: () -> some InlineElement
+        @InlineElementBuilder label: () -> Label
     ) {
         self.label = label()
         addEvent(name: "onclick", actions: actions())
@@ -121,7 +102,7 @@ public struct Button: InlineElement, FormItem {
     ///   - label: The label text to display on this button.
     public init(
         action: any Action,
-        @InlineElementBuilder label: () -> some InlineElement
+        @InlineElementBuilder label: () -> Label
     ) {
         self.label = label()
         dataAttributes(for: action)
@@ -131,7 +112,7 @@ public struct Button: InlineElement, FormItem {
     /// Adjusts the size of this button.
     /// - Parameter size: The new size.
     /// - Returns: A new `Button` instance with the updated size.
-    public func buttonSize(_ size: Size) -> Self {
+    public func buttonSize(_ size: ButtonSize) -> Self {
         var copy = self
         copy.size = size
         return copy
@@ -159,7 +140,7 @@ public struct Button: InlineElement, FormItem {
     /// Sets the button type, determining its behavior.
     /// - Parameter type: The type of button, such as `.plain` or `.submit`.
     /// - Returns: A new `Button` instance with the updated type.
-    public func type(_ type: Type) -> Self {
+    public func type(_ type: ButtonType) -> Self {
         var copy = self
         copy.type = type
         return copy
@@ -182,51 +163,12 @@ public struct Button: InlineElement, FormItem {
         attributes.append(dataAttributes: .init(name: "bs-target", value: "#\(toggleSidebar.id)"))
     }
 
-    /// Returns an array containing the correct CSS classes to style this button
-    /// based on the role and size passed in. This is used for buttons, links, and
-    /// dropdowns, which is why it's shared.
-    /// - Parameters:
-    ///   - role: The role we are styling.
-    ///   - size: The size we are styling.
-    /// - Returns: The CSS classes to apply for this button
-    static func classes(forRole role: Role, size: Size) -> [String] {
-        var outputClasses = ["btn"]
-
-        switch size {
-        case .small:
-            outputClasses.append("btn-sm")
-        case .large:
-            outputClasses.append("btn-lg")
-        default:
-            break
-        }
-
-        switch role {
-        case .default, .none:
-           break
-        default:
-            outputClasses.append("btn-\(role.rawValue)")
-        }
-
-        return outputClasses
-    }
-
-    /// Adds the correct ARIA attribute for Close buttons, if needed.
-    static func aria(forRole role: Role) -> Attribute? {
-        switch role {
-        case .close:
-            Attribute(name: "label", value: "Close")
-        default:
-            nil
-        }
-    }
-
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         var buttonAttributes = attributes
-            .appending(classes: Button.classes(forRole: role, size: size))
-            .appending(aria: Button.aria(forRole: role))
+            .appending(classes: size.classes(forRole: role))
+            .appending(aria: role.aria())
 
         if isDisabled {
             buttonAttributes.append(customAttributes: .disabled)
@@ -249,3 +191,5 @@ public extension Button {
         self.class("w-100", ColumnWidth.count(width).className)
     }
 }
+
+extension Button: ButtonElement {}
