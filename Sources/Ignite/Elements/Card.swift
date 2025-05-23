@@ -20,7 +20,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -34,7 +34,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     var image: Image?
     private var header: Header
     private var footer: Footer
-    private var items: Content
+    private var children: Children
 
     var cardClasses: String? {
         switch style {
@@ -49,9 +49,9 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
     public init(
         imageName: String? = nil,
-        @HTMLBuilder body: () -> Content,
-        @HTMLBuilder header: () -> Header = { EmptyHTML() },
-        @HTMLBuilder footer: () -> Footer = { EmptyHTML() }
+        @HTMLBuilder content: () -> Content,
+        @HTMLBuilder header: () -> Header,
+        @HTMLBuilder footer: () -> Footer
     ) {
         if let imageName {
             self.image = Image(decorative: imageName)
@@ -59,7 +59,34 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = header()
         self.footer = footer()
-        self.items = body()
+        self.children = Children(content())
+    }
+
+    public init(
+        imageName: String? = nil,
+        @HTMLBuilder header: () -> Header,
+        @HTMLBuilder footer: () -> Footer
+    ) where Content == EmptyHTML {
+        if let imageName {
+            self.image = Image(decorative: imageName)
+        }
+
+        self.header = header()
+        self.footer = footer()
+        self.children = Children()
+    }
+
+    public init(
+        imageName: String? = nil,
+        @HTMLBuilder content: () -> Content
+    ) where Header == EmptyHTML, Footer == EmptyHTML {
+        if let imageName {
+            self.image = Image(decorative: imageName)
+        }
+
+        self.header = EmptyHTML()
+        self.footer = EmptyHTML()
+        self.children = Children(content())
     }
 
     public func role(_ role: Role) -> Card {
@@ -148,21 +175,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
     private func renderItems() -> some HTML {
         Section {
-//            let items = VariadicHTML([items]).children
-//            ForEach(items) { item in
-//                switch item {
-//                case let text as any TextElement where text.fontStyle == .body || text.fontStyle == .lead:
-//                    AnyHTML(text).class("card-text")
-//                case is any TextElement:
-//                    AnyHTML(item).class("card-title")
-//                case is any LinkElement:
-//                    AnyHTML(item).class("card-link")
-//                case is any ImageElement:
-//                    AnyHTML(item).class("card-img")
-//                default:
-//                    AnyHTML(item)
-//                }
-//            }
+            ForEach(children) { $0 }
         }
         .class(contentPosition.bodyClasses)
     }
@@ -171,151 +184,4 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
         Section(footer)
             .class("card-footer", "text-body-secondary")
     }
-}
-
-public extension Card where Content == EmptyHTML {
-    init(
-        imageName: String? = nil,
-        @HTMLBuilder header: () -> Header = { EmptyHTML() },
-        @HTMLBuilder footer: () -> Footer = { EmptyHTML() }
-    ) {
-        if let imageName {
-            self.image = Image(decorative: imageName)
-        }
-
-        self.header = header()
-        self.footer = footer()
-        self.items = EmptyHTML()
-    }
-}
-
-public extension Card where Footer == EmptyHTML {
-    init(
-        imageName: String? = nil,
-        @HTMLBuilder body: () -> Content,
-        @HTMLBuilder header: () -> Header = { EmptyHTML() }
-    ) {
-        if let imageName {
-            self.image = Image(decorative: imageName)
-        }
-
-        self.header = header()
-        self.footer = EmptyHTML()
-        self.items = body()
-    }
-}
-
-public extension Card where Header == EmptyHTML, Footer == EmptyHTML {
-    init(
-        imageName: String? = nil,
-        @HTMLBuilder body: () -> Content
-    ) {
-        if let imageName {
-            self.image = Image(decorative: imageName)
-        }
-
-        self.header = EmptyHTML()
-        self.footer = EmptyHTML()
-        self.items = body()
-    }
-}
-
-/// Where to position the content of the card relative to it image.
-public enum CardContentPosition: CaseIterable, Sendable {
-    public static let allCases: [CardContentPosition] = [
-        .bottom, .top, .overlay(alignment: .topLeading)
-    ]
-
-    /// Positions content below the image.
-    case bottom
-
-    /// Positions content above the image.
-    case top
-
-    /// Positions content over the image.
-    case overlay(alignment: CardContentAlignment)
-
-    // Static entries for backward compatibilty
-    public static let `default` = Self.bottom
-    public static let overlay = Self.overlay(alignment: .topLeading)
-
-    // MARK: Helpers for `render`
-
-    var imageClass: String {
-        switch self {
-        case .bottom:
-            "card-img-top"
-        case .top:
-            "card-img-bottom"
-        case .overlay:
-            "card-img"
-        }
-    }
-
-    var bodyClasses: [String] {
-        switch self {
-        case .overlay(let alignment):
-            ["card-img-overlay", alignment.textAlignment.rawValue, alignment.verticalAlignment.rawValue]
-        default:
-            ["card-body"]
-        }
-    }
-
-    var addImageFirst: Bool {
-        switch self {
-        case .bottom, .overlay:
-            true
-        case .top:
-            false
-        }
-    }
-}
-
-public enum CardContentAlignment: CaseIterable, Sendable {
-    case topLeading
-    case top
-    case topTrailing
-    case leading
-    case center
-    case trailing
-    case bottomLeading
-    case bottom
-    case bottomTrailing
-
-
-    enum TextAlignment: String, CaseIterable, Sendable {
-        case start = "text-start"
-        case center = "text-center"
-        case end = "text-end"
-    }
-
-    enum VerticalAlignment: String, CaseIterable, Sendable {
-        case start = "align-content-start"
-        case center = "align-content-center"
-        case end = "align-content-end"
-    }
-
-    var textAlignment: TextAlignment {
-        switch self {
-        case .topLeading, .leading, .bottomLeading:
-            .start
-        case .top, .center, .bottom:
-            .center
-        case .topTrailing, .trailing, .bottomTrailing:
-            .end
-        }
-    }
-
-    var verticalAlignment: VerticalAlignment {
-        switch self {
-        case .topLeading, .top, .topTrailing:
-            .start
-        case .leading, .center, .trailing:
-            .center
-        case .bottomLeading, .bottom, .bottomTrailing:
-            .end
-        }
-    }
-
-    public static let `default` = Self.topLeading
 }

@@ -1,3 +1,10 @@
+//
+// CardContentPosition.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
 /// Where to position the content of the card relative to it image.
 public enum CardContentPosition: CaseIterable, Sendable {
     public static let allCases: [CardContentPosition] = [

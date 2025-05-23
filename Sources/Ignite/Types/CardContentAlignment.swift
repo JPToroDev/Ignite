@@ -1,3 +1,10 @@
+//
+// CardContentAlignment.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
 public enum CardContentAlignment: CaseIterable, Sendable {
     case topLeading
     case top
