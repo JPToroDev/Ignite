@@ -5,17 +5,16 @@
 // See LICENSE for license information.
 //
 
+/// Styling options for tables.
+public enum TableStyle {
+    /// All table rows and columns look the same. The default.
+    case plain
 
-    /// Styling options for tables.
-    public enum Style {
-        /// All table rows and columns look the same. The default.
-        case plain
+    /// Applies a "zebra stripe" effect where alternate rows have a
+    /// varying color.
+    case stripedRows
 
-        /// Applies a "zebra stripe" effect where alternate rows have a
-        /// varying color.
-        case stripedRows
-
-        /// Applies a "zebra stripe" effect where alternate columns have a
-        /// varying color.
-        case stripedColumns
-    }
+    /// Applies a "zebra stripe" effect where alternate columns have a
+    /// varying color.
+    case stripedColumns
+}

@@ -6,46 +6,32 @@
 //
 
 /// Used to create tabulated data on a page.
-public struct Table: HTML {
-    /// Styling options for tables.
-    public enum Style {
-        /// All table rows and columns look the same. The default.
-        case plain
-
-        /// Applies a "zebra stripe" effect where alternate rows have a
-        /// varying color.
-        case stripedRows
-
-        /// Applies a "zebra stripe" effect where alternate columns have a
-        /// varying color.
-        case stripedColumns
-    }
-
+public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// What text to use for an optional filter text field.
-    var filterTitle: String?
+    private var filterTitle: String?
 
     /// The rows that are inside this table.
-    var rows: any HTML
+    private var rows: Rows
 
     /// An optional array of header to use at the top of this table.
-    var header: (any HTML)?
+    private var header: Header
 
     /// The styling to apply to this table. Defaults to `.plain`.
-    var style = Style.plain
+    private var style = TableStyle.plain
 
     /// An optional caption for this table. Displayed to the user, but also useful
     /// for screen readers so users can decide if the table is worth reading further.
-    var caption: String?
+    private var caption: String?
 
     /// Whether this table should be drawn with a border or not.
     /// Defaults to false.
-    var hasBorderEnabled = false
+    private var hasBorderEnabled = false
 
     /// Creates a new `Table` instance from an element builder that returns
     /// an array of rows to use in the table.
@@ -55,10 +41,11 @@ public struct Table: HTML {
     ///   - rows: An array of rows to use in the table.
     public init(
         filterTitle: String? = nil,
-        @ElementBuilder<Row> rows: () -> [Row]
-    ) {
+        @TableRowElementBuilder rows: () -> Rows
+    ) where Header == EmptyHTML {
         self.filterTitle = filterTitle
-        self.rows = EmptyHTML()
+        self.header = EmptyHTML()
+        self.rows = rows()
     }
 
     /// Creates a new `Table` instance from an element builder that returns
@@ -71,11 +58,11 @@ public struct Table: HTML {
     ///   - header: An array of headers to use at the top of the table.
     public init(
         filterTitle: String? = nil,
-        @ElementBuilder<Row> rows: () -> [Row],
-        @HTMLBuilder header: () -> some HTML
+        @TableRowElementBuilder rows: () -> Rows,
+        @HTMLBuilder header: () -> Header
     ) {
         self.filterTitle = filterTitle
-        self.rows = EmptyHTML()
+        self.rows = rows()
         self.header = header()
     }
 
@@ -87,13 +74,14 @@ public struct Table: HTML {
     ///     text field that filters the table data.
     ///   - content: A function that accepts a single value from the sequence, and
     /// returns a row representing that value in the table.
-    public init<T>(
-        _ items: any Sequence<T>,
+    public init<T, S: Sequence, RowContent: TableRowElement>(
+        _ items: S,
         filterTitle: String? = nil,
-        content: (T) -> Row
-    ) {
+        @TableRowElementBuilder rows: @escaping (T) -> RowContent
+    ) where S.Element == T, Header == EmptyHTML, Rows == ForEach<Array<T>, RowContent> {
         self.filterTitle = filterTitle
-        self.rows = EmptyHTML()
+        self.rows = ForEach(Array(items), content: rows)
+        self.header = EmptyHTML()
     }
 
     /// Creates a new `Table` instance from a collection of items, along with a function
@@ -105,21 +93,21 @@ public struct Table: HTML {
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns a row representing that value in the table.
     ///   - header: An array of headers to use at the top of the table.
-    public init<T>(
-        _ items: any Sequence<T>,
+    public init<T, S: Sequence, RowContent: TableRowElement>(
+        _ items: S,
         filterTitle: String? = nil,
-        content: (T) -> Row,
-        @HTMLBuilder header: () -> some HTML
-    ) {
+        @TableRowElementBuilder rows: @escaping (T) -> RowContent,
+        @HTMLBuilder header: () -> Header
+    ) where S.Element == T, Rows == ForEach<Array<T>, RowContent> {
         self.filterTitle = filterTitle
-        self.rows = EmptyHTML()
+        self.rows = ForEach(Array(items), content: rows)
         self.header = header()
     }
 
     /// Adjusts the style of this table.
     /// - Parameter style: The new style.
     /// - Returns: A new `Table` instance with the updated style.
-    public func tableStyle(_ style: Style) -> Self {
+    public func tableStyle(_ style: TableStyle) -> Self {
         var copy = self
         copy.style = style
         return copy
@@ -178,16 +166,13 @@ public struct Table: HTML {
             output += "<caption>\(caption)</caption>"
         }
 
-        if let header {
-//            let headerHTML = header.map {
-//                "<th>\($0.markupString())</th>"
-//            }.joined()
-
-//            output += "<thead><tr>\(headerHTML)</tr></thead>"
+        if header.isEmpty == false {
+            let headerHTML = "<th>\(header.markupString())</th>"
+            output += "<thead><tr>\(headerHTML)</tr></thead>"
         }
 
         output += "<tbody>"
-        output += rows.markupString()
+        output += Children(rows).markup().string
         output += "</tbody>"
         output += "</table>"
         return Markup(output)

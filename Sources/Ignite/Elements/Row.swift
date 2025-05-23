@@ -5,37 +5,40 @@
 // See LICENSE for license information.
 //
 
+@MainActor
+public protocol TableRowElement {}
+
 /// One row inside a `Table`.
-public struct Row: HTML {
+public struct Row<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// The columns to display inside this row.
-    private var columns: any HTML
+    private var columns: Children
 
     /// Create a new `Row` using a page element builder that returns the
     /// array of columns to use in this row.
     /// - Parameter columns: The columns to use in this row.
-    public init(@HTMLBuilder columns: () -> some HTML) {
-        self.columns = columns()
+    public init(@HTMLBuilder columns: () -> Content) {
+        self.columns = Children(columns())
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        let output = ""
-//        columns.map { column in
-//            if column is Column {
-//                column.markup()
-//            } else {
-//                Markup("<td>\(column.markupString())</td>")
-//            }
-//        }.joined()
-//        .string
-
-        return Markup("<tr\(attributes)>\(output)</tr>")
+        let output = columns.map { column in
+            if column.wrapped is any ColumnProvider {
+                column.markup()
+            } else {
+                Markup("<td>\(column.markupString())</td>")
+            }
+        }.joined()
+        
+        return Markup("<tr\(attributes)>\(output.string)</tr>")
     }
 }
+
+extension Row: TableRowElement {}

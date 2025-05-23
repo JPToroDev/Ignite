@@ -5,8 +5,10 @@
 // See LICENSE for license information.
 //
 
+protocol ColumnProvider {}
+
 /// A column inside a table row.
-public struct Column: HTML {
+public struct Column<Content: HTML>: HTML {
     /// How to vertically align the contents of this column.
     public enum VerticalAlignment: String, Sendable, CaseIterable {
         /// Align contents to the top of the column.
@@ -20,25 +22,25 @@ public struct Column: HTML {
     }
 
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// How many columns this should occupy when placed in a grid.
-    var columnSpan = 1
+    private var columnSpan = 1
 
     /// How the contents of this column should be vertically aligned.
     /// Defaults to `.top`.
-    var verticalAlignment = VerticalAlignment.top
+    private var verticalAlignment = VerticalAlignment.top
 
     /// The items to render inside this column.
-    var content: any HTML
+    private var content: Content
 
     /// Creates a new column from a page element builder of items.
     /// - Parameter items: A page element builder that returns the items
     /// for this column.
-    public init(@HTMLBuilder content: () -> some HTML) {
+    public init(@HTMLBuilder content: () -> Content) {
         self.content = content()
     }
 
@@ -73,3 +75,5 @@ public struct Column: HTML {
         return Markup("<td\(columnAttributes)>\(contentHTML)</td>")
     }
 }
+
+extension Column: ColumnProvider {}
