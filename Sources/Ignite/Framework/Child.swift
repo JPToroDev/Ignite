@@ -60,7 +60,27 @@ extension Child: AccordionItemAssignable {
     }
 }
 
-@MainActor
-protocol AccordionItemAssignable {
-    func assigned(to parentID: String, openMode: AccordionOpenMode) -> Self
+extension Child {
+    func configuredAsCardItem() -> Self {
+        switch wrapped {
+        case let text as any TextProvider & HTML where text.fontStyle == .body || text.fontStyle == .lead:
+            var item = Child(text)
+            item.attributes.append(classes: "card-text")
+            return item
+        case is any TextProvider:
+            var item = Child(wrapped)
+            item.attributes.append(classes: "card-title")
+            return item
+        case is any LinkProvider:
+            var item = Child(wrapped)
+            item.attributes.append(classes: "card-link")
+            return item
+        case is any ImageElement:
+            var item = Child(wrapped)
+            item.attributes.append(classes: "card-img")
+            return item
+        default:
+            return self
+        }
+    }
 }
