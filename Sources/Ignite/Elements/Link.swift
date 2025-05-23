@@ -7,10 +7,12 @@
 
 import Foundation
 
+protocol LinkProvider {}
+
 /// A hyperlink to another resource on this site or elsewhere.
 public struct Link<Content: InlineElement>: InlineElement, NavigationElement, DropdownItem {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -28,7 +30,7 @@ public struct Link<Content: InlineElement>: InlineElement, NavigationElement, Dr
     var style = LinkStyle.automatic
 
     /// When rendered with the `.button` style, this controls the button's size.
-    var size = Button.Size.medium
+    var size = ButtonSize.medium
 
     /// The role of this link, which applies various styling effects.
     var role = Role.default
@@ -39,7 +41,7 @@ public struct Link<Content: InlineElement>: InlineElement, NavigationElement, Dr
 
         switch style {
         case .button:
-            outputClasses.append(contentsOf: Button.classes(forRole: role, size: size))
+            outputClasses.append(contentsOf: size.classes(forRole: role))
         case .underline(let baseDecoration, hover: let hoverDecoration) where style != .automatic:
             outputClasses.append("link-underline")
             outputClasses.append("link-underline-opacity-\(baseDecoration)")
@@ -144,7 +146,7 @@ public struct Link<Content: InlineElement>: InlineElement, NavigationElement, Dr
     /// Adjusts the style of this link, when rendered in the `.button` style.
     /// - Parameter size: The new style.
     /// - Returns: A new `Link` instance with the updated size.
-    public func buttonSize(_ size: Button.Size) -> Self {
+    public func buttonSize(_ size: ButtonSize) -> Self {
         var copy = self
         copy.size = size
         return copy
@@ -257,24 +259,4 @@ extension Link: NavigationItemConfigurable {
     }
 }
 
-/// The visual style to apply to the link.
-public enum LinkStyle: Equatable {
-    /// A link with an underline effect.
-    /// - Parameters:
-    ///   - base: The underline prominence in the link's normal state.
-    ///   - hover: The underline prominence when hovering over the link.
-    case underline(_ default: UnderlineProminence, hover: UnderlineProminence)
-
-    /// A link that appears and behaves like a button.
-    case button
-
-    /// Creates an underline-style link with uniform prominence for both normal and hover states.
-    /// - Parameter prominence: The underline prominence to use for both states.
-    /// - Returns: A `LinkStyle` with identical base and hover prominence.
-    public static func underline(_ prominence: UnderlineProminence) -> Self {
-        .underline(prominence, hover: prominence)
-    }
-
-    /// The default link style with heavy underline prominence.
-    public static var automatic: Self { .underline(.heavy, hover: .heavy) }
-}
+extension Link: LinkProvider {}
