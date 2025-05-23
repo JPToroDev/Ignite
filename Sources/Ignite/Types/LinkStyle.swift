@@ -1,3 +1,10 @@
+//
+// LinkStyle.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
 /// The visual style to apply to the link.
 public enum LinkStyle: Equatable {
     /// A link with an underline effect.

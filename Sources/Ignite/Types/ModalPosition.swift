@@ -1,3 +1,10 @@
+//
+// ModalPosition.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
 /// The vertical position of the modal dialog on the screen.
 public enum ModalPosition: CaseIterable, Sendable {
     /// Positions the modal at the top of the screen.

@@ -1,3 +1,10 @@
+//
+// ModalSize.swift
+// Ignite
+// https://www.github.com/twostraws/Ignite
+// See LICENSE for license information.
+//
+
 /// The size of the modal dialog.
 ///
 /// The height is determined by the content, while the width is fixed based on the selected size.
