@@ -8,7 +8,7 @@
 /// A small, capsule-shaped piece of information, such as a tag.
 public struct Badge<Content: InlineElement>: InlineElement {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()

@@ -9,7 +9,7 @@
 /// This wrapper also handles unwrapping nested `AnyHTML` instances to prevent unnecessary wrapping layers.
 public struct AnyHTML: HTML {
     /// The body of this HTML element, which is itself
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()

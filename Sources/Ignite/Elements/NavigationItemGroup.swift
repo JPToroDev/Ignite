@@ -8,7 +8,7 @@
 /// A container for organizing related navigation items .
 @MainActor
 public struct NavigationItemGroup<Content: NavigationElement>: NavigationElement {
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()

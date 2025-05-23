@@ -12,7 +12,7 @@ protocol ImageElement {}
 /// An image on your page. Can be vector (SVG) or raster (JPG, PNG, GIF).
 public struct Image: InlineElement, LazyLoadable {
     /// The content and behavior of this HTML.
-    public var body: some InlineElement { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()

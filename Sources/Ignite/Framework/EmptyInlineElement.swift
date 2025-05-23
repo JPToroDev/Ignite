@@ -12,7 +12,7 @@ public struct EmptyInlineElement: InlineElement {
     public nonisolated init() {}
 
     /// Returns self as the body content since this is an empty element
-    public var body: some InlineElement { fatalError() }
+    public var body: Never { fatalError() }
 
     /// Renders this element as an empty string
     /// - Returns: An empty string

@@ -7,7 +7,7 @@
 
 struct NavigationItem: HTML, NavigationElement {
     /// The content and behavior of this HTML.
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()

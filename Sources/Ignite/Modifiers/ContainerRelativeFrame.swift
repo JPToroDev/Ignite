@@ -30,7 +30,7 @@ private extension HTML {
 struct ContainerRelativeFrame<Content: HTML>: HTML {
     var attributes = CoreAttributes()
 
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     var content: Content
     var alignment: Alignment
