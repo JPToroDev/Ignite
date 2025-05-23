@@ -23,7 +23,7 @@ public struct ConditionalHTML<TrueContent, FalseContent> {
 }
 
 extension ConditionalHTML: HTML, MarkupElement, Sendable where TrueContent: HTML, FalseContent: HTML {
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     public func markup() -> Markup {
         switch storage {
@@ -34,5 +34,3 @@ extension ConditionalHTML: HTML, MarkupElement, Sendable where TrueContent: HTML
         }
     }
 }
-
-extension ConditionalHTML: NavigationElement where TrueContent: NavigationElement, FalseContent: NavigationElement {}
