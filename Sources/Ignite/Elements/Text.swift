@@ -5,7 +5,8 @@
 // See LICENSE for license information.
 //
 
-protocol TextProvider: HTML {
+@MainActor
+protocol TextProvider {
     var fontStyle: FontStyle { get set }
 }
 
@@ -18,7 +19,7 @@ protocol TextProvider: HTML {
 /// use `Span` instead of `Text`.
 public struct Text<Content: InlineElement>: HTML, DropdownItem {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -174,25 +175,10 @@ extension Text where Content == String {
     }
 }
 
-extension HTML {
-    func fontStyle(_ font: Font.Style) -> any HTML {
-        var copy: any HTML = self
-        if Font.Style.classBasedStyles.contains(font), let sizeClass = font.sizeClass {
-            copy.attributes.append(classes: sizeClass)
-        } else if var text = copy as? any TextProvider {
-            text.fontStyle = font
-            copy = text
-        }
+extension Text: TextProvider {
+    func fontStyle(_ font: Font.Style) -> Self {
+        var copy = self
+        copy.fontStyle = font
         return copy
     }
 }
-
-extension InlineElement {
-    func fontStyle(_ font: Font.Style) -> any InlineElement {
-        var copy: any InlineElement = self
-        copy.attributes.append(classes: font.sizeClass)
-        return copy
-    }
-}
-
-extension Text: TextProvider {}
