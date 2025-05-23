@@ -11,18 +11,18 @@
 /// handling common control flow patterns like conditionals, loops, and switch statements.
 @MainActor
 @resultBuilder
-public struct AccordionContentBuilder {
+public struct AccordionElementBuilder {
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildExpression<Content: AccordionContent>(_ content: Content) -> Content {
+    public static func buildExpression<Content: AccordionElement>(_ content: Content) -> Content {
         content
     }
 
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildBlock<Content: AccordionContent>(_ content: Content) -> Content {
+    public static func buildBlock<Content: AccordionElement>(_ content: Content) -> Content {
         content
     }
 
@@ -31,7 +31,7 @@ public struct AccordionContentBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content: AccordionContent>(_ content: repeat each Content) -> some AccordionContent {
+    public static func buildBlock<each Content: AccordionElement>(_ content: repeat each Content) -> some AccordionElement {
         PackHTML(repeat each content)
     }
 }
