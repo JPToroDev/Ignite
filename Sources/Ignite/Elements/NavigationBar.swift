@@ -64,7 +64,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     }
 
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
@@ -284,7 +284,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     }
 }
 
-fileprivate extension HTML {
+private extension HTML {
     /// Adds a data attribute to the element.
     /// - Parameters:
     ///   - name: The name of the data attribute
