@@ -7,7 +7,7 @@
 
 struct ModifiedHTML<Content: HTML>: HTML {
     /// The body of this HTML element, which is itself
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()
@@ -67,10 +67,12 @@ extension ModifiedHTML: VariadicElement where Content: VariadicElement {
 
 extension ModifiedHTML: NavigationElement where Content: NavigationElement {}
 
+extension ModifiedHTML: ColumnProvider where Content: ColumnProvider {}
+
+extension ModifiedHTML: LinkProvider where Content: LinkProvider {}
+
 extension ModifiedHTML: DropdownElement where Content: DropdownElement {
-    func configuration(_ configuration: Dropdown.Configuration) -> Self {
-        var copy = self
-        copy.content.configuration(configuration)
-        return copy
+    func configuration(_ configuration: Dropdown.Configuration) -> some HTML {
+        content.configuration(configuration)
     }
 }
