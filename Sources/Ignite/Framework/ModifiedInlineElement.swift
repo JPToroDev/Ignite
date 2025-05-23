@@ -36,6 +36,4 @@ struct ModifiedInlineElement<Content: InlineElement>: InlineElement {
 
 extension ModifiedInlineElement: FormItem where Content: FormItem {}
 
-extension ModifiedInlineElement: ListElement where Content: ListElement {}
-
 extension ModifiedInlineElement: ImageElement where Content: ImageElement {}
