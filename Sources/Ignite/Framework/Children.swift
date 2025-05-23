@@ -6,7 +6,7 @@
 //
 
 struct Children: HTML, Sequence {
-    var body: some HTML { fatalError() }
+    var body: Never { fatalError() }
 
     var attributes = CoreAttributes()
 
@@ -29,6 +29,38 @@ struct Children: HTML, Sequence {
     }
 
     init(_ content: any NavigationElement) {
+        if let variad = content as? any VariadicElement {
+            self.elements = variad.children.elements
+        } else if let content = content as? any HTML {
+            self.elements = [Child(content)]
+        }
+    }
+
+    init(_ content: any AccordionElement) {
+        if let variad = content as? any VariadicElement {
+            self.elements = variad.children.elements
+        } else if let content = content as? any HTML {
+            self.elements = [Child(content)]
+        }
+    }
+
+    init(_ content: any ButtonElement) {
+        if let variad = content as? any VariadicElement {
+            self.elements = variad.children.elements
+        } else if let content = content as? any HTML {
+            self.elements = [Child(content)]
+        }
+    }
+
+    init(_ content: any TableRowElement) {
+        if let variad = content as? any VariadicElement {
+            self.elements = variad.children.elements
+        } else if let content = content as? any HTML {
+            self.elements = [Child(content)]
+        }
+    }
+
+    init(_ content: any SlideElement) {
         if let variad = content as? any VariadicElement {
             self.elements = variad.children.elements
         } else if let content = content as? any HTML {
