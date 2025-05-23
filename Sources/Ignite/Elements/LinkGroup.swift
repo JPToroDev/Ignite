@@ -8,15 +8,15 @@
 import Foundation
 
 /// A hyperlink to another resource on this site or elsewhere.
-public struct LinkGroup: HTML {
+public struct LinkGroup<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
+    public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// The content to display inside this link.
-    var content: any HTML
+    var content: Content
 
     /// The location to which this link should direct users.
     var url: String
@@ -26,7 +26,7 @@ public struct LinkGroup: HTML {
     /// - Parameters:
     ///   - target: The URL you want to link to.
     ///   - content: The user-facing content to show inside the `Link`.
-    public init(target: String, @HTMLBuilder content: @escaping () -> some HTML) {
+    public init(target: String, @HTMLBuilder content: () -> Content) {
         self.content = content()
         self.url = target
     }
@@ -35,7 +35,7 @@ public struct LinkGroup: HTML {
     /// - Parameters:
     ///  - target: The new target to apply.
     ///  - content: The user-facing content to show inside the `Link`.
-    public init(target: any StaticPage, @HTMLBuilder content: @escaping () -> some HTML) {
+    public init(target: any StaticPage, @HTMLBuilder content: () -> Content) {
         self.content = content()
         self.url = target.path
     }
@@ -45,7 +45,7 @@ public struct LinkGroup: HTML {
     /// - Parameters:
     ///   - content: A piece of content from your site.
     ///   - content: The user-facing content to show inside the `Link`.
-    public init(target article: Article, @HTMLBuilder content: @escaping () -> some HTML) {
+    public init(target article: Article, @HTMLBuilder content: () -> Content) {
         self.content = content()
         self.url = article.path
     }
@@ -126,3 +126,5 @@ public struct LinkGroup: HTML {
         return Markup("<a\(linkAttributes)>\(contentHTML)</a>")
     }
 }
+
+extension LinkGroup: LinkProvider {}
