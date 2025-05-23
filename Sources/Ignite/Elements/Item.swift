@@ -6,7 +6,13 @@
 //
 
 @MainActor
-public protocol AccordionContent {}
+public protocol AccordionElement {}
+
+
+@MainActor
+protocol AccordionItemAssignable {
+    func assigned(to parentID: String, openMode: AccordionOpenMode) -> Self
+}
 
 /// One item inside an accordion.
 public struct Item<Header: InlineElement, Content: HTML>: HTML {
@@ -125,6 +131,6 @@ public struct Item<Header: InlineElement, Content: HTML>: HTML {
     }
 }
 
-extension Item: AccordionContent {}
+extension Item: AccordionElement {}
 
 extension Item: AccordionItemAssignable {}
