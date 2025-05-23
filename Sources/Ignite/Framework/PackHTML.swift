@@ -25,7 +25,7 @@ extension PackHTML: HTML, VariadicElement, MarkupElement, Sendable where repeat 
 
     var children: Children {
         var children = Children()
-        for case var element in repeat each content {
+        for element in repeat each content {
             // Using the attributes() modifier will change the type to ModifiedHTML,
             // so to keep the type info, we'll modify the attributes directly
             var child = Child(element)
@@ -42,4 +42,10 @@ extension PackHTML: HTML, VariadicElement, MarkupElement, Sendable where repeat 
 
 extension PackHTML: NavigationElement where repeat each Content: NavigationElement {}
 
-extension PackHTML: AccordionContent where repeat each Content: AccordionContent {}
+extension PackHTML: AccordionElement where repeat each Content: AccordionElement {}
+
+extension PackHTML: ButtonElement where repeat each Content: ButtonElement {}
+
+extension PackHTML: TableRowElement where repeat each Content: TableRowElement {}
+
+extension PackHTML: SlideElement where repeat each Content: SlideElement {}
