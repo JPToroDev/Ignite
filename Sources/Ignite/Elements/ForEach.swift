@@ -7,10 +7,7 @@
 
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
-public struct ForEach<Data: Sequence, Content: HTML>: HTML {
-    /// The content and behavior of this HTML.
-    public var body: some HTML { fatalError() }
-    
+public struct ForEach<Data: Sequence, Content> {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -19,6 +16,11 @@ public struct ForEach<Data: Sequence, Content: HTML>: HTML {
 
     /// The child elements contained within this HTML element.
     var children: Children
+}
+
+extension ForEach: HTML, MarkupElement, Sendable where Content: HTML {
+    /// The content and behavior of this HTML.
+    public var body: Never { fatalError() }
 
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:
@@ -37,6 +39,56 @@ public struct ForEach<Data: Sequence, Content: HTML>: HTML {
     /// - Returns: The rendered HTML string.
     public func markup() -> Markup {
         children.map { $0.attributes(attributes).markup() }.joined()
+    }
+}
+
+extension ForEach: ColumnProvider where Content: ColumnProvider {}
+
+extension ForEach: LinkProvider where Content: LinkProvider {}
+
+extension ForEach: AccordionElement where Content: AccordionElement {
+    /// Creates a new ForEach instance that generates HTML content from a sequence.
+    /// - Parameters:
+    ///   - data: The sequence to iterate over.
+    ///   - content: A closure that converts each element into HTML content.
+    init(
+        _ data: Data,
+        @AccordionElementBuilder content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        let items = data.map(content).compactMap { $0 as? any HTML }
+        self.children = Children(items.map { Child($0) })
+    }
+}
+
+extension ForEach: TableRowElement where Content: TableRowElement {
+    /// Creates a new ForEach instance that generates HTML content from a sequence.
+    /// - Parameters:
+    ///   - data: The sequence to iterate over.
+    ///   - content: A closure that converts each element into HTML content.
+    init(
+        _ data: Data,
+        @TableRowElementBuilder content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        let items = data.map(content).compactMap { $0 as? any HTML }
+        self.children = Children(items.map { Child($0) })
+    }
+}
+
+
+extension ForEach: SlideElement where Content: SlideElement {
+    /// Creates a new ForEach instance that generates HTML content from a sequence.
+    /// - Parameters:
+    ///   - data: The sequence to iterate over.
+    ///   - content: A closure that converts each element into HTML content.
+    init(
+        _ data: Data,
+        @TableRowElementBuilder content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        let items = data.map(content).compactMap { $0 as? any HTML }
+        self.children = Children(items.map { Child($0) })
     }
 }
 
