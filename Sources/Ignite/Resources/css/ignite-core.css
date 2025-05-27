@@ -268,3 +268,32 @@ div.alert p:last-child {
 .splitview-sidebar.collapsed + .splitview-divider-responsive {
     display: none;
 }
+
+.adaptive-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns, 3), minmax(0, 1fr));
+    gap: var(--grid-gap, 20px);
+}
+
+@media (max-width: 768px) {
+    .adaptive-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min-width, 50%)), 1fr));
+    }
+}
+
+.grid-item {
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.grid-spacer {
+    min-height: 0;
+    background: transparent;
+}
+
+@media (max-width: 768px) {
+    .grid-spacer {
+        display: none;
+    }
+}

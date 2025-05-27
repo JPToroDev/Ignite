@@ -1,17 +1,18 @@
 //
-// SpacingAmount.swift
+// SpacingType.swift
 // Ignite
 // https://www.github.com/twostraws/Ignite
 // See LICENSE for license information.
 //
 
-/// Adaptive spacing amounts that are used by Bootstrap to provide consistency
-/// in site design.
-public enum SpacingAmount: Int, CaseIterable, Sendable {
-    case none = 0
-    case xSmall
-    case small
-    case medium
-    case large
-    case xLarge
+typealias SpacingAmount = Amount<Int, SemanticSpacing>
+
+extension SpacingAmount {
+    var inlineStyle: InlineStyle? {
+        switch self {
+        case .exact(let value): .init(.gap, value: value.formatted())
+        case .semantic(let value): .init(.gap, value: "\(Double(value.rawValue) * 0.25)em")
+        default: nil
+        }
+    }
 }

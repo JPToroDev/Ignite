@@ -19,17 +19,8 @@ public struct Grid<Content: HTML>: HTML {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    /// How many columns this should be divided into
-    var columnCount: Int?
-
-    /// The amount of space between elements.
-    private var spacingAmount: SpacingType = .semantic(.none)
-
-    /// The alignment of the items within the grid.
-    private var alignment: Alignment = .center
-
-    /// The items to display in this grid.
-    var children: Children
+    /// The layout and content of this grid.
+    var tree: VariadicTree<GridLayout, Content>
 
     /// Creates a new `Grid` object using a block element builder
     /// that returns an array of items to use in this grid.
@@ -38,13 +29,13 @@ public struct Grid<Content: HTML>: HTML {
     ///   - spacing: The number of pixels between each element.
     ///   - items: The items to use in this grid.
     public init(
+        columns: Int? = nil,
         alignment: Alignment = .center,
         spacing: Int,
         @HTMLBuilder content: () -> Content
     ) {
-        self.children = Children(content())
-        self.alignment = alignment
-        self.spacingAmount = .exact(spacing)
+        let layout = GridLayout(spacingAmount: .exact(spacing), alignment: alignment, columnCount: columns)
+        self.tree = VariadicTree(root: layout, content: content())
     }
 
     /// Creates a new `Grid` object using a block element builder
@@ -54,13 +45,13 @@ public struct Grid<Content: HTML>: HTML {
     ///   - spacing: The predefined size between each element. Defaults to `.none`.
     ///   - items: The items to use in this grid.
     public init(
+        columns: Int? = nil,
         alignment: Alignment = .center,
-        spacing: SpacingAmount = .medium,
+        spacing: SemanticSpacing = .medium,
         @HTMLBuilder content: () -> Content
     ) {
-        self.children = Children(content())
-        self.alignment = alignment
-        self.spacingAmount = .semantic(spacing)
+        let layout = GridLayout(spacingAmount: .semantic(spacing), alignment: alignment, columnCount: columns)
+        self.tree = VariadicTree(root: layout, content: content())
     }
 
     /// Creates a new grid from a collection of items, along with a function that converts
@@ -73,14 +64,14 @@ public struct Grid<Content: HTML>: HTML {
     ///     returns some HTML representing that value in the grid.
     public init<T, S: Sequence, ItemContent: HTML>(
         _ items: S,
+        columns: Int? = nil,
         alignment: Alignment = .center,
         spacing: Int,
         @HTMLBuilder content: @escaping (T) -> ItemContent
     ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
         let content = ForEach(Array(items), content: content)
-        self.children = Children(content)
-        self.alignment = alignment
-        self.spacingAmount = .exact(spacing)
+        let layout = GridLayout(spacingAmount: .exact(spacing), alignment: alignment, columnCount: columns)
+        self.tree = VariadicTree(root: layout, content: content)
     }
 
     /// Creates a new grid from a collection of items, along with a function that converts
@@ -93,97 +84,41 @@ public struct Grid<Content: HTML>: HTML {
     ///     returns some HTML representing that value in the grid.
     public init<T, S: Sequence, ItemContent: HTML>(
         _ items: S,
+        columns: Int? = nil,
         alignment: Alignment = .center,
-        spacing: SpacingAmount = .medium,
+        spacing: SemanticSpacing = .medium,
         @HTMLBuilder content: @escaping (T) -> ItemContent
     ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
         let content = ForEach(Array(items), content: content)
-        self.children = Children(content)
-        self.alignment = alignment
-        self.spacingAmount = .semantic(spacing)
+        let layout = GridLayout(spacingAmount: .semantic(spacing), alignment: alignment, columnCount: columns)
+        self.tree = VariadicTree(root: layout, content: content)
     }
 
-    /// Adjusts the number of columns that can be fitted into this grid.
-    /// - Parameter columns: The number of columns to use
-    /// - Returns: A new `Grid` instance with the updated column count.
-    public func columns(_ columns: Int) -> Self {
+    public func gridItemSizing(_ sizing: GridItemSize) -> Self {
         var copy = self
-        copy.columnCount = columns
+        copy.tree.root.gridItemSizing = sizing
         return copy
-    }
-
-    /// Removes a column class, if it exists, from the item and reassigns it to a wrapper.
-    private func column(_ item: some HTML) -> some HTML {
-        var item = item
-
-        var columnWidth = item.columnWidth
-        if case .count(let columnCount) = columnWidth {
-            item.attributes.remove(classes: columnWidth.className)
-            let scaledWidth = scaledWidth(columnCount)
-            columnWidth = scaledWidth
-        }
-
-        // We need to ensure the Section wrapping a Grid item
-        // retains its child's position
-        var positionClass: String?
-        let positionClasses = Position.allCases.map(\.rawValue)
-        if let position = item.attributes.classes.first(where: { positionClasses.contains($0) }) {
-            item.attributes.remove(classes: position)
-            positionClass = position
-        }
-
-        return Section(item)
-            .class(columnWidth.className)
-            .class(positionClass)
-            .class(alignment.vertical.itemAlignmentClass)
-    }
-
-    /// Calculates the appropriate Bootstrap column class name for a block element.
-    /// - Parameter count: The number of columns.
-    /// - Returns: The scaled `ColumnWidth`.
-    private func scaledWidth(_ count: Int) -> ColumnWidth {
-        let scaledCount = if let columnCount {
-            count * 12 / columnCount
-        } else {
-            count
-        }
-        return ColumnWidth.count(scaledCount)
-    }
-
-    /// The required HTML attributes for the outermost container of the `Grid.`
-    private var gridAttributes: CoreAttributes {
-        var gridAttributes = attributes.appending(classes: ["row"])
-        gridAttributes.append(classes: alignment.horizontal.containerAlignmentClass)
-
-        // If a column count is set, we want to use that for all
-        // page sizes that are medium and above. Below that we
-        // should drop down to width 1 to avoid squeezing things
-        // into oblivion.
-        if let columnCount {
-            gridAttributes.append(classes: "row-cols-1", "row-cols-md-\(columnCount)")
-        }
-
-        switch spacingAmount {
-        case .exact(let pixels) where pixels == 0:
-            gridAttributes.append(classes: "g-0")
-        case .exact(let pixels):
-            gridAttributes.append(styles: .init(.rowGap, value: "\(pixels)px"))
-        case .semantic(let amount):
-            gridAttributes.append(classes: "g-\(amount.rawValue)")
-        default: break
-        }
-        return gridAttributes
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        Section {
-            ForEach(children) { child in
-                column(child)
-            }
+        tree.attributes(attributes).markup()
+    }
+}
+
+public enum GridItemSize: Sendable {
+    case automatic
+    case adaptive(minimum: LengthUnit)
+
+    public static func adaptive(minimum: Int) -> Self {
+        .adaptive(minimum: .px(minimum))
+    }
+
+    var inlineStyles: [InlineStyle] {
+        switch self {
+        case .automatic: []
+        case .adaptive(let minimum): [.init("--grid-min-width", value: minimum.stringValue)]
         }
-        .attributes(gridAttributes)
-        .markup()
     }
 }
