@@ -28,5 +28,3 @@ public struct NavigationItemGroup<Content: NavigationElement>: NavigationElement
         children.map { $0.configuredAsNavigationItem().markup() }.joined()
     }
 }
-
-extension NavigationItemGroup: VariadicElement {}

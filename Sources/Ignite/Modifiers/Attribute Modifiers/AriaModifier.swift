@@ -5,15 +5,15 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func ariaModifier(
-    _ key: AriaType,
-    value: String?,
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
-    guard let value else { return modified }
-    modified.attributes.aria.append(.init(name: key.rawValue, value: value))
-    return modified
+struct AriaModifier: HTMLModifier {
+    var key: AriaType
+    var value: String?
+    func body(content: Content) -> some HTML {
+        var content = content
+        guard let value else { return content }
+        content.attributes.aria.append(.init(name: key.rawValue, value: value))
+        return content
+    }
 }
 
 @MainActor private func ariaModifier(
@@ -34,7 +34,7 @@ public extension HTML {
     ///   - value: The ARIA attribute value
     /// - Returns: The modified `HTML` element
     func aria(_ key: AriaType, _ value: String) -> some HTML {
-        ariaModifier(key, value: value, content: self)
+       modifier(AriaModifier(key: key, value: value))
     }
 
     /// Adds an ARIA attribute to the element.
@@ -43,7 +43,7 @@ public extension HTML {
     ///   - value: The ARIA attribute value
     /// - Returns: The modified `HTML` element
     func aria(_ key: AriaType, _ value: String?) -> some HTML {
-        ariaModifier(key, value: value, content: self)
+        modifier(AriaModifier(key: key, value: value))
     }
 }
 

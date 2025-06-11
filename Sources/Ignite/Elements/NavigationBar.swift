@@ -153,10 +153,11 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         var copy = self
         switch width {
         case .viewport:
-            copy.widthClasses = ["container-fluid", copy.columnWidth()]
+            let columnWidth = ColumnWidth.intrinsic.className
+            copy.widthClasses = ["container-fluid", columnWidth]
         case .count(let count):
-            copy.columnWidth(.count(count))
-            copy.widthClasses = ["container", copy.columnWidth()]
+            let columnWidth = ColumnWidth.count(count).className
+            copy.widthClasses = ["container", columnWidth]
         }
         return copy
     }
@@ -193,7 +194,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     public func markup() -> Markup {
         // Check if we have a NavigationItemGroup, the only variadic NavigationElement,
         // and use its children directly so that types like Spacer() aren't concealed
-        let items = items.flatMap { ($0 as? any VariadicElement)?.children.elements ?? [$0] }
+        let items = items.flatMap { ($0 as? any PackProvider)?.children.elements ?? [$0] }
         let navItems = items.map { $0.configuredAsNavigationItem() }
         let pinnedItems = navItems.filter { $0.navigationBarVisibility == .always }
         let collapsibleItems = navItems.filter { $0.navigationBarVisibility == .automatic }

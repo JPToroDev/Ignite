@@ -17,7 +17,7 @@ protocol TextProvider {
 ///
 /// - Important: For types that accept only `InlineElement` or use `@InlineElementBuilder`,
 /// use `Span` instead of `Text`.
-public struct Text<Content: InlineElement>: HTML, DropdownItem {
+public struct Text<Content: InlineElement>: HTML, DropdownElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 

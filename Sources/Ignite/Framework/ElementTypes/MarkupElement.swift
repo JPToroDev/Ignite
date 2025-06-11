@@ -8,7 +8,7 @@
 /// A protocol that defines the common behavior between all HTML types.
 /// - Warning: Do not conform to this type directly.
 @MainActor
-public protocol MarkupElement: Sendable {
+protocol MarkupElement {
     /// The standard set of control attributes for HTML elements.
     var attributes: CoreAttributes { get set }
 
@@ -17,7 +17,7 @@ public protocol MarkupElement: Sendable {
     func markup() -> Markup
 }
 
-public extension MarkupElement {
+extension MarkupElement {
     /// A collection of styles, classes, and attributes.
     var attributes: CoreAttributes {
         get { CoreAttributes() }
@@ -30,10 +30,5 @@ extension MarkupElement {
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
         markup().string
-    }
-
-    /// The publishing context of this site.
-    var publishingContext: PublishingContext {
-        PublishingContext.shared
     }
 }

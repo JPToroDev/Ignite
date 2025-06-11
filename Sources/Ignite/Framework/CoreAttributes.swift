@@ -205,6 +205,15 @@ public struct CoreAttributes: Equatable, Sendable, CustomStringConvertible {
         self.styles.formUnion(styles)
     }
 
+    /// Appends multiple extra inline CSS styles.
+    /// - Parameter classes: The inline CSS styles to append.
+    func appending(styles: InlineStyle...) -> CoreAttributes {
+        var copy = self
+        let styles = styles.filter { !$0.value.isEmpty }
+        copy.styles.formUnion(styles)
+        return copy
+    }
+
     /// Appends a single extra inline CSS style.
     ///  - Parameter style: The style name, e.g. background-color
     ///  - Parameter value: The style value, e.g. steelblue

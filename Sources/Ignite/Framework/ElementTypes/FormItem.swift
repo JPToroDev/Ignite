@@ -7,7 +7,20 @@
 
 /// Describes elements that can be placed into forms.
 /// - Warning: Do not conform to this type directly.
-public protocol FormItem: MarkupElement {}
+@MainActor
+public protocol FormItem {
+    var attributes: CoreAttributes { get set }
+    
+    func markup() -> Markup
+}
+
+extension FormItem {
+    /// Converts this element and its children into an HTML string with attributes.
+    /// - Returns: A string containing the HTML markup
+    func markupString() -> String {
+        markup().string
+    }
+}
 
 public extension FormItem where Self: HTML {
     /// Generates the complete `HTML` string representation of the element.

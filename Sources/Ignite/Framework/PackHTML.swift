@@ -19,7 +19,7 @@ struct PackHTML<each Content> {
     }
 }
 
-extension PackHTML: HTML, VariadicElement, MarkupElement, Sendable where repeat each Content: HTML {
+extension PackHTML: HTML, PackProvider, MarkupElement, Sendable where repeat each Content: HTML {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
 
@@ -49,3 +49,18 @@ extension PackHTML: ButtonElement where repeat each Content: ButtonElement {}
 extension PackHTML: TableRowElement where repeat each Content: TableRowElement {}
 
 extension PackHTML: SlideElement where repeat each Content: SlideElement {}
+
+extension PackHTML: @MainActor DropdownElement where repeat each Content: DropdownElement {
+    func markup() -> Markup {
+        var markup = Markup()
+        for element in repeat each content {
+            markup += element.configuredAsDropdownItem().markup()
+        }
+        return markup
+    }
+}
+
+@MainActor
+protocol PackProvider {
+    var children: Children { get }
+}

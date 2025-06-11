@@ -8,15 +8,25 @@
 /// A protocol that defines the core behavior and
 /// structure of `HTML` elements in Ignite.
 @MainActor
-public protocol HTML: MarkupElement {
+public protocol HTML: Sendable {
     /// The type of HTML content this element contains.
     associatedtype Body: HTML
+    
+    var attributes: CoreAttributes { get set }
+    
+    func markup() -> Markup
 
     /// The content and behavior of this `HTML` element.
     @HTMLBuilder var body: Body { get }
 }
 
 public extension HTML {
+    /// A collection of styles, classes, and attributes.
+    var attributes: CoreAttributes {
+        get { CoreAttributes() }
+        set {} // swiftlint:disable:this unused_setter_value
+    }
+
     /// Generates the complete `HTML` string representation of the element.
     func markup() -> Markup {
         body.markup()
@@ -24,13 +34,24 @@ public extension HTML {
 }
 
 extension HTML {
+    /// The publishing context of this site.
+    var publishingContext: PublishingContext {
+        PublishingContext.shared
+    }
+    
+    /// Converts this element and its children into an HTML string with attributes.
+    /// - Returns: A string containing the HTML markup
+    func markupString() -> String {
+        markup().string
+    }
+    
     /// The default status as a primitive element.
     var isPrimitive: Bool {
         Self.Body.self == Never.self
     }
 
     /// Checks if this element is an empty HTML element.
-    var isEmpty: Bool {
+    var isEmptyHTML: Bool {
         markup().isEmpty
     }
 
@@ -38,26 +59,6 @@ extension HTML {
     /// that can position its contents.
     var requiresPositioningContext: Bool {
         markup().string.hasPrefix("<div") == false
-    }
-
-    /// How this element should be sized in a `Grid`.
-    var columnWidth: ColumnWidth {
-        let prefix = "col-md-"
-
-        if let width = attributes.classes.first(where: { $0.hasPrefix(prefix) }),
-           let count = Int(width.dropFirst(prefix.count)) {
-            return .count(count)
-        }
-
-        if attributes.classes.contains("col") {
-            return .uniform
-        }
-
-        if attributes.classes.contains("col-auto") {
-            return .intrinsic
-        }
-
-        return .uniform
     }
 }
 
@@ -79,11 +80,5 @@ extension HTML {
     /// - Note: Adds appropriate HTML attribute based on TabFocus enum
     func tabFocus(_ tabFocus: TabFocus) -> some HTML {
         customAttribute(name: tabFocus.htmlName, value: tabFocus.value)
-    }
-
-    /// Adjusts the number of columns assigned to this element.
-    /// - Parameter width: The new number of columns to use.
-    mutating func columnWidth(_ width: ColumnWidth) {
-        attributes.classes.append(width())
     }
 }

@@ -22,7 +22,7 @@ public struct ConditionalHTML<TrueContent, FalseContent> {
     }
 }
 
-extension ConditionalHTML: HTML, MarkupElement, Sendable where TrueContent: HTML, FalseContent: HTML {
+extension ConditionalHTML: HTML, Sendable where TrueContent: HTML, FalseContent: HTML {
     public var body: Never { fatalError() }
 
     public func markup() -> Markup {

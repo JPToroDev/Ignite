@@ -34,6 +34,6 @@ public struct GridRow<Content: HTML>: HTML {
 
 extension GridRow: GridItemProvider {
     func gridItems() -> [GridItem] {
-        content.map { GridItem($0.wrapped) }
+        content.map { GridItem($0) }
     }
 }

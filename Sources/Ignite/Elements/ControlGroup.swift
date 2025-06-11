@@ -81,11 +81,11 @@ public struct ControlGroup: HTML, FormItem {
     public func markup() -> Markup {
         var items = items
         let lastItem = items.last
-        if var lastItem = lastItem as? Dropdown {
-            lastItem = lastItem.configuration(.lastControlGroupItem)
-            items = items.dropLast()
-            items.append(lastItem)
-        }
+//        if var lastItem = lastItem as? Dropdown {
+//            lastItem = lastItem.configuration(.lastControlGroupItem)
+//            items = items.dropLast()
+//            items.append(lastItem)
+//        }
 
         let content = Section {
             ForEach(items) { item in
@@ -146,7 +146,7 @@ public struct ControlGroup: HTML, FormItem {
 //        return button
 //    }
 
-    private func renderDropdown(_ dropdown: Dropdown) -> some HTML {
-        dropdown.configuration(.controlGroupItem)
-    }
+//    private func renderDropdown(_ dropdown: Dropdown) -> some HTML {
+//        dropdown.configuration(.controlGroupItem)
+//    }
 }

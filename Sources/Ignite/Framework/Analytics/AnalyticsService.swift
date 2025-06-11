@@ -9,7 +9,7 @@ import Foundation
 
 extension Analytics {
     /// Defines the different types of analytics services supported
-    public enum Service {
+    public enum Service: Sendable {
         /// Google Analytics 4
         case googleAnalytics(measurementID: String)
         /// Plausible Analytics

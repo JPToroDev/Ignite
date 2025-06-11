@@ -5,13 +5,14 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func dataModifier(
-    _ name: String,
-    value: String, content: some HTML
-) -> some HTML {
-    var modifiedHTML = ModifiedHTML(content)
-    modifiedHTML.attributes.data.append(.init(name: name, value: value))
-    return modifiedHTML
+struct DataModifier: HTMLModifier {
+    var name: String
+    var value: String
+    func body(content: Content) -> some HTML {
+        var content = content
+        content.attributes.data.append(.init(name: name, value: value))
+        return content
+    }
 }
 
 @MainActor private func dataModifier(
@@ -31,7 +32,7 @@ public extension HTML {
     ///   - value: The value of the data attribute
     /// - Returns: The modified `HTML` element
     func data(_ name: String, _ value: String) -> some HTML {
-        dataModifier(name, value: value, content: self)
+        modifier(DataModifier(name: name, value: value))
     }
 }
 

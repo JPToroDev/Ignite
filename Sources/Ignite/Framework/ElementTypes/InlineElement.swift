@@ -8,12 +8,42 @@
 /// An element that exists inside a block element, such as an emphasized
 /// piece of text.
 @MainActor
-public protocol InlineElement: MarkupElement, CustomStringConvertible {
+public protocol InlineElement: CustomStringConvertible, Sendable {
     /// The type of HTML content this element contains.
     associatedtype Body: InlineElement
-
+    
     /// The content and behavior of this element.
     @InlineElementBuilder var body: Body { get }
+    
+    var attributes: CoreAttributes { get set }
+    
+    func markup() -> Markup
+}
+
+public extension InlineElement {
+    /// A collection of styles, classes, and attributes.
+    var attributes: CoreAttributes {
+        get { CoreAttributes() }
+        set {} // swiftlint:disable:this unused_setter_value
+    }
+    
+    /// Generates the complete HTML string representation of the element.
+    func markup() -> Markup {
+        body.markup()
+    }
+}
+
+extension InlineElement {
+    /// Converts this element and its children into an HTML string with attributes.
+    /// - Returns: A string containing the HTML markup
+    func markupString() -> String {
+        markup().string
+    }
+
+    /// The publishing context of this site.
+    var publishingContext: PublishingContext {
+        PublishingContext.shared
+    }
 }
 
 public extension InlineElement {
@@ -22,11 +52,6 @@ public extension InlineElement {
         MainActor.assumeIsolated {
             self.markupString()
         }
-    }
-
-    /// Generates the complete HTML string representation of the element.
-    func markup() -> Markup {
-        body.markup()
     }
 }
 

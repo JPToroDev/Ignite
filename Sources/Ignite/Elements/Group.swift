@@ -16,7 +16,8 @@
 ///         attributes to multiple elements without affecting the document
 ///         structure. If you need a containing `div` element, use
 ///         ``Section`` instead.
-public struct Group<Content: HTML>: HTML {
+@MainActor
+public struct Group<Content>: Sendable {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -37,17 +38,27 @@ public struct Group<Content: HTML>: HTML {
     public init(_ content: Content) {
         self.content = content
     }
+}
 
+extension Group: HTML where Content: HTML {
     public func markup() -> Markup {
-        Children(content).map { $0.attributes(attributes).markup() }.joined()
+        content.attributes(attributes).markup()
     }
 }
 
-extension Group: VariadicElement {
-    var children: Children { .init(content) }
+extension Group: PackProvider where Content: PackProvider {
+    var children: Children {
+        content.children
+    }
 }
 
 extension Group: ColumnProvider where Content: ColumnProvider {}
+
+extension Group: LinkProvider where Content: LinkProvider {
+    var url: String {
+        content.url
+    }
+}
 
 extension Group: TextProvider where Content: TextProvider {
     var fontStyle: FontStyle {
@@ -55,9 +66,3 @@ extension Group: TextProvider where Content: TextProvider {
         set { content.fontStyle = newValue }
     }
 }
-
-extension Group: SpacerProvider where Content: SpacerProvider {
-    var spacer: Spacer { content.spacer }
-}
-
-extension Group: LinkProvider where Content: LinkProvider {}

@@ -116,7 +116,7 @@ public struct Inspector<Content: HTML, Header: HTML>: HTML {
     public func markup() -> Markup {
         Section {
             Section {
-                if header.isEmpty == false {
+                if header.isEmptyHTML == false {
                     AnyHTML(header)
                         .class("offcanvas-title")
                         .id("offcanvasLabel")

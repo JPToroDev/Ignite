@@ -7,10 +7,13 @@
 
 import Foundation
 
-protocol LinkProvider {}
+@MainActor
+protocol LinkProvider {
+    var url: String { get }
+}
 
 /// A hyperlink to another resource on this site or elsewhere.
-public struct Link<Content: InlineElement>: InlineElement, NavigationElement, DropdownItem {
+public struct Link<Content: InlineElement>: InlineElement, NavigationElement, DropdownElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -260,3 +263,5 @@ extension Link: NavigationItemConfigurable {
 }
 
 extension Link: LinkProvider {}
+
+extension Link: MarkupElement {}

@@ -100,7 +100,8 @@ public struct Item<Header: InlineElement, Content: HTML>: HTML {
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         guard let parentID, let parentOpenMode else {
-            fatalError("Accordion sections must not be rendered without a parentID and parentOpenMode in place.")
+//            fatalError("Accordion sections must not be rendered without a parentID and parentOpenMode in place.")
+            return Markup()
         }
 
         let itemID = "\(parentID)-item\(UUID().uuidString.truncatedHash)"

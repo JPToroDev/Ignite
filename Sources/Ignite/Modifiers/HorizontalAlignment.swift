@@ -10,19 +10,19 @@ private enum AlignmentType {
     case responsive(HorizontalAlignment.ResponsiveAlignment)
 }
 
-@MainActor private func horizontalAlignmentModifier(
-    _ alignment: AlignmentType,
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
-    switch alignment {
-    case .universal(let alignment):
-        modified.attributes.append(classes: alignment.rawValue)
-    case .responsive(let alignment):
-        modified.attributes.append(classes: alignment.containerAlignmentClasses)
-    }
-    return modified
-}
+//@MainActor private func horizontalAlignmentModifier(
+//    _ alignment: AlignmentType,
+//    content: some HTML
+//) -> some HTML {
+//    var modified = ModifiedHTML(content)
+//    switch alignment {
+//    case .universal(let alignment):
+//        modified.attributes.append(classes: alignment.rawValue)
+//    case .responsive(let alignment):
+//        modified.attributes.append(classes: alignment.containerAlignmentClasses)
+//    }
+//    return modified
+//}
 
 @MainActor private func horizontalAlignmentModifier(
     _ alignment: AlignmentType,
@@ -45,14 +45,16 @@ public extension HTML {
     /// - Parameter alignment: How to align this element.
     /// - Returns: A modified copy of the element with alignment applied
     func horizontalAlignment(_ alignment: HorizontalAlignment) -> some HTML {
-        horizontalAlignmentModifier(.universal(alignment), content: self)
+//        horizontalAlignmentModifier(.universal(alignment), content: self)
+        EmptyHTML()
     }
 
     /// Aligns this element using multiple responsive alignments.
     /// - Parameter alignment: One or more alignments with optional breakpoints.
     /// - Returns: A modified copy of the element with alignments applied
     func horizontalAlignment(_ alignment: HorizontalAlignment.ResponsiveAlignment) -> some HTML {
-        horizontalAlignmentModifier(.responsive(alignment), content: self)
+//        horizontalAlignmentModifier(.responsive(alignment), content: self)
+        EmptyHTML()
     }
 }
 

@@ -17,7 +17,7 @@ public struct Spacer: HTML, NavigationElement {
     public var navigationBarVisibility: NavigationBarVisibility = .automatic
 
     /// The amount of space to occupy.
-    private var spacingAmount: SpacingType
+    private var spacingAmount: SpacingAmount
 
     /// Whether the spacer is used horizontally or vertically.
     private var axis: Axis = .vertical
@@ -37,7 +37,7 @@ public struct Spacer: HTML, NavigationElement {
     /// Creates a new `Spacer` using adaptive sizing.
     /// - Parameter size: The amount of margin to apply, specified as a
     /// `SpacingAmount` case.
-    public init(size: SpacingAmount) {
+    public init(size: SemanticSpacing) {
         spacingAmount = .semantic(size)
     }
 
@@ -53,7 +53,7 @@ public struct Spacer: HTML, NavigationElement {
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        if spacingAmount == .automatic {
+        if case .automatic = spacingAmount {
             Section {}
                 .class(axis == .horizontal ? "ms-auto" : nil)
                 .class(axis == .vertical ? "mt-auto" : nil)
@@ -73,7 +73,8 @@ public struct Spacer: HTML, NavigationElement {
     }
 }
 
-protocol SpacerProvider: HTML {
+@MainActor
+protocol SpacerProvider {
     var spacer: Spacer { get }
 }
 

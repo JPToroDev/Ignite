@@ -5,13 +5,13 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func inlineStyleModifier(
-    _ styles: [InlineStyle],
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
-    modified.attributes.append(styles: styles)
-    return modified
+struct InlineStyleModifier: HTMLModifier {
+    var styles: [InlineStyle]
+    func body(content: Content) -> some HTML {
+        var content = content
+        content.attributes.append(styles: styles)
+        return content
+    }
 }
 
 @MainActor private func inlineStyleModifier(
@@ -30,7 +30,7 @@ public extension HTML {
     ///   - value: The value to set for the property
     /// - Returns: A modified copy of the element with the style property added
     func style(_ property: Property, _ value: String) -> some HTML {
-        inlineStyleModifier([.init(property, value: value)], content: self)
+        modifier(InlineStyleModifier(styles: [.init(property, value: value)]))
     }
 }
 
@@ -52,7 +52,7 @@ extension HTML {
     ///   - value: The value.
     /// - Returns: The modified `HTML` element
     func style(_ property: String, _ value: String) -> some HTML {
-        inlineStyleModifier([.init(property, value: value)], content: self)
+        modifier(InlineStyleModifier(styles: [.init(property, value: value)]))
     }
 
     /// Adds inline styles to the element.
@@ -60,14 +60,14 @@ extension HTML {
     /// - Returns: The modified `HTML` element
     func style(_ values: InlineStyle?...) -> some HTML {
         let styles = values.compactMap(\.self)
-        return inlineStyleModifier(styles, content: self)
+        return modifier(InlineStyleModifier(styles: styles))
     }
 
     /// Adds inline styles to the element.
     /// - Parameter styles: An array of `InlineStyle` objects
     /// - Returns: The modified `HTML` element
     func style(_ styles: [InlineStyle]) -> some HTML {
-       inlineStyleModifier(styles, content: self)
+        modifier(InlineStyleModifier(styles: styles))
     }
 }
 

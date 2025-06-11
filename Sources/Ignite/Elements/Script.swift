@@ -43,6 +43,7 @@ public struct Script: HTML, HeadElement {
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         var attributes = attributes
+        let publishingContext = PublishingContext.shared
         if let file {
             let path = publishingContext.path(for: file)
             attributes.append(customAttributes: .init(name: "src", value: path))

@@ -9,7 +9,8 @@ import Foundation
 
 /// A group of metadata headers for your page, such as its title,
 /// links to its CSS, and more.
-public struct Head: MarkupElement {
+@MainActor
+public struct Head: @MainActor MarkupElement {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 

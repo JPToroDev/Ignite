@@ -40,14 +40,14 @@ public struct ZStack: HTML {
     public func markup() -> Markup {
         var items = [any HTML]()
         var index = 0
-        if let collection = content as? VariadicElement {
-//            collection.forEach { child in
-//                items.append(addAttributesToChild(child, at: index))
-//                index += 1
-//            }
-        } else {
-            items.append(content)
-        }
+//        if let collection = content as? VariadicElement {
+////            collection.forEach { child in
+////                items.append(addAttributesToChild(child, at: index))
+////                index += 1
+////            }
+//        } else {
+//            items.append(content)
+//        }
 
         var attributes = attributes
         attributes.append(styles: .init(.display, value: "grid"))

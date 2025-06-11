@@ -18,7 +18,7 @@ public struct ForEach<Data: Sequence, Content> {
     var children: Children
 }
 
-extension ForEach: HTML, MarkupElement, Sendable where Content: HTML {
+extension ForEach: HTML, MarkupElement, PackProvider, Sendable where Content: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -44,7 +44,9 @@ extension ForEach: HTML, MarkupElement, Sendable where Content: HTML {
 
 extension ForEach: ColumnProvider where Content: ColumnProvider {}
 
-extension ForEach: LinkProvider where Content: LinkProvider {}
+extension ForEach: @MainActor LinkProvider where Content: LinkProvider {
+    var url: String { "" }
+}
 
 extension ForEach: AccordionElement where Content: AccordionElement {
     /// Creates a new ForEach instance that generates HTML content from a sequence.
@@ -76,6 +78,24 @@ extension ForEach: TableRowElement where Content: TableRowElement {
     }
 }
 
+extension ForEach: DropdownElement where Content: DropdownElement {
+    /// Creates a new ForEach instance that generates HTML content from a sequence.
+    /// - Parameters:
+    ///   - data: The sequence to iterate over.
+    ///   - content: A closure that converts each element into HTML content.
+    init(
+        _ data: Data,
+        @DropdownElementBuilder content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        let items = data.map(content).compactMap { $0 as? any HTML }
+        self.children = Children(items.map { Child($0) })
+    }
+    
+    public func markup() -> Markup {
+        children.map { $0.markup() }.joined()
+    }
+}
 
 extension ForEach: SlideElement where Content: SlideElement {
     /// Creates a new ForEach instance that generates HTML content from a sequence.
@@ -100,5 +120,3 @@ extension ForEach: ListElement where Content: ListElement {
         children.map { Markup("<li\(attributes)>\($0.markupString())</li>") }.joined()
     }
 }
-
-extension ForEach: VariadicElement {}

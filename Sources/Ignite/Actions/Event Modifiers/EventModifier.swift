@@ -5,15 +5,15 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func eventModifier(
-    _ type: EventType,
-    actions: [Action],
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
-    guard !actions.isEmpty else { return modified }
-    modified.attributes.events.append(Event(name: type.rawValue, actions: actions))
-    return modified
+struct EventModifier: HTMLModifier {
+    var type: EventType
+    var actions: [Action]
+    func body(content: Content) -> some HTML {
+        var content = content
+        guard !actions.isEmpty else { return content }
+        content.attributes.events.append(Event(name: type.rawValue, actions: actions))
+        return content
+    }
 }
 
 @MainActor private func eventModifier(
@@ -34,7 +34,7 @@ public extension HTML {
     ///   - actions: Array of actions to execute when the event occurs
     /// - Returns: A modified HTML element with the specified attribute.
     func onEvent(_ type: EventType, _ actions: [Action]) -> some HTML {
-        eventModifier(type, actions: actions, content: self)
+        modifier(EventModifier(type: type, actions: actions))
     }
 }
 

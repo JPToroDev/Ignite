@@ -20,7 +20,7 @@ public struct Form: HTML, NavigationElement {
     private var columnCount: Int = 12
 
     /// The amount of vertical spacing between form elements.
-    private var spacing: SpacingAmount
+    private var spacing: SemanticSpacing
 
     /// The form elements to be rendered.
     private var items: [any FormItem]
@@ -67,7 +67,7 @@ public struct Form: HTML, NavigationElement {
     ///   - spacing: The amount of horizontal space between elements. Defaults to `.medium`.
     ///   - content: A closure that returns the form's elements.
     public init(
-        spacing: SpacingAmount = .medium,
+        spacing: SemanticSpacing = .medium,
         @ElementBuilder<FormItem>
         content: () -> [any FormItem]
     ) {
@@ -237,7 +237,7 @@ public struct Form: HTML, NavigationElement {
     ///   - item: The HTML element to calculate the column class for.
     ///   - totalColumns: The total number of columns in the form's grid.
     /// - Returns: A string containing the appropriate Bootstrap column class.
-    private func getColumnClass(for item: any MarkupElement) -> String {
+    private func getColumnClass(for item: any HTML) -> String {
         if let widthClass = item.attributes.classes.first(where: { $0.starts(with: "col-md-") }),
            let width = Int(widthClass.dropFirst("col-md-".count)) {
             let bootstrapColumns = 12 * width / columnCount

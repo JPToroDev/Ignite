@@ -39,6 +39,7 @@ public struct Body: MarkupElement {
         var attributes = attributes
         var output = content.markup()
 
+        let publishingContext = PublishingContext.shared
         if publishingContext.site.useDefaultBootstrapURLs == .localBootstrap {
             output += Script(file: "/js/bootstrap.bundle.min.js").markup()
         } else if
@@ -125,7 +126,7 @@ public extension Body {
     ///   - amount: The amount of margin to apply, specified as a
     ///   `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new margins applied.
-    func margin(_ edges: Edge, _ amount: SpacingAmount) -> Self {
+    func margin(_ edges: Edge, _ amount: SemanticSpacing) -> Self {
         let classes = Edge.edgeAdjustedClasses(prefix: "m", edges, amount.rawValue)
         var copy = self
         copy.attributes.append(classes: classes)
@@ -151,7 +152,7 @@ public extension Body {
     ///   - amount: The amount of padding to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new padding applied.
-    func padding(_ edges: Edge, _ amount: SpacingAmount) -> Self {
+    func padding(_ edges: Edge, _ amount: SemanticSpacing) -> Self {
         let classes = Edge.edgeAdjustedClasses(prefix: "p", edges, amount.rawValue)
         var copy = self
         copy.attributes.append(classes: classes)

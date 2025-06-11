@@ -5,14 +5,14 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func idModifier(
-    _ id: String,
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
-    guard !id.isEmpty else { return modified }
-    modified.attributes.id = id
-    return modified
+struct IDModifier: HTMLModifier {
+    var id: String
+    func body(content: Content) -> some HTML {
+        var content = content
+        guard !id.isEmpty else { return content }
+        content.attributes.id = id
+        return content
+    }
 }
 
 @MainActor private func idModifier(
@@ -30,7 +30,7 @@ public extension HTML {
     /// - Parameter id: The HTML ID value to set
     /// - Returns: A modified copy of the element with the HTML id added
     func id(_ id: String) -> some HTML {
-        idModifier(id, content: self)
+        modifier(IDModifier(id: id))
     }
 }
 

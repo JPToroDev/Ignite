@@ -141,7 +141,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
                 }
             }
 
-            if header.isEmpty == false {
+            if header.isEmptyHTML == false {
                 renderHeader()
             }
 
@@ -158,7 +158,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
                 }
             }
 
-            if footer.isEmpty == false {
+            if footer.isEmptyHTML == false {
                 renderFooter()
             }
         }

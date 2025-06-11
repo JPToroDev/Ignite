@@ -6,26 +6,26 @@
 //
 
 private enum MarginType {
-    case exact(LengthUnit), semantic(SpacingAmount)
+    case exact(LengthUnit), semantic(SemanticSpacing)
 }
 
-@MainActor private func marginModifier(
-    _ margin: MarginType,
-    edges: Edge = .all,
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
+private struct MarginModifier: HTMLModifier {
+    var margin: MarginType
+    var edges: Edge
+    func body(content: Content) -> some HTML {
+        var modified = content
 
-    switch margin {
-    case .exact(let unit):
-        let styles = Edge.edgeAdjustedStyles(prefix: "margin", edges, unit.stringValue)
-        modified.attributes.append(styles: styles)
-    case .semantic(let amount):
-        let classes = Edge.edgeAdjustedClasses(prefix: "m", edges, amount.rawValue)
-        modified.attributes.append(classes: classes)
+        switch margin {
+        case .exact(let unit):
+            let styles = Edge.edgeAdjustedStyles(prefix: "margin", edges, unit.stringValue)
+            modified.attributes.append(styles: styles)
+        case .semantic(let amount):
+            let classes = Edge.edgeAdjustedClasses(prefix: "m", edges, amount.rawValue)
+            modified.attributes.append(classes: classes)
+        }
+
+        return modified
     }
-
-    return modified
 }
 
 @MainActor private func marginModifier(
@@ -52,7 +52,7 @@ public extension HTML {
     /// - Parameter length: The amount of margin to apply, specified in pixels.
     /// - Returns: A copy of the current element with the new margins applied.
     func margin(_ length: Int = 20) -> some HTML {
-        marginModifier(.exact(.px(length)), content: self)
+        modifier(MarginModifier(margin: .exact((.px(length))), edges: .all))
     }
 
     /// Applies margins on all sides of this element. Defaults to 20 pixels.
@@ -60,15 +60,15 @@ public extension HTML {
     /// units of your choosing.
     /// - Returns: A copy of the current element with the new margins applied.
     func margin(_ length: LengthUnit) -> some HTML {
-        marginModifier(.exact(length), content: self)
+        modifier(MarginModifier(margin: .exact(length), edges: .all))
     }
 
     /// Applies margins on all sides of this element using adaptive sizing.
     /// - Parameter amount: The amount of margin to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new margins applied.
-    func margin(_ amount: SpacingAmount) -> some HTML {
-        marginModifier(.semantic(amount), content: self)
+    func margin(_ amount: SemanticSpacing) -> some HTML {
+        modifier(MarginModifier(margin: .semantic(amount), edges: .all))
     }
 
     /// Applies margins on selected sides of this element. Defaults to 20 pixels.
@@ -77,7 +77,7 @@ public extension HTML {
     ///   - length: The amount of margin to apply, specified in pixels.
     /// - Returns: A copy of the current element with the new margins applied.
     func margin(_ edges: Edge, _ length: Int = 20) -> some HTML {
-        marginModifier(.exact(.px(length)), edges: edges, content: self)
+        modifier(MarginModifier(margin: .exact((.px(length))), edges: edges))
     }
 
     /// Applies margins on selected sides of this element. Defaults to 20 pixels.
@@ -87,7 +87,7 @@ public extension HTML {
     /// units of your choosing.
     /// - Returns: A copy of the current element with the new margins applied.
     func margin(_ edges: Edge, _ length: LengthUnit) -> some HTML {
-        marginModifier(.exact(length), edges: edges, content: self)
+        modifier(MarginModifier(margin: .exact(length), edges: edges))
     }
 
     /// Applies margins on selected sides of this element, using adaptive sizing.
@@ -96,8 +96,8 @@ public extension HTML {
     ///   - amount: The amount of margin to apply, specified as a
     ///   `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new margins applied.
-    func margin(_ edges: Edge, _ amount: SpacingAmount) -> some HTML {
-        marginModifier(.semantic(amount), edges: edges, content: self)
+    func margin(_ edges: Edge, _ amount: SemanticSpacing) -> some HTML {
+        modifier(MarginModifier(margin: .semantic(amount), edges: edges))
     }
 }
 
@@ -121,7 +121,7 @@ public extension InlineElement {
     /// - Parameter amount: The amount of margin to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new margins applied.
-    func margin(_ amount: SpacingAmount) -> some InlineElement {
+    func margin(_ amount: SemanticSpacing) -> some InlineElement {
         marginModifier(.semantic(amount), content: self)
     }
 
@@ -150,7 +150,7 @@ public extension InlineElement {
     ///   - amount: The amount of margin to apply, specified as a
     ///   `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new margins applied.
-    func margin(_ edges: Edge, _ amount: SpacingAmount) -> some InlineElement {
+    func margin(_ edges: Edge, _ amount: SemanticSpacing) -> some InlineElement {
         marginModifier(.semantic(amount), edges: edges, content: self)
     }
 }

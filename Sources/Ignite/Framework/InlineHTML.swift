@@ -21,6 +21,10 @@ public struct InlineHTML<Content: InlineElement>: HTML {
     /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
     /// - Parameter content: The HTML content to wrap
     init(_ content: Content) {
+        var content = content
+        // Make ModifiedHTML the single source of truth for attributes
+        attributes.merge(content.attributes)
+        content.attributes.clear()
         self.content = content
     }
 
@@ -35,7 +39,11 @@ public struct InlineHTML<Content: InlineElement>: HTML {
 
 extension InlineHTML: ImageElement where Content == Image {}
 
-extension InlineHTML: LinkProvider where Content: LinkProvider {}
+extension InlineHTML: @MainActor LinkProvider where Content: LinkProvider {
+    var url: String {
+        content.url
+    }
+}
 
 extension InlineHTML: NavigationElement where Content: NavigationElement {}
 

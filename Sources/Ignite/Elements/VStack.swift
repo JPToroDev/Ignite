@@ -109,11 +109,6 @@ public struct VStack<Content: HTML>: HTML {
 
     public func markup() -> Markup {
         var content: any HTML = content
-        if let collection = content as? VariadicElement {
-//            VariadicHTML(collection) { child in
-//                addAttributesToChild(child)
-//            }
-        }
 
         var attributes = attributes
         attributes.append(classes: "vstack")

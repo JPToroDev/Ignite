@@ -166,7 +166,7 @@ public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
             output += "<caption>\(caption)</caption>"
         }
 
-        if header.isEmpty == false {
+        if header.isEmptyHTML == false {
             let headerHTML = "<th>\(header.markupString())</th>"
             output += "<thead><tr>\(headerHTML)</tr></thead>"
         }

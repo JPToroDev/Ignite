@@ -9,7 +9,7 @@ import Foundation
 
 extension Analytics {
     /// Defines the available measurement options for Plausible Analytics
-    public enum PlausibleMeasurement: String, Hashable, CaseIterable {
+    public enum PlausibleMeasurement: String, Hashable, CaseIterable, Sendable {
         case fileDownloads = "file-downloads"
         case hash
         case outboundLinks = "outbound-links"

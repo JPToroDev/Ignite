@@ -5,14 +5,14 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func attributeModifier(
-    _ attribute: Attribute?,
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
-    guard let attribute else { return modified }
-    modified.attributes.append(customAttributes: attribute)
-    return modified
+struct AttributeModifier: HTMLModifier {
+    var attribute: Attribute?
+    func body(content: Content) -> some HTML {
+        var content = content
+        guard let attribute else { return content }
+        content.attributes.append(customAttributes: attribute)
+        return content
+    }
 }
 
 @MainActor private func attributeModifier(
@@ -32,14 +32,14 @@ public extension HTML {
     ///   - value: The value of the attribute
     /// - Returns: The modified element
     func attribute(_ name: String, _ value: String) -> some HTML {
-        attributeModifier(.init(name: name, value: value), content: self)
+        modifier(AttributeModifier(attribute: .init(name: name, value: value)))
     }
 
     /// Adds a custom boolean attribute to the element.
     /// - Parameter name: The name of the attribute
     /// - Returns: The modified element
     func attribute(_ name: String) -> some HTML {
-        attributeModifier(.init(name), content: self)
+        modifier(AttributeModifier(attribute: .init(name)))
     }
 }
 
@@ -68,7 +68,7 @@ extension HTML {
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
     func customAttribute(name: String, value: String) -> some HTML {
-        attributeModifier(.init(name: name, value: value), content: self)
+        modifier(AttributeModifier(attribute: .init(name: name, value: value)))
     }
 
     /// Adds a custom attribute to the element.
@@ -77,7 +77,7 @@ extension HTML {
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
     func customAttribute(_ attribute: Attribute?) -> some HTML {
-        attributeModifier(attribute, content: self)
+        modifier(AttributeModifier(attribute: attribute))
     }
 }
 

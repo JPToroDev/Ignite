@@ -6,26 +6,26 @@
 //
 
 private enum PaddingType {
-    case exact(LengthUnit), semantic(SpacingAmount)
+    case exact(LengthUnit), semantic(SemanticSpacing)
 }
 
-@MainActor private func paddingModifier(
-    _ padding: PaddingType,
-    edges: Edge = .all,
-    content: some HTML
-) -> some HTML {
-    var modified = ModifiedHTML(content)
+private struct PaddingModifier: HTMLModifier {
+    var padding: PaddingType
+    var edges: Edge
+    func body(content: Content) -> some HTML {
+        var modified = content
 
-    switch padding {
-    case .exact(let unit):
-        let styles = Edge.edgeAdjustedStyles(prefix: "padding", edges, unit.stringValue)
-        modified.attributes.append(styles: styles)
-    case .semantic(let amount):
-        let classes = Edge.edgeAdjustedClasses(prefix: "p", edges, amount.rawValue)
-        modified.attributes.append(classes: classes)
+        switch padding {
+        case .exact(let unit):
+            let styles = Edge.edgeAdjustedStyles(prefix: "padding", edges, unit.stringValue)
+            modified.attributes.append(styles: styles)
+        case .semantic(let amount):
+            let classes = Edge.edgeAdjustedClasses(prefix: "p", edges, amount.rawValue)
+            modified.attributes.append(classes: classes)
+        }
+
+        return modified
     }
-
-    return modified
 }
 
 @MainActor private func paddingModifier(
@@ -52,7 +52,7 @@ public extension HTML {
     /// - Parameter length: The amount of padding to apply, specified in pixels.
     /// - Returns: A copy of the current element with the new padding applied.
     func padding(_ length: Int = 20) -> some HTML {
-        paddingModifier(.exact(.px(length)), content: self)
+        modifier(PaddingModifier(padding: .exact((.px(length))), edges: .all))
     }
 
     /// Applies padding on all sides of this element. Defaults to 20 pixels.
@@ -60,15 +60,15 @@ public extension HTML {
     /// units of your choosing.
     /// - Returns: A copy of the current element with the new padding applied.
     func padding(_ length: LengthUnit) -> some HTML {
-        paddingModifier(.exact(length), content: self)
+        modifier(PaddingModifier(padding: .exact(length), edges: .all))
     }
 
     /// Applies padding on all sides of this element using adaptive sizing.
     /// - Parameter amount: The amount of padding to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new padding applied.
-    func padding(_ amount: SpacingAmount) -> some HTML {
-        paddingModifier(.semantic(amount), content: self)
+    func padding(_ amount: SemanticSpacing) -> some HTML {
+        modifier(PaddingModifier(padding: .semantic(amount), edges: .all))
     }
 
     /// Applies padding on selected sides of this element. Defaults to 20 pixels.
@@ -77,7 +77,7 @@ public extension HTML {
     ///   - length: The amount of padding to apply, specified in pixels.
     /// - Returns: A copy of the current element with the new padding applied.
     func padding(_ edges: Edge, _ length: Int = 20) -> some HTML {
-        paddingModifier(.exact(.px(length)), edges: edges, content: self)
+        modifier(PaddingModifier(padding: .exact((.px(length))), edges: edges))
     }
 
     /// Applies padding on selected sides of this element. Defaults to 20 pixels.
@@ -87,7 +87,7 @@ public extension HTML {
     /// units of your choosing.
     /// - Returns: A copy of the current element with the new padding applied.
     func padding(_ edges: Edge, _ length: LengthUnit) -> some HTML {
-        paddingModifier(.exact(length), edges: edges, content: self)
+        modifier(PaddingModifier(padding: .exact(length), edges: edges))
     }
 
     /// Applies padding on selected sides of this element using adaptive sizing.
@@ -96,8 +96,8 @@ public extension HTML {
     ///   - amount: The amount of padding to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new padding applied.
-    func padding(_ edges: Edge, _ amount: SpacingAmount) -> some HTML {
-        paddingModifier(.semantic(amount), edges: edges, content: self)
+    func padding(_ edges: Edge, _ amount: SemanticSpacing) -> some HTML {
+        modifier(PaddingModifier(padding: .semantic(amount), edges: edges))
     }
 }
 
@@ -121,7 +121,7 @@ public extension InlineElement {
     /// - Parameter amount: The amount of padding to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new padding applied.
-    func padding(_ amount: SpacingAmount) -> some InlineElement {
+    func padding(_ amount: SemanticSpacing) -> some InlineElement {
         paddingModifier(.semantic(amount), content: self)
     }
 
@@ -150,7 +150,7 @@ public extension InlineElement {
     ///   - amount: The amount of padding to apply, specified as a
     /// `SpacingAmount` case.
     /// - Returns: A copy of the current element with the new padding applied.
-    func padding(_ edges: Edge, _ amount: SpacingAmount) -> some InlineElement {
+    func padding(_ edges: Edge, _ amount: SemanticSpacing) -> some InlineElement {
         paddingModifier(.semantic(amount), edges: edges, content: self)
     }
 }

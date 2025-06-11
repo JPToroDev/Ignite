@@ -27,6 +27,7 @@ struct LineSpacedHTML<Content: HTML>: HTML {
             case .semantic(let spacing):
                 content.class("lh-\(spacing.rawValue)")
                     .markup()
+            default: content.markup()
             }
         } else {
             switch spacing {
@@ -38,6 +39,7 @@ struct LineSpacedHTML<Content: HTML>: HTML {
                 Section(content.class("line-height-inherit"))
                     .class("lh-\(spacing.rawValue)")
                     .markup()
+            default: content.markup()
             }
         }
     }
