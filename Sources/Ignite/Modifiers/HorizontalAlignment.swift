@@ -5,24 +5,24 @@
 // See LICENSE for license information.
 //
 
-private enum AlignmentType {
+enum AlignmentType {
     case universal(HorizontalAlignment)
     case responsive(HorizontalAlignment.ResponsiveAlignment)
 }
 
-//@MainActor private func horizontalAlignmentModifier(
-//    _ alignment: AlignmentType,
-//    content: some HTML
-//) -> some HTML {
-//    var modified = ModifiedHTML(content)
-//    switch alignment {
-//    case .universal(let alignment):
-//        modified.attributes.append(classes: alignment.rawValue)
-//    case .responsive(let alignment):
-//        modified.attributes.append(classes: alignment.containerAlignmentClasses)
-//    }
-//    return modified
-//}
+struct HorizontalAlignmentModifier: HTMLModifier {
+    var alignment: AlignmentType
+    func body(content: Content) -> some HTML {
+        var content = content
+           switch alignment {
+           case .universal(let alignment):
+               content.attributes.append(classes: alignment.rawValue)
+           case .responsive(let alignment):
+               content.attributes.append(classes: alignment.containerAlignmentClasses)
+           }
+           return content
+    }
+}
 
 @MainActor private func horizontalAlignmentModifier(
     _ alignment: AlignmentType,
@@ -45,16 +45,14 @@ public extension HTML {
     /// - Parameter alignment: How to align this element.
     /// - Returns: A modified copy of the element with alignment applied
     func horizontalAlignment(_ alignment: HorizontalAlignment) -> some HTML {
-//        horizontalAlignmentModifier(.universal(alignment), content: self)
-        EmptyHTML()
+        modifier(HorizontalAlignmentModifier(alignment: .universal(alignment)))
     }
 
     /// Aligns this element using multiple responsive alignments.
     /// - Parameter alignment: One or more alignments with optional breakpoints.
     /// - Returns: A modified copy of the element with alignments applied
     func horizontalAlignment(_ alignment: HorizontalAlignment.ResponsiveAlignment) -> some HTML {
-//        horizontalAlignmentModifier(.responsive(alignment), content: self)
-        EmptyHTML()
+       modifier(HorizontalAlignmentModifier(alignment: .responsive(alignment)))
     }
 }
 

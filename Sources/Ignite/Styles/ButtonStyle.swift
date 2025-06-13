@@ -12,7 +12,7 @@ public protocol ButtonStyle: Sendable {
     ///    - button: The button to be styled.
     ///    - theme: The type of `Theme` this style applies to.
     /// - Returns: A new button with the applied style modifications.
-    func style(button: ButtonProxy, theme: any Theme) -> ButtonProxy
+    func style(button: ButtonProxy, theme: some Theme) -> ButtonProxy
 }
 
 extension ButtonStyle {

@@ -34,7 +34,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     var image: Image?
     private var header: Header
     private var footer: Footer
-    private var children: Children
+    private var children: SubviewsCollection
 
     var cardClasses: String? {
         switch style {
@@ -59,7 +59,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = header()
         self.footer = footer()
-        self.children = Children(content())
+        self.children = SubviewsCollection(content())
     }
 
     public init(
@@ -73,7 +73,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = header()
         self.footer = footer()
-        self.children = Children()
+        self.children = SubviewsCollection()
     }
 
     public init(
@@ -86,7 +86,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = EmptyHTML()
         self.footer = EmptyHTML()
-        self.children = Children(content())
+        self.children = SubviewsCollection(content())
     }
 
     public func role(_ role: Role) -> Card {

@@ -35,3 +35,19 @@ public struct ButtonElementBuilder {
         PackHTML(repeat each content)
     }
 }
+
+public extension ButtonElementBuilder {
+    struct Content<C>: HTML where C: ButtonElement {
+        public var body: Never { fatalError() }
+        public var attributes = CoreAttributes()
+        var content: C
+
+        init(_ content: C) {
+            self.content = content
+        }
+
+        public func markup() -> Markup {
+            content.markup()
+        }
+    }
+}

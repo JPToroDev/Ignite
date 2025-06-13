@@ -5,10 +5,7 @@
 // See LICENSE for license information.
 //
 
-@MainActor
-protocol TextProvider {
-    var fontStyle: FontStyle { get set }
-}
+
 
 /// A structured piece of text, such as a paragraph of heading. If you are just
 /// placing content inside a list, table, table header, and so on, you can usually
@@ -172,6 +169,15 @@ extension Text where Content == String {
             self.content = markup
             publishingContext.addError(.failedToParseMarkup)
         }
+    }
+}
+
+extension Text: DropdownElementRepresentable {
+    func renderAsDropdownElement() -> Markup {
+        ListItem {
+            self.class("dropdown-header")
+        }
+        .markup()
     }
 }
 

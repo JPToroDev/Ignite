@@ -33,12 +33,12 @@ public struct NavigationElementBuilder {
         content
     }
 
-    /// Converts a single HTML element into a builder expression.
-    /// - Parameter content: The HTML element to convert
-    /// - Returns: The same HTML element, unchanged
-    static func buildBlock(_ content: any HTML & NavigationItemConfigurable) -> some NavigationElement {
-        NavigationItem(content)
-    }
+//    /// Converts a single HTML element into a builder expression.
+//    /// - Parameter content: The HTML element to convert
+//    /// - Returns: The same HTML element, unchanged
+//    static func buildBlock(_ content: any NavigationItemConfigurable) -> some NavigationElement {
+//        NavigationItem(content)
+//    }
 
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert

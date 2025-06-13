@@ -68,7 +68,7 @@ public struct List<Content: HTML>: HTML {
 
     /// The items to show in this list. This may contain any page elements,
     /// but if you need specific styling you might want to use `ListItem` objects.
-    var children: Children
+    var children: SubviewsCollection
 
     /// Returns the correct HTML name for this list.
     private var listElementName: String {
@@ -83,7 +83,7 @@ public struct List<Content: HTML>: HTML {
     /// an array of `HTML` objects to display in the list.
     /// - Parameter items: The content you want to display in your list.
     public init(@HTMLBuilder content: () -> Content) {
-        let children = Children(content())
+        let children = SubviewsCollection(content())
         self.children = children
     }
 
@@ -98,7 +98,7 @@ public struct List<Content: HTML>: HTML {
         @HTMLBuilder content: @escaping (T) -> RowContent
     ) where S.Element == T, Content == ForEach<Array<T>, RowContent> {
         let content = ForEach(Array(items), content: content)
-        self.children = Children(content)
+        self.children = SubviewsCollection(content)
     }
 
     /// Adjusts the style of this list.
@@ -160,7 +160,7 @@ public struct List<Content: HTML>: HTML {
     }
 
     /// Renders an individual list row, wrapping it in a `ListItem` when necessary.
-    private func renderListRow(_ content: Child) -> Markup {
+    private func renderListRow(_ content: Subview) -> Markup {
         // Any element that renders its own <li> (e.g. ForEach) should
         // be allowed to handle that itself.
         if var listItem = content.wrapped as? ListElement {

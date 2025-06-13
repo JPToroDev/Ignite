@@ -14,17 +14,17 @@ public struct GridRow<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
-    private var content: Children
+    private var content: SubviewsCollection
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     public init(@HTMLBuilder content: () -> Content) {
-        self.content = Children(content())
+        self.content = SubviewsCollection(content())
     }
 
     init(_ content: Content) {
-        self.content = Children(content)
+        self.content = SubviewsCollection(content)
     }
 
     public func markup() -> Markup {

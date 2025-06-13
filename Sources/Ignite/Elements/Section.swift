@@ -12,7 +12,8 @@
 ///
 /// - Note: Unlike ``Group``, modifiers applied to a `Section` affect the
 ///         containing element rather than being propagated to child elements.
-public struct Section<Content: HTML>: HTML, FormItem {
+@MainActor
+public struct Section<Content>: Sendable {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -26,7 +27,9 @@ public struct Section<Content: HTML>: HTML, FormItem {
     var headerStyle: Font.Style = .title2
 
     var content: Content
+}
 
+extension Section: HTML where Content: HTML {
     init(_ content: Content) {
         self.content = content
     }
@@ -38,7 +41,7 @@ public struct Section<Content: HTML>: HTML, FormItem {
     init<T: InlineElement>(_ content: T) where Content == InlineHTML<T> {
         self.content = InlineHTML(content)
     }
-    
+
     /// Creates a section that renders as a `div` element.
     /// - Parameter content: The content to display within this section.
     public init(@HTMLBuilder content: () -> Content) {
@@ -70,5 +73,40 @@ public struct Section<Content: HTML>: HTML, FormItem {
             return Markup("<section\(attributes)>\(headerHTML + contentHTML)</section>")
         }
         return Markup("<div\(attributes)>\(contentHTML)</div>")
+    }
+}
+
+extension Section: FormElement, FormElementRepresentable where Content: FormElement {
+    public func markup() -> Markup {
+        content.markup()
+    }
+
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        var subviews = content.subviews().elements
+        let last = subviews.last
+
+        subviews = subviews.dropLast().map {
+            var subview = $0
+            subview.attributes.append(classes: "mb-\(configuration.spacing.rawValue)")
+            return subview
+        }
+
+        if let last {
+            subviews.append(last)
+        }
+
+        return Tag("fieldset") {
+            if let header {
+                Tag("legend") {
+                    header
+                }
+                .class(configuration.labelStyle == .leading ? "col-form-label col-sm-2" : nil)
+            }
+
+            ForEach(subviews) { item in
+                item.formConfiguration(configuration)
+            }
+        }
+        .markup()
     }
 }

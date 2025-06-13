@@ -5,14 +5,10 @@
 // See LICENSE for license information.
 //
 
-@MainActor
-public protocol SlideElement {}
+
 
 /// One slide in a `Carousel`.
-public struct Slide<Content: HTML>: HTML {
-    /// The content and behavior of this HTML.
-    public var body: Never { fatalError() }
-
+public struct Slide<Content: HTML>: CarouselElement {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -59,9 +55,9 @@ public struct Slide<Content: HTML>: HTML {
         return copy
     }
 
-    /// Used during rendering to assign this carousel slide to a particular parent,
-    /// so our open paging behavior works correctly.
-    func assigned(at index: Int) -> some HTML {
+    /// Renders this element using publishing context passed in.
+    /// - Returns: The HTML for this element.
+    public func markup() -> Markup {
         Section {
             if let slideBackground = background {
                 Image(slideBackground, description: "")
@@ -74,22 +70,14 @@ public struct Slide<Content: HTML>: HTML {
             }
 
             Section {
-                Section(AnyHTML(content))
+                Section(content)
                     .class("carousel-caption")
             }
             .class("container")
         }
         .attributes(attributes)
         .class("carousel-item")
-        .class(index == 0 ? "active" : nil)
         .style(.backgroundColor, "black")
-    }
-
-    /// Renders this element using publishing context passed in.
-    /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
-        content.attributes(attributes).markup()
+        .markup()
     }
 }
-
-extension Slide: SlideElement {}

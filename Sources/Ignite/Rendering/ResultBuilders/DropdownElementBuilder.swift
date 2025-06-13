@@ -36,18 +36,26 @@ public struct DropdownElementBuilder {
     }
 }
 
+/// An HTML representation of the content of a Dropdown.
 public extension DropdownElementBuilder {
     struct Content<C>: HTML where C: DropdownElement {
-        init(content: C) {
-            self.content = content
-        }
-        public var attributes = CoreAttributes()
         public var body: Never { fatalError() }
-        
+        public var attributes = CoreAttributes()
         var content: C
         
+        init(_ content: C) {
+            self.content = content
+        }
+        
         public func markup() -> Markup {
-            content.markup()
+            var content = content
+            content.attributes.merge(attributes)
+
+            return if let content = content as? any DropdownElementRepresentable {
+                content.renderAsDropdownElement()
+            } else {
+                content.markup()
+            }
         }
     }
 }

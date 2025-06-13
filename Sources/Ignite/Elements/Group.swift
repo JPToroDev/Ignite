@@ -26,7 +26,9 @@ public struct Group<Content>: Sendable {
 
     /// The child elements contained within this group.
     var content: Content
+}
 
+extension Group: HTML where Content: HTML {
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.
     public init(@HTMLBuilder content: () -> Content) {
@@ -38,16 +40,14 @@ public struct Group<Content>: Sendable {
     public init(_ content: Content) {
         self.content = content
     }
-}
 
-extension Group: HTML where Content: HTML {
     public func markup() -> Markup {
         content.attributes(attributes).markup()
     }
 }
 
-extension Group: PackProvider where Content: PackProvider {
-    var children: Children {
+extension Group: SubviewsProvider where Content: SubviewsProvider {
+    var children: SubviewsCollection {
         content.children
     }
 }

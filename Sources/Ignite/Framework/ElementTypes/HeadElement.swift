@@ -18,7 +18,7 @@ extension HeadElement {
     var publishingContext: PublishingContext {
         PublishingContext.shared
     }
-    
+
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {

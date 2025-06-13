@@ -35,3 +35,19 @@ public struct TableRowElementBuilder {
         PackHTML(repeat each content)
     }
 }
+
+public extension TableRowElementBuilder {
+    struct Content<C>: HTML where C: TableRowElement {
+        public var body: Never { fatalError() }
+        public var attributes = CoreAttributes()
+        var content: C
+
+        init(_ content: C) {
+            self.content = content
+        }
+
+        public func markup() -> Markup {
+            content.markup()
+        }
+    }
+}

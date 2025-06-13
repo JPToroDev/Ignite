@@ -7,7 +7,7 @@
 
 /// An inline subsection of another element, useful when you need to style
 /// just part of some text, for example.
-public struct Span<Content: InlineElement>: InlineElement, NavigationElement, FormItem {
+public struct Span<Content: InlineElement>: InlineElement, NavigationElement, FormElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -48,10 +48,46 @@ public struct Span<Content: InlineElement>: InlineElement, NavigationElement, Fo
     }
 }
 
-extension Span: NavigationItemConfigurable {
-    func configuredAsNavigationItem() -> NavigationItem {
+extension Span: NavigationElementRepresentable {
+    func renderAsNavigationElement() -> Markup {
         var copy = self
         copy.attributes.append(classes: "navbar-text")
-        return NavigationItem(copy)
+        return copy.markup()
+    }
+}
+
+extension Span: FormElementRepresentable {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        print("""
+        For proper alignment within Form, prefer a read-only, \
+        plain-text TextField over a Span.
+        """)
+
+        return Section(InlineHTML(self))
+            .class("d-flex", "align-items-center")
+            .markup()
+    }
+}
+
+extension Span: ControlGroupItemConfigurable {
+    func configuredAsControlGroupItem(_ labelStyle: ControlLabelStyle) -> ControlGroupItem {
+        ControlGroupItem(self.class("input-group-text"))
+    }
+}
+
+struct ControlGroupItem: HTML {
+    var body: Never { fatalError() }
+    var attributes = CoreAttributes()
+    var content: any HTML
+    init(_ content: any HTML) {
+        self.content = content
+    }
+    init<T: InlineElement>(_ content: T) {
+        self.content = InlineHTML(content)
+    }
+    func markup() -> Markup {
+        var content = content
+        content.attributes.merge(attributes)
+        return content.markup()
     }
 }

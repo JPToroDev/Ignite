@@ -24,7 +24,7 @@ public struct HStack<Content: HTML>: HTML {
     private var alignment: VerticalAlignment
 
     /// The child elements contained in the stack.
-    private var children: Children
+    private var children: SubviewsCollection
 
     /// Creates a horizontal stack with the specified alignment, exact pixel spacing, and content.
     /// - Parameters:
@@ -36,7 +36,7 @@ public struct HStack<Content: HTML>: HTML {
         spacing pixels: Int,
         @HTMLBuilder content: () -> Content
     ) {
-        self.children = Children(content())
+        self.children = SubviewsCollection(content())
         self.alignment = alignment
         self.spacingAmount = .exact(pixels)
     }
@@ -51,7 +51,7 @@ public struct HStack<Content: HTML>: HTML {
         spacing: SemanticSpacing = .medium,
         @HTMLBuilder content: () -> Content
     ) {
-        self.children = Children(content())
+        self.children = SubviewsCollection(content())
         self.alignment = alignment
         self.spacingAmount = .semantic(spacing)
     }
@@ -62,7 +62,7 @@ public struct HStack<Content: HTML>: HTML {
             elementAttributes.append(classes: "mb-0")
             elementAttributes.append(classes: alignment.itemAlignmentClass)
             if let provider = $0.wrapped as? any SpacerProvider {
-                return Child(provider.spacer.axis(.horizontal))
+                return Subview(provider.spacer.axis(.horizontal))
             }
             return $0.attributes(elementAttributes)
         }

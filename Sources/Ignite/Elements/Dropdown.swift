@@ -7,14 +7,13 @@
 
 @MainActor
 protocol DropdownItemConfigurable {
-    associatedtype Content: HTML
-    func configuration(_ configuration: DropdownConfiguration) -> Content
+    var configuration: DropdownConfiguration { get set }
 }
 
 /// Renders a button that presents a menu of information when pressed.
 /// Can be used as a free-floating element on your page, or in
 /// a `NavigationBar`.
-public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationElement, FormItem {
+public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationElement, FormElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -35,7 +34,7 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
 
     /// Controls whether this dropdown needs to be created as its own element,
     /// or whether it uses the structure provided by a parent like `NavigationBar`.
-    private var configuration = DropdownConfiguration.standalone
+    var configuration = DropdownConfiguration.standalone
 
     /// Creates a new dropdown button using a title and an element that builder
     /// that returns an array of types conforming to `DropdownItem`.
@@ -47,7 +46,7 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
         @DropdownElementBuilder items: () -> C
     ) where Content == DropdownElementBuilder.Content<C>, C: DropdownElement {
         self.title = title
-        self.content = DropdownElementBuilder.Content(content: items())
+        self.content = DropdownElementBuilder.Content(items())
     }
 
     /// Creates a new dropdown button using a title and an element that builder
@@ -60,7 +59,7 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
         @InlineElementBuilder title: () -> Label
     ) where Content == DropdownElementBuilder.Content<C>, C: DropdownElement {
         self.title = title()
-        self.content = DropdownElementBuilder.Content(content: items())
+        self.content = DropdownElementBuilder.Content(items())
     }
 
     /// Adjusts the size of this dropdown.
@@ -81,16 +80,7 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
         return copy
     }
 
-    /// Sets how this dropdown should be rendered based on its placement context.
-    /// - Parameter configuration: The context in which this dropdown will be used.
-    /// - Returns: A configured dropdown instance.
-    func configuration(_ configuration: DropdownConfiguration) -> Self {
-        var copy = self
-        copy.configuration = configuration
-        return copy
-    }
-    
-    public func toggleTint(_ color: Color) -> Self {
+    public func labelColor(_ color: Color) -> Self {
         var copy = self
         copy.attributes.append(styles: .init("--bs-nav-link-color", value: color.description))
         copy.attributes.append(styles: .init("--bs-nav-link-hover-color", value: color.description))
@@ -115,8 +105,7 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
 
     /// Creates the internal dropdown structure including the trigger button and menu items.
     /// - Returns: A group containing the dropdown's trigger and menu list.
-    @HTMLBuilder
-    private func renderDropdownContent() -> some HTML {
+    @HTMLBuilder private func renderDropdownContent() -> some HTML {
         if configuration == .navigationBarItem {
             let titleAttributes = title.attributes
             let title = title.clearingAttributes()
@@ -144,12 +133,23 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
     }
 }
 
-extension Dropdown: NavigationItemConfigurable {
-    func configuredAsNavigationItem() -> NavigationItem {
+extension Dropdown: DropdownItemConfigurable {
+    /// Sets how this dropdown should be rendered based on its placement context.
+    /// - Parameter configuration: The context in which this dropdown will be used.
+    /// - Returns: A configured dropdown instance.
+    func configuration(_ configuration: DropdownConfiguration) -> Self {
+        var copy = self
+        copy.configuration = configuration
+        return copy
+    }
+}
+
+extension Dropdown: NavigationElementRepresentable {
+    func renderAsNavigationElement() -> Markup {
         var copy = ListItem(self.configuration(.navigationBarItem))
         copy.attributes.append(classes: "nav-item", "dropdown")
         copy.attributes.append(styles: .init(.listStyleType, value: "none"))
-        return NavigationItem(copy)
+        return copy.markup()
     }
 }
 
@@ -160,12 +160,4 @@ private extension InlineElement {
         copy.attributes = CoreAttributes()
         return copy
     }
-}
-
-/// Elements that conform to `DropdownElement` can be shown inside
-/// Dropdown objects.
-@MainActor
-public protocol DropdownElement {
-    var attributes: CoreAttributes { get set }
-    func markup() -> Markup
 }

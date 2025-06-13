@@ -18,7 +18,7 @@ public struct InlineForEach<Data: Sequence>: InlineElement {
     private let data: Data
 
     /// The child elements contained within this HTML element.
-    var items: InlineElementCollection
+    var items: SubviewsCollection
 
     /// Creates a new InlineForEach instance that generates inline content from a sequence.
     /// - Parameters:
@@ -26,14 +26,16 @@ public struct InlineForEach<Data: Sequence>: InlineElement {
     ///   - content: A closure that converts each element into inline content.
     public init(_ data: Data, @InlineElementBuilder content: @escaping (Data.Element) -> some InlineElement) {
         self.data = data
-        self.items = InlineElementCollection(data.map(content))
+        var collection = SubviewsCollection()
+        data.map(content).forEach { collection.elements.append(Subview(InlineHTML(AnyInlineElement($0)))) }
+        self.items = collection
     }
 
     /// Renders the ForEach content.
     /// - Returns: The rendered HTML string.
     public func markup() -> Markup {
         items.map {
-            var item: any InlineElement = $0
+            var item: any HTML = $0
             item.attributes.merge(attributes)
             return item.markup()
         }.joined()

@@ -14,7 +14,7 @@ public protocol Document {
 
     /// The metadata section of the document.
     var head: Head { get }
-    
+
     func markup() -> Markup
 }
 
@@ -24,12 +24,12 @@ extension Document {
     func markupString() -> String {
         markup().string
     }
-    
+
     /// The publishing context of this site.
     var publishingContext: PublishingContext {
         PublishingContext.shared
     }
-    
+
     /// Returns the appropriate theme attributes on the document
     /// root element based on the site's theme configuration.
     var themeAttribute: Attribute? {

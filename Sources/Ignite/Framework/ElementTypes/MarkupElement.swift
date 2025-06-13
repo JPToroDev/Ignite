@@ -8,7 +8,7 @@
 /// A protocol that defines the common behavior between all HTML types.
 /// - Warning: Do not conform to this type directly.
 @MainActor
-protocol MarkupElement {
+public protocol MarkupElement {
     /// The standard set of control attributes for HTML elements.
     var attributes: CoreAttributes { get set }
 

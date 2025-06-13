@@ -160,40 +160,41 @@ public struct SubscribeForm: HTML, NavigationElement {
     }
 
     public func markup() -> Markup {
-        var formOutput = Form {
-            TextField(emailFieldLabel, prompt: emailFieldLabel)
-                .type(.text)
-                .id(service.emailFieldID)
-                .class(controlSize.controlClass)
-                .customAttribute(name: "name", value: service.emailFieldName!)
-                .class(formStyle == .inline ? "col" : "col-md-12")
-
-            Button(subscribeButtonLabel)
-                .type(.submit)
-                .role(subscribeButtonRole)
-                .style(.color, subscribeButtonForegroundStyle != nil ? subscribeButtonForegroundStyle!.description : "")
-                .class(controlSize.buttonClass)
-                .class(formStyle == .inline ? nil : "w-100")
-                .class(formStyle == .inline ? "col-auto" : "col")
-
-            if let honeypotName = service.honeypotFieldName {
-                Section {
-                    TextField(EmptyInlineElement(), prompt: nil)
-                        .id("")
-                        .labelStyle(.hidden)
-                        .customAttribute(name: "name", value: honeypotName)
-                        .customAttribute(name: "tabindex", value: "-1")
-                        .customAttribute(name: "value", value: "")
-                        .customAttribute(name: "autocomplete", value: "off")
-                }
-                .customAttribute(name: "style", value: "position: absolute; left: -5000px;")
-                .customAttribute(name: "aria-hidden", value: "true")
-            }
-        }
-        .configuredAsNavigationItem(isNavigationItem)
-        .labelStyle(labelStyle == .floating ? .floating : .hidden)
-        .attributes(attributes)
-        .markup()
+        var formOutput = Markup()
+//        Form {
+//            TextField(emailFieldLabel, prompt: emailFieldLabel)
+//                .type(.text)
+//                .id(service.emailFieldID)
+//                .class(controlSize.controlClass)
+//                .customAttribute(name: "name", value: service.emailFieldName!)
+//                .class(formStyle == .inline ? "col" : "col-md-12")
+//
+//            Button(subscribeButtonLabel)
+//                .type(.submit)
+//                .role(subscribeButtonRole)
+//                .style(.color, subscribeButtonForegroundStyle != nil ? subscribeButtonForegroundStyle!.description : "")
+//                .class(controlSize.buttonClass)
+//                .class(formStyle == .inline ? nil : "w-100")
+//                .class(formStyle == .inline ? "col-auto" : "col")
+//
+//            if let honeypotName = service.honeypotFieldName {
+//                Section {
+//                    TextField(EmptyInlineElement(), prompt: nil)
+//                        .id("")
+//                        .labelStyle(.hidden)
+//                        .customAttribute(name: "name", value: honeypotName)
+//                        .customAttribute(name: "tabindex", value: "-1")
+//                        .customAttribute(name: "value", value: "")
+//                        .customAttribute(name: "autocomplete", value: "off")
+//                }
+//                .customAttribute(name: "style", value: "position: absolute; left: -5000px;")
+//                .customAttribute(name: "aria-hidden", value: "true")
+//            }
+//        }
+//        .configuredAsNavigationItem(isNavigationItem)
+//        .labelStyle(labelStyle == .floating ? .floating : .hidden)
+//        .attributes(attributes)
+//        .markup()
 
         if let script = service.script {
             formOutput += Script(file: URL(static: script))
@@ -205,10 +206,10 @@ public struct SubscribeForm: HTML, NavigationElement {
     }
 }
 
-extension SubscribeForm: NavigationItemConfigurable {
-    func configuredAsNavigationItem() -> NavigationItem {
-        var copy = self
-        copy.isNavigationItem = true
-        return NavigationItem(copy)
-    }
-}
+//extension SubscribeForm: NavigationElementRepresentable {
+//    func configuredAsNavigationItem() -> some NavigationElement {
+//        var copy = self
+//        copy.isNavigationItem = true
+//        return copy
+//    }
+//}

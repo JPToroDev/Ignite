@@ -30,21 +30,13 @@ public enum LineSpacing: String, CaseIterable, Sendable {
     }
 }
 
-
-
-@MainActor private func lineSpacingModifier(
-    _ spacing: Amount<Double, LineSpacing>,
-    content: some InlineElement
-) -> some InlineElement {
-    var modified = ModifiedInlineElement(content)
-    switch spacing {
-    case .exact(let spacing):
-        modified.attributes.append(styles: .init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
-    case .semantic(let spacing):
-        modified.attributes.append(classes: "lh-\(spacing.rawValue)")
-    default: modified
+public extension ElementProxy {
+    /// Sets the line height of the element using a custom value.
+    /// - Parameter height: The line height multiplier to use
+    /// - Returns: The modified HTML element
+    func lineSpacing(_ height: Double) -> Self {
+        self.style(.lineHeight, String(height))
     }
-    return modified
 }
 
 public extension HTML {
@@ -68,22 +60,27 @@ public extension InlineElement {
     /// - Parameter spacing: The line height multiplier to use.
     /// - Returns: The modified InlineElement element.
     func lineSpacing(_ spacing: Double) -> some InlineElement {
-        lineSpacingModifier(.exact(spacing), content: self)
+        modifier(LineSpacingInlineModifier(spacing: .exact(spacing)))
     }
 
     /// Sets the line height of the element using a predefined Bootstrap value.
     /// - Parameter spacing: The predefined line height to use.
     /// - Returns: The modified InlineElement element.
-    func lineSpacing(_ spacing: LineSpacing) -> some InlineElement {
-        lineSpacingModifier(.semantic(spacing), content: self)
+    func lineSpacing(_ spacing: LineSpacing) -> some InlineElement { modifier(LineSpacingInlineModifier(spacing: .semantic(spacing)))
     }
 }
 
-public extension ElementProxy {
-    /// Sets the line height of the element using a custom value.
-    /// - Parameter height: The line height multiplier to use
-    /// - Returns: The modified HTML element
-    func lineSpacing(_ height: Double) -> Self {
-        self.style(.lineHeight, String(height))
+private struct LineSpacingInlineModifier: InlineElementModifier {
+    var spacing: Amount<Double, LineSpacing>
+    func body(content: Content) -> some InlineElement {
+        var modified = content
+        switch spacing {
+        case .exact(let spacing):
+            modified.attributes.append(styles: .init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
+        case .semantic(let spacing):
+            modified.attributes.append(classes: "lh-\(spacing.rawValue)")
+        default: modified
+        }
+        return modified
     }
 }

@@ -6,7 +6,10 @@
 //
 
 @MainActor
-public protocol TableRowElement {}
+public protocol TableRowElement {
+    var attributes: CoreAttributes { get set }
+    func markup() -> Markup
+}
 
 /// One row inside a `Table`.
 public struct Row<Content: HTML>: HTML {
@@ -17,13 +20,13 @@ public struct Row<Content: HTML>: HTML {
     public var attributes = CoreAttributes()
 
     /// The columns to display inside this row.
-    private var columns: Children
+    private var columns: SubviewsCollection
 
     /// Create a new `Row` using a page element builder that returns the
     /// array of columns to use in this row.
     /// - Parameter columns: The columns to use in this row.
     public init(@HTMLBuilder columns: () -> Content) {
-        self.columns = Children(columns())
+        self.columns = SubviewsCollection(columns())
     }
 
     /// Renders this element using publishing context passed in.

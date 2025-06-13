@@ -6,10 +6,13 @@
 //
 
 @MainActor
-public protocol ButtonElement {}
+public protocol ButtonElement {
+    var attributes: CoreAttributes { get set }
+    func markup() -> Markup
+}
 
 /// A clickable button with a label and styling.
-public struct Button<Label: InlineElement>: InlineElement, FormItem {
+public struct Button<Label: InlineElement>: InlineElement, FormElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -193,3 +196,24 @@ public extension Button {
 }
 
 extension Button: ButtonElement {}
+
+extension Button: FormElementRepresentable {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        Section {
+            self
+                .class(configuration.controlSize.buttonClass)
+                .class(configuration.labelStyle == .leading ? nil : "w-100")
+        }
+        .class("d-flex")
+        .class(configuration.labelStyle == .floating ? "align-items-stretch" : "align-items-end")
+        .markup()
+    }
+}
+
+extension Button: ControlGroupItemConfigurable {
+    func configuredAsControlGroupItem(_ labelStyle: ControlLabelStyle) -> ControlGroupItem {
+        var button = self
+        button.type = .plain
+        return ControlGroupItem(button)
+    }
+}

@@ -6,7 +6,7 @@
 //
 
 @MainActor
-public struct ConditionalHTML<TrueContent, FalseContent> {
+public struct ConditionalHTML<TrueContent, FalseContent>: Sendable {
 
     public var attributes = CoreAttributes()
 
@@ -22,7 +22,20 @@ public struct ConditionalHTML<TrueContent, FalseContent> {
     }
 }
 
-extension ConditionalHTML: HTML, Sendable where TrueContent: HTML, FalseContent: HTML {
+extension ConditionalHTML: HTML where TrueContent: HTML, FalseContent: HTML {
+    public var body: Never { fatalError() }
+
+    public func markup() -> Markup {
+        switch storage {
+        case .trueContent(let content):
+            content.attributes(attributes).markup()
+        case .falseContent(let content):
+            content.attributes(attributes).markup()
+        }
+    }
+}
+
+extension ConditionalHTML: InlineElement, CustomStringConvertible where TrueContent: InlineElement, FalseContent: InlineElement {
     public var body: Never { fatalError() }
 
     public func markup() -> Markup {

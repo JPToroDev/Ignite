@@ -6,7 +6,7 @@
 //
 
 /// A text input field for collecting user information in forms.
-public struct TextField<Label: InlineElement>: InlineElement, FormItem {
+public struct TextField<Label: InlineElement>: InlineElement, FormElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -67,7 +67,7 @@ public struct TextField<Label: InlineElement>: InlineElement, FormItem {
             input.attributes.append(customAttributes: .init(name: "placeholder", value: prompt))
         }
 
-        if label.isEmpty == false {
+        if label.isEmptyInlineElement == false {
             var label = ControlLabel(label)
             label.attributes.append(customAttributes: .init(name: "for", value: id))
             self.label = label
@@ -203,5 +203,28 @@ public struct TextField<Label: InlineElement>: InlineElement, FormItem {
         input
             .attributes(attributes)
             .markup()
+    }
+}
+
+extension TextField: FormElementRepresentable {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        var copy = self
+            .size(configuration.controlSize)
+            .labelStyle(configuration.labelStyle)
+
+        return switch configuration.labelStyle {
+        case .leading: copy.markup()
+        default: Section(copy).markup()
+        }
+    }
+}
+
+extension TextField: ControlGroupItemConfigurable {
+    func configuredAsControlGroupItem(_ labelStyle: ControlLabelStyle) -> ControlGroupItem {
+        var copy = self.labelStyle(labelStyle)
+        if labelStyle != .floating {
+            copy.label = nil
+        }
+        return ControlGroupItem(copy)
     }
 }

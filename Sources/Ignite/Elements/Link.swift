@@ -7,10 +7,7 @@
 
 import Foundation
 
-@MainActor
-protocol LinkProvider {
-    var url: String { get }
-}
+
 
 /// A hyperlink to another resource on this site or elsewhere.
 public struct Link<Content: InlineElement>: InlineElement, NavigationElement, DropdownElement {
@@ -244,8 +241,8 @@ public struct Link<Content: InlineElement>: InlineElement, NavigationElement, Dr
     }
 }
 
-extension Link: NavigationItemConfigurable {
-    func configuredAsNavigationItem() -> NavigationItem {
+extension Link: NavigationElementRepresentable {
+    func renderAsNavigationElement() -> Markup {
         let isActive = PublishingContext.shared.currentRenderingPath == self.url
         let isButton = style == .button
         var link = self
@@ -258,7 +255,19 @@ extension Link: NavigationItemConfigurable {
         var listItem = ListItem(link)
         listItem.attributes.append(classes: "nav-item")
         listItem.attributes.append(styles: .init(.listStyleType, value: "none"))
-        return NavigationItem(listItem)
+        return listItem.markup()
+    }
+}
+
+extension Link: DropdownElementRepresentable {
+    func renderAsDropdownElement() -> Markup {
+        ListItem {
+            self
+                .class("dropdown-item")
+                .class(publishingContext.currentRenderingPath == url ? "active" : nil)
+                .aria(.current, publishingContext.currentRenderingPath == url ? "page" : nil)
+        }
+        .markup()
     }
 }
 

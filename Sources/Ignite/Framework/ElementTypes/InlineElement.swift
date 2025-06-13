@@ -11,12 +11,15 @@
 public protocol InlineElement: CustomStringConvertible, Sendable {
     /// The type of HTML content this element contains.
     associatedtype Body: InlineElement
-    
+
     /// The content and behavior of this element.
     @InlineElementBuilder var body: Body { get }
-    
+
+    /// The standard set of control attributes for HTML elements.
     var attributes: CoreAttributes { get set }
-    
+
+    /// Converts this element and its children into HTML markup.
+    /// - Returns: A string containing the HTML markup
     func markup() -> Markup
 }
 
@@ -26,10 +29,34 @@ public extension InlineElement {
         get { CoreAttributes() }
         set {} // swiftlint:disable:this unused_setter_value
     }
-    
+
     /// Generates the complete HTML string representation of the element.
     func markup() -> Markup {
         body.markup()
+    }
+
+    /// The complete string representation of the element.
+    nonisolated var description: String {
+        MainActor.assumeIsolated {
+            self.markupString()
+        }
+    }
+}
+
+extension InlineElement {
+    /// The publishing context of this site.
+    var publishingContext: PublishingContext {
+        PublishingContext.shared
+    }
+
+    /// The default status as a primitive element.
+    var isPrimitive: Bool {
+        Self.Body.self == Never.self
+    }
+
+    /// Checks if this element is `EmptyInlineElement`
+    var isEmptyInlineElement: Bool {
+        markup().isEmpty
     }
 }
 
@@ -40,25 +67,8 @@ extension InlineElement {
         markup().string
     }
 
-    /// The publishing context of this site.
-    var publishingContext: PublishingContext {
-        PublishingContext.shared
-    }
-}
-
-public extension InlineElement {
-    /// The complete string representation of the element.
-    nonisolated var description: String {
-        MainActor.assumeIsolated {
-            self.markupString()
-        }
-    }
-}
-
-extension InlineElement {
-    /// The default status as a primitive element.
-    var isPrimitive: Bool {
-        Self.Body.self == Never.self
+    func subviews() -> InlineSubviewsCollection {
+        InlineSubviewsCollection(self)
     }
 
     /// Adds an event handler to the element.
@@ -71,9 +81,10 @@ extension InlineElement {
         let event = Event(name: name, actions: actions)
         attributes.events.append(event)
     }
+}
 
-    /// Checks if this element is `EmptyInlineElement`
-    var isEmpty: Bool {
-        markup().isEmpty
+public extension InlineElement {
+    func modifier<M: InlineElementModifier>(_ modifier: M) -> some InlineElement {
+        ModifiedInlineElement(content: self, modifier: modifier)
     }
 }

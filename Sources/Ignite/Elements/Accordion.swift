@@ -15,7 +15,7 @@ public struct Accordion<Content: AccordionElement>: HTML {
     public var attributes = CoreAttributes()
 
     /// A collection of sections you want to show inside this accordion.
-    var items: Children
+    private var content: Content
 
     /// Adjusts what happens when a section is opened.
     /// Defaults to `.individual`, meaning that only one
@@ -25,8 +25,8 @@ public struct Accordion<Content: AccordionElement>: HTML {
     /// Create a new Accordion from a collection of sections.
     /// - Parameter items: A result builder containing all the sections
     /// you want to display in this accordion.
-    public init(@AccordionElementBuilder _ items: () -> Content) {
-        self.items = Children(items())
+    public init(@AccordionElementBuilder _ content: () -> Content) {
+        self.content = content()
     }
 
     /// Creates a new `Accordion` instance from a collection of items, along with a function
@@ -40,7 +40,7 @@ public struct Accordion<Content: AccordionElement>: HTML {
         content: @escaping (T) -> ItemContent
     ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
         let content = ForEach(Array(items), content: content)
-        self.items = Children(content)
+        self.content = content
     }
 
     /// Adjusts the open mode for this Accordion.
@@ -121,7 +121,7 @@ public struct Accordion<Content: AccordionElement>: HTML {
         // items so they can adapt accordinly.
         let accordionID = "accordion\(UUID().uuidString.truncatedHash)"
         let content = Section {
-            ForEach(items) { item in
+            ForEach(self.content.subviews()) { item in
                 item.assigned(to: accordionID, openMode: openMode)
             }
         }

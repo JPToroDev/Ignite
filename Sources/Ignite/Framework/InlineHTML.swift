@@ -47,8 +47,8 @@ extension InlineHTML: @MainActor LinkProvider where Content: LinkProvider {
 
 extension InlineHTML: NavigationElement where Content: NavigationElement {}
 
-extension InlineHTML: NavigationItemConfigurable where Content: NavigationItemConfigurable {
-    func configuredAsNavigationItem() -> NavigationItem {
-        content.configuredAsNavigationItem()
+extension InlineHTML: NavigationElementRepresentable where Content: NavigationElementRepresentable {
+    func renderAsNavigationElement() -> Markup {
+        content.renderAsNavigationElement()
     }
 }

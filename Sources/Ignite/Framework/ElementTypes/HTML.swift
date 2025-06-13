@@ -11,13 +11,16 @@
 public protocol HTML: Sendable {
     /// The type of HTML content this element contains.
     associatedtype Body: HTML
-    
-    var attributes: CoreAttributes { get set }
-    
-    func markup() -> Markup
 
     /// The content and behavior of this `HTML` element.
     @HTMLBuilder var body: Body { get }
+
+    /// The standard set of control attributes for HTML elements.
+    var attributes: CoreAttributes { get set }
+
+    /// Converts this element and its children into HTML markup.
+    /// - Returns: A string containing the HTML markup
+    func markup() -> Markup
 }
 
 public extension HTML {
@@ -80,5 +83,15 @@ extension HTML {
     /// - Note: Adds appropriate HTML attribute based on TabFocus enum
     func tabFocus(_ tabFocus: TabFocus) -> some HTML {
         customAttribute(name: tabFocus.htmlName, value: tabFocus.value)
+    }
+
+    func subviews() -> SubviewsCollection {
+        SubviewsCollection(self)
+    }
+}
+
+public extension HTML {
+    func modifier<M: HTMLModifier>(_ modifier: M) -> some HTML {
+        ModifiedHTML(content: self, modifier: modifier)
     }
 }

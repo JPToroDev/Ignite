@@ -84,7 +84,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     private let logo: Logo
 
     /// An array of items to show in this navigation bar.
-    private let items: Children
+    private let items: NavigationSubviewsCollection
 
     /// The style to use when rendering this bar.
     private var style = NavigationBarStyle.automatic
@@ -96,13 +96,13 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     /// - Parameter logo: The logo to use in the top-left edge of your bar.
     public init(logo: Logo) where Content == EmptyHTML {
         self.logo = logo
-        self.items = Children()
+        self.items = NavigationSubviewsCollection()
     }
 
     /// Creates a new `NavigationBar` instance from the `logo`, without any items.
     public init() where Content == EmptyHTML, Logo == EmptyInlineElement {
         self.logo = EmptyInlineElement()
-        self.items = Children()
+        self.items = NavigationSubviewsCollection()
     }
 
     /// Creates a new `NavigationBar` instance from the `logo` and `items` provided.
@@ -110,7 +110,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     ///   collapsed into a hamburger menu at small screen sizes.
     public init(@NavigationElementBuilder items: () -> Content) where Logo == EmptyInlineElement {
         self.logo = EmptyInlineElement()
-        self.items = Children(items())
+        self.items = NavigationSubviewsCollection(items())
     }
 
     /// Creates a new `NavigationBar` instance from the `logo` and `items` provided.
@@ -120,7 +120,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     ///   collapsed into a hamburger menu at small screen sizes.
     public init(logo: Logo, @NavigationElementBuilder items: () -> Content) where Logo == String {
         self.logo = logo
-        self.items = Children(items())
+        self.items = NavigationSubviewsCollection(items())
     }
 
     /// Creates a new `NavigationBar` instance from the `logo` and `items` provided.
@@ -132,7 +132,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         @NavigationElementBuilder items: () -> Content,
         @InlineElementBuilder logo: () -> Logo = { EmptyInlineElement() }
     ) {
-        self.items = Children(items())
+        self.items = NavigationSubviewsCollection(items())
         self.logo = logo()
     }
 
@@ -192,20 +192,16 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        // Check if we have a NavigationItemGroup, the only variadic NavigationElement,
-        // and use its children directly so that types like Spacer() aren't concealed
-        let items = items.flatMap { ($0 as? any PackProvider)?.children.elements ?? [$0] }
-        let navItems = items.map { $0.configuredAsNavigationItem() }
-        let pinnedItems = navItems.filter { $0.navigationBarVisibility == .always }
-        let collapsibleItems = navItems.filter { $0.navigationBarVisibility == .automatic }
+        let pinnedItems = items.filter { $0.navigationBarVisibility == .always }
+        let collapsibleItems = items.filter { $0.navigationBarVisibility == .automatic }
         /// The number of controls that aren't `Spacer`,
         /// used to determine the gap class that should be used.
-        let visibleControlCount = pinnedItems.count(where: { !($0.wrapped is any SpacerProvider) })
+        let visibleControlCount = pinnedItems.count(where: { !($0.content is any SpacerProvider) })
 
         return Tag("header") {
             Tag("nav") {
                 Section {
-                    if logo.isEmpty == false {
+                    if logo.isEmptyInlineElement == false {
                         Section(renderLogo(logo))
                             .class("me-2 me-md-auto")
                     }
@@ -243,7 +239,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         .markup()
     }
 
-    private func renderPinnedItems(_ items: [NavigationItem]) -> some HTML {
+    private func renderPinnedItems(_ items: [NavigationSubview]) -> some HTML {
         ForEach(items) { $0 }
     }
 
@@ -261,7 +257,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         .aria(.label, "Toggle navigation")
     }
 
-    private func renderCollapsibleItems(_ items: [NavigationItem]) -> some HTML {
+    private func renderCollapsibleItems(_ items: [NavigationSubview]) -> some HTML {
         Section {
             List(items) { $0 }
                 .class("navbar-nav", "mb-2", "mb-md-0", "col", itemAlignment.rawValue)

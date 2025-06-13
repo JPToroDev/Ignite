@@ -12,9 +12,7 @@
 /// To retain these implicit styles, set `spacing` to `nil`.
 public struct VStack<Content: HTML>: HTML {
     /// A type that represents spacing values in either exact pixels or semantic spacing amounts.
-    private enum SpacingType: Equatable {
-        case exact(Int), semantic(SpacingAmount)
-    }
+    private typealias SpacingType = Amount<Int, SpacingAmount>
 
     /// Adaptive spacing amounts that are used by Bootstrap to provide consistency
     /// in site design.
@@ -119,7 +117,7 @@ public struct VStack<Content: HTML>: HTML {
             attributes.append(classes: "gap-\(amount.rawValue)")
         }
 
-        let contentHTML =/* items.map { $0.markupString() }.joined()*/ ""
+        let contentHTML = content.subviews().map { addAttributesToChild($0).markupString() }.joined()
         return Markup("<div\(attributes)>\(contentHTML)</div>")
     }
 

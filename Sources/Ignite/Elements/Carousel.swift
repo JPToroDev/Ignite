@@ -6,7 +6,7 @@
 //
 
 /// A collection of slides the user can swipe through.
-public struct Carousel<Slides: SlideElement>: HTML {
+public struct Carousel<Slides: CarouselElement>: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -18,7 +18,7 @@ public struct Carousel<Slides: SlideElement>: HTML {
     private let carouselID = "carousel\(UUID().uuidString.truncatedHash)"
 
     /// The collection of slides to show inside this carousel.
-    private var slides: Children
+    private var slides: CarouselSubviewsCollection
 
     /// The animation style used to move between slides.
     private var style: CarouselStyle = .move
@@ -38,8 +38,8 @@ public struct Carousel<Slides: SlideElement>: HTML {
     /// Creates a new carousel from an element builder that generates slides.
     /// - Parameter items: An element builder that returns an array of
     ///   slides to place in this carousel.
-    public init(@SlideElementBuilder slides: () -> Slides) {
-        self.slides = Children(slides())
+    public init(@CarouselElementBuilder slides: () -> Slides) {
+        self.slides = slides().subviews()
     }
 
     /// Creates a new carousel from a collection of items, along with a function that converts
@@ -48,12 +48,12 @@ public struct Carousel<Slides: SlideElement>: HTML {
     ///   - items: A sequence of items you want to convert into slides.
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns a slide representing that value in the carousel.
-    public init<T, S: Sequence, SlideContent: SlideElement>(
+    public init<T, S: Sequence, SlideContent: CarouselElement>(
         _ items: S,
-        @SlideElementBuilder slides: @escaping (T) -> SlideContent
+        @CarouselElementBuilder slides: @escaping (T) -> SlideContent
     ) where S.Element == T, Slides == ForEach<Array<T>, SlideContent> {
-        let items = items.map(slides).compactMap { $0 as? any HTML }
-        self.slides = Children(items.map { Child($0) })
+        let items = items.map(slides)
+        self.slides = CarouselSubviewsCollection(items.map(CarouselSubview.init))
     }
 
     /// Adjusts the style of this carousel.
@@ -110,7 +110,7 @@ public struct Carousel<Slides: SlideElement>: HTML {
             Section {
                 ForEach(slides.enumerated()) { index, item in
                     item
-//                        .assigned(at: index)
+                        .class(index == 0 ? "active" : nil)
                         .style(slideTransition(for: style))
                 }
             }
@@ -144,7 +144,13 @@ public struct Carousel<Slides: SlideElement>: HTML {
         .id(carouselID)
         .class("carousel", "slide", doesCrossfade ? "carousel-fade" : nil)
         .data("bs-ride", "carousel")
-        .data("bs-interval", duration != nil ? Int(duration! * 1000).formatted() : "")
+        .data("bs-interval", duration != nil ? Int(duration! * 1000).formatted() : nil)
         .markup()
+    }
+}
+
+private extension HTML {
+    func data(_ name: String, _ value: String?) -> some HTML {
+        modifier(DataModifier(name: name, value: value))
     }
 }

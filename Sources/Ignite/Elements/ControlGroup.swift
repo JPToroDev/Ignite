@@ -6,7 +6,7 @@
 //
 
 /// A container that groups related form controls into a unified visual component.
-public struct ControlGroup: HTML, FormItem {
+public struct ControlGroup<Content: FormElement>: HTML, FormElement {
     /// Defines the size variants available for control groups.
     public enum ControlSize: String, Sendable, CaseIterable {
         /// Creates a smaller, more compact control group.
@@ -30,7 +30,7 @@ public struct ControlGroup: HTML, FormItem {
     private var helpText: String?
 
     /// The collection of form items contained within this control group.
-    private let items: [any FormItem]
+    private let content: Content
 
     /// The size configuration for the control group.
     private var size: ControlSize?
@@ -44,10 +44,10 @@ public struct ControlGroup: HTML, FormItem {
     ///   - items: A closure returning an array of form items to include in the group.
     public init(
         _ label: String? = nil,
-        @ElementBuilder<FormItem> items: () -> [any FormItem]
+        @FormElementBuilder content: () -> Content
     ) {
         self.label = label
-        self.items = items()
+        self.content = content()
         self.helpText = nil
     }
 
@@ -79,29 +79,16 @@ public struct ControlGroup: HTML, FormItem {
     }
 
     public func markup() -> Markup {
-        var items = items
-        let lastItem = items.last
-//        if var lastItem = lastItem as? Dropdown {
-//            lastItem = lastItem.configuration(.lastControlGroupItem)
-//            items = items.dropLast()
-//            items.append(lastItem)
-//        }
+        var items = content.subviews().elements
+        if var lastItem = items.last {
+            items = items.dropLast()
+            items.append(lastItem.configuredAsLastItem())
+        }
 
         let content = Section {
             ForEach(items) { item in
-//                switch item {
-//                case let item as TextField:
-//                    renderTextField(item)
-//                case let button as Button:
-//                    renderButton(button)
-//                case let item as Span:
-//                    renderText(item)
-//                case let dropdown as Dropdown:
-//                    renderDropdown(dropdown)
-//                default:
-//                    AnyHTML(item)
-                    EmptyHTML()
-//                }
+                item
+                    .configuredAsControlGroupItem(labelStyle)
             }
         }
         .attributes(attributes)
@@ -127,26 +114,12 @@ public struct ControlGroup: HTML, FormItem {
         }
         .markup()
     }
+}
 
-//    private func renderText(_ text: Span) -> some InlineElement {
-//        text.class("input-group-text")
-//    }
-
-//    private func renderTextField(_ textField: TextField) -> some InlineElement {
-//        var textField = textField.labelStyle(labelStyle)
-//        if labelStyle != .floating {
-//            textField.label = nil
-//        }
-//        return textField
-//    }
-
-//    private func renderButton(_ button: Button) -> some InlineElement {
-//        var button = button
-//        button.type = .plain
-//        return button
-//    }
-
-//    private func renderDropdown(_ dropdown: Dropdown) -> some HTML {
-//        dropdown.configuration(.controlGroupItem)
-//    }
+extension ControlGroup: FormElementRepresentable {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        var copy = self
+        copy.labelStyle(configuration.labelStyle)
+        return copy.markup()
+    }
 }

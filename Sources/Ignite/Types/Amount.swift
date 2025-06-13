@@ -15,3 +15,6 @@ enum Amount<Exact: Sendable, Semantic: Sendable>: Sendable {
     /// The value appropriate for the given context.
     case automatic
 }
+
+typealias PaddingAmount = Amount<LengthUnit, SemanticSpacing>
+typealias MarginAmount = Amount<LengthUnit, SemanticSpacing>

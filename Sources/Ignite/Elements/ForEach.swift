@@ -7,7 +7,7 @@
 
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
-public struct ForEach<Data: Sequence, Content> {
+public struct ForEach<Data: Sequence, Content>: Sendable {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -15,10 +15,10 @@ public struct ForEach<Data: Sequence, Content> {
     private let data: Data
 
     /// The child elements contained within this HTML element.
-    var children: Children
+    var children: SubviewsCollection
 }
 
-extension ForEach: HTML, MarkupElement, PackProvider, Sendable where Content: HTML {
+extension ForEach: HTML, SubviewsProvider where Content: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -28,11 +28,11 @@ extension ForEach: HTML, MarkupElement, PackProvider, Sendable where Content: HT
     ///   - content: A closure that converts each element into HTML content.
     public init(
         _ data: Data,
-        @HTMLBuilder content: @escaping (Data.Element) -> Content
+        @HTMLBuilder content: (Data.Element) -> Content
     ) {
         self.data = data
         let items = data.map(content)
-        self.children = Children(items.map { Child($0) })
+        self.children = SubviewsCollection(items.map(Subview.init))
     }
 
     /// Renders the ForEach content when this isn't part of a list.
@@ -59,7 +59,13 @@ extension ForEach: AccordionElement where Content: AccordionElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = Children(items.map { Child($0) })
+        self.children = SubviewsCollection(items.map { Subview($0) })
+    }
+
+    /// Renders the ForEach content when this isn't part of a list.
+    /// - Returns: The rendered HTML string.
+    public func markup() -> Markup {
+        children.map { $0.attributes(attributes).markup() }.joined()
     }
 }
 
@@ -74,7 +80,11 @@ extension ForEach: TableRowElement where Content: TableRowElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = Children(items.map { Child($0) })
+        self.children = SubviewsCollection(items.map { Subview($0) })
+    }
+
+    public func markup() -> Markup {
+        children.map { $0.markup() }.joined()
     }
 }
 
@@ -89,7 +99,7 @@ extension ForEach: DropdownElement where Content: DropdownElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = Children(items.map { Child($0) })
+        self.children = SubviewsCollection(items.map { Subview($0) })
     }
     
     public func markup() -> Markup {
@@ -97,7 +107,26 @@ extension ForEach: DropdownElement where Content: DropdownElement {
     }
 }
 
-extension ForEach: SlideElement where Content: SlideElement {
+extension ForEach: NavigationElement where Content: NavigationElement {
+    /// Creates a new ForEach instance that generates HTML content from a sequence.
+    /// - Parameters:
+    ///   - data: The sequence to iterate over.
+    ///   - content: A closure that converts each element into HTML content.
+    init(
+        _ data: Data,
+        @NavigationElementBuilder content: @escaping (Data.Element) -> Content
+    ) {
+        self.data = data
+        let items = data.map(content).compactMap { $0 as? any HTML }
+        self.children = SubviewsCollection(items.map { Subview($0) })
+    }
+    
+    public func markup() -> Markup {
+        children.map { $0.markup() }.joined()
+    }
+}
+
+extension ForEach: CarouselElement where Content: CarouselElement {
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:
     ///   - data: The sequence to iterate over.
@@ -108,7 +137,11 @@ extension ForEach: SlideElement where Content: SlideElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = Children(items.map { Child($0) })
+        self.children = SubviewsCollection(items.map { Subview($0) })
+    }
+    
+    public func markup() -> Markup {
+        children.map { $0.markup() }.joined()
     }
 }
 

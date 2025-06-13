@@ -19,8 +19,21 @@ public struct Grid<Content: HTML>: HTML {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    /// The layout and content of this grid.
-    var tree: VariadicTree<GridLayout, Content>
+    /// The amount of space between elements.
+    private var spacingAmount: SpacingAmount
+
+    /// The alignment of the items within the grid.
+    private var alignment: Alignment
+
+    /// How grid items should size.
+    private var gridItemSizing: GridItemSize = .automatic
+
+    /// The number of columns this grid should span. Use `nil` to have
+    /// the column count based on the longest row.
+    private var columnCount: Int?
+
+    /// The rows that make up the grid's content.
+    private var content: Content
 
     /// Creates a new `Grid` object using a block element builder
     /// that returns an array of items to use in this grid.
@@ -34,8 +47,10 @@ public struct Grid<Content: HTML>: HTML {
         spacing: Int,
         @HTMLBuilder content: () -> Content
     ) {
-        let layout = GridLayout(spacingAmount: .exact(spacing), alignment: alignment, columnCount: columns)
-        self.tree = VariadicTree(root: layout, content: content())
+        self.spacingAmount = .exact(spacing)
+        self.alignment = alignment
+        self.columnCount = columns
+        self.content = content()
     }
 
     /// Creates a new `Grid` object using a block element builder
@@ -50,8 +65,10 @@ public struct Grid<Content: HTML>: HTML {
         spacing: SemanticSpacing = .medium,
         @HTMLBuilder content: () -> Content
     ) {
-        let layout = GridLayout(spacingAmount: .semantic(spacing), alignment: alignment, columnCount: columns)
-        self.tree = VariadicTree(root: layout, content: content())
+        self.spacingAmount = .semantic(spacing)
+        self.alignment = alignment
+        self.columnCount = columns
+        self.content = content()
     }
 
     /// Creates a new grid from a collection of items, along with a function that converts
@@ -69,9 +86,11 @@ public struct Grid<Content: HTML>: HTML {
         spacing: Int,
         @HTMLBuilder content: @escaping (T) -> ItemContent
     ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+        self.spacingAmount = .exact(spacing)
+        self.alignment = alignment
+        self.columnCount = columns
         let content = ForEach(Array(items), content: content)
-        let layout = GridLayout(spacingAmount: .exact(spacing), alignment: alignment, columnCount: columns)
-        self.tree = VariadicTree(root: layout, content: content)
+        self.content = content
     }
 
     /// Creates a new grid from a collection of items, along with a function that converts
@@ -89,36 +108,56 @@ public struct Grid<Content: HTML>: HTML {
         spacing: SemanticSpacing = .medium,
         @HTMLBuilder content: @escaping (T) -> ItemContent
     ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+        self.spacingAmount = .semantic(spacing)
+        self.alignment = alignment
+        self.columnCount = columns
         let content = ForEach(Array(items), content: content)
-        let layout = GridLayout(spacingAmount: .semantic(spacing), alignment: alignment, columnCount: columns)
-        self.tree = VariadicTree(root: layout, content: content)
+        self.content = content
     }
 
     public func gridItemSizing(_ sizing: GridItemSize) -> Self {
         var copy = self
-        copy.tree.root.gridItemSizing = sizing
+        copy.gridItemSizing = sizing
         return copy
+    }
+
+    private func processGridItems(_ children: SubviewsCollection) -> ([GridItem], String) {
+        let gridItems = children.map { $0.resolvedToGridItems() }
+        let maxColumnCount = columnCount ?? gridItems.map(\.count).max() ?? 1
+
+        func padRow(_ row: [GridItem]) -> [GridItem] {
+            guard !(row.count == 1 && row.first?.isFullWidth == true) else { return row }
+            let emptyCellsNeeded = maxColumnCount - row.count
+            return emptyCellsNeeded > 0 ? row + Array(repeating: .emptyCell, count: emptyCellsNeeded) : row
+        }
+
+        return (gridItems.map(padRow).flatMap(\.self), String(maxColumnCount))
+    }
+
+    private func createGridAttributes(columnCount: String) -> CoreAttributes {
+        var attributes = CoreAttributes()
+        attributes.append(styles: gridItemSizing.inlineStyles)
+        attributes.append(styles: .init("--grid-columns", value: columnCount), .init("--grid-gap", value: "20px"))
+        return attributes
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
-        tree.attributes(attributes).markup()
-    }
-}
+        let subviews = content.subviews()
+        let (flattenedGridItems, columnCount) = processGridItems(subviews)
+        let attributes = createGridAttributes(columnCount: columnCount)
 
-public enum GridItemSize: Sendable {
-    case automatic
-    case adaptive(minimum: LengthUnit)
-
-    public static func adaptive(minimum: Int) -> Self {
-        .adaptive(minimum: .px(minimum))
-    }
-
-    var inlineStyles: [InlineStyle] {
-        switch self {
-        case .automatic: []
-        case .adaptive(let minimum): [.init("--grid-min-width", value: minimum.stringValue)]
+        return Section {
+            ForEach(flattenedGridItems) { child in
+                child
+                    .class("grid-item")
+            }
         }
+        .attributes(attributes)
+        .class("adaptive-grid")
+        .style(spacingAmount.inlineStyle)
+        .style(alignment.gridAlignmentRules)
+        .markup()
     }
 }

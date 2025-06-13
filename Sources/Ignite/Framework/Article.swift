@@ -299,7 +299,7 @@ public struct Article {
                 }
             }
         } else {
-            EmptyHTML()
+            EmptyInlineElement()
         }
     }
 }

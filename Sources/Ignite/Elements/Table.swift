@@ -6,7 +6,7 @@
 //
 
 /// Used to create tabulated data on a page.
-public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
+public struct Table<Header: HTML, Rows: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -39,13 +39,13 @@ public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
     ///   - filterTitle: When provided, this is used to for the placeholder in a
     ///     text field that filters the table data.
     ///   - rows: An array of rows to use in the table.
-    public init(
+    public init<C>(
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: () -> Rows
-    ) where Header == EmptyHTML {
+        @TableRowElementBuilder rows: () -> C
+    ) where Rows == TableRowElementBuilder.Content<C>, C: TableRowElement, Header == EmptyHTML {
         self.filterTitle = filterTitle
         self.header = EmptyHTML()
-        self.rows = rows()
+        self.rows = TableRowElementBuilder.Content(rows())
     }
 
     /// Creates a new `Table` instance from an element builder that returns
@@ -56,13 +56,13 @@ public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
     ///     text field that filters the table data.
     ///   - rows: An array of rows to use in the table.
     ///   - header: An array of headers to use at the top of the table.
-    public init(
+    public init<C>(
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: () -> Rows,
+        @TableRowElementBuilder rows: () -> C,
         @HTMLBuilder header: () -> Header
-    ) {
+    ) where Rows == TableRowElementBuilder.Content<C>, C: TableRowElement, Header == EmptyHTML {
         self.filterTitle = filterTitle
-        self.rows = rows()
+        self.rows = TableRowElementBuilder.Content(rows())
         self.header = header()
     }
 
@@ -74,13 +74,19 @@ public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
     ///     text field that filters the table data.
     ///   - content: A function that accepts a single value from the sequence, and
     /// returns a row representing that value in the table.
-    public init<T, S: Sequence, RowContent: TableRowElement>(
+    public init<C, T, S: Sequence>(
         _ items: S,
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: @escaping (T) -> RowContent
-    ) where S.Element == T, Header == EmptyHTML, Rows == ForEach<Array<T>, RowContent> {
+        @TableRowElementBuilder rows: @escaping (T) -> C
+    ) where
+        S.Element == T,
+        Header == EmptyHTML,
+        Rows == TableRowElementBuilder.Content<ForEach<Array<T>, C>>,
+        C: TableRowElement
+    {
         self.filterTitle = filterTitle
-        self.rows = ForEach(Array(items), content: rows)
+        let content = ForEach(Array(items), content: rows)
+        self.rows = TableRowElementBuilder.Content(content)
         self.header = EmptyHTML()
     }
 
@@ -93,14 +99,19 @@ public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
     ///   - content: A function that accepts a single value from the sequence, and
     ///     returns a row representing that value in the table.
     ///   - header: An array of headers to use at the top of the table.
-    public init<T, S: Sequence, RowContent: TableRowElement>(
+    public init<C, T, S: Sequence>(
         _ items: S,
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: @escaping (T) -> RowContent,
+        @TableRowElementBuilder rows: @escaping (T) -> C,
         @HTMLBuilder header: () -> Header
-    ) where S.Element == T, Rows == ForEach<Array<T>, RowContent> {
+    ) where
+        S.Element == T,
+        Rows == TableRowElementBuilder.Content<ForEach<Array<T>, C>>,
+        C: TableRowElement
+    {
         self.filterTitle = filterTitle
-        self.rows = ForEach(Array(items), content: rows)
+        let content = ForEach(Array(items), content: rows)
+        self.rows = TableRowElementBuilder.Content(content)
         self.header = header()
     }
 
@@ -167,12 +178,14 @@ public struct Table<Header: HTML, Rows: TableRowElement>: HTML {
         }
 
         if header.isEmptyHTML == false {
-            let headerHTML = "<th>\(header.markupString())</th>"
+            let headerHTML = header.subviews().map {
+                "<th>\($0.markupString())</th>"
+            }.joined()
             output += "<thead><tr>\(headerHTML)</tr></thead>"
         }
 
         output += "<tbody>"
-        output += Children(rows).markup().string
+        output += rows.markup().string
         output += "</tbody>"
         output += "</table>"
         return Markup(output)

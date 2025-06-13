@@ -5,6 +5,22 @@
 // See LICENSE for license information.
 //
 
+struct BackgroundImageModifier: HTMLModifier {
+    var image: String
+    var contentMode: BackgroundImageContentMode
+    var repeats: Bool
+    var position: BackgroundPosition
+    func body(content: Content) -> some HTML {
+        content
+            .style(
+                .init(.backgroundImage, value: "url('\(image)')"),
+                .init(.backgroundSize, value: contentMode.css),
+                .init(.backgroundRepeat, value: repeats ? "repeat" : "no-repeat"),
+                .init(.backgroundPosition, value: position.css)
+            )
+    }
+}
+
 public extension HTML {
     /// Applies a background image to the element.
     /// - Parameters:
@@ -19,12 +35,11 @@ public extension HTML {
         position: BackgroundPosition = .center,
         repeats: Bool = false
     ) -> some HTML {
-        self.style(
-            .init(.backgroundImage, value: "url('\(image)')"),
-            .init(.backgroundSize, value: contentMode.css),
-            .init(.backgroundRepeat, value: repeats ? "repeat" : "no-repeat"),
-            .init(.backgroundPosition, value: position.css)
-        )
+        modifier(BackgroundImageModifier(
+            image: image,
+            contentMode: contentMode,
+            repeats: repeats,
+            position: position))
     }
 }
 

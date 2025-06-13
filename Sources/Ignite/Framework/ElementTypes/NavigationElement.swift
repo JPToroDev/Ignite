@@ -8,19 +8,22 @@
 /// Describes elements that can be placed into navigation bars.
 /// - Warning: Do not conform to this type directly.
 @MainActor
-public protocol NavigationElement {}
+public protocol NavigationElement {
+    var attributes: CoreAttributes { get set }
+    func markup() -> Markup
+}
 
 public extension NavigationElement where Self: HTML {
     /// Returns a new instance with the specified visibility.
     func navigationBarVisibility(_ visibility: NavigationBarVisibility) -> some NavigationElement {
-        NavigationItem(self).navigationBarVisibility(visibility)
+        NavigationItem(visibility: visibility, content: self)
     }
 }
 
 public extension NavigationElement where Self: InlineElement {
     /// Returns a new instance with the specified visibility.
     func navigationBarVisibility(_ visibility: NavigationBarVisibility) -> some NavigationElement {
-        NavigationItem(InlineHTML(self)).navigationBarVisibility(visibility)
+        NavigationItem(visibility: visibility, content: self)
     }
 }
 
