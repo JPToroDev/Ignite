@@ -14,17 +14,17 @@ public struct GridRow<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
-    private var content: SubviewsCollection
+    private var content: Content
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     public init(@HTMLBuilder content: () -> Content) {
-        self.content = SubviewsCollection(content())
+        self.content = content()
     }
 
     init(_ content: Content) {
-        self.content = SubviewsCollection(content)
+        self.content = content
     }
 
     public func markup() -> Markup {
@@ -34,6 +34,6 @@ public struct GridRow<Content: HTML>: HTML {
 
 extension GridRow: GridItemProvider {
     func gridItems() -> [GridItem] {
-        content.map { GridItem($0) }
+        content.subviews().map { GridItem($0) }
     }
 }

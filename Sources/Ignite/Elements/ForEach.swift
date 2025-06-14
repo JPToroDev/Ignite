@@ -15,7 +15,7 @@ public struct ForEach<Data: Sequence, Content>: Sendable {
     private let data: Data
 
     /// The child elements contained within this HTML element.
-    var children: SubviewsCollection
+    var subviews: SubviewsCollection
 }
 
 extension ForEach: HTML, VariadicHTML where Content: HTML {
@@ -32,21 +32,18 @@ extension ForEach: HTML, VariadicHTML where Content: HTML {
     ) {
         self.data = data
         let items = data.map(content)
-        self.children = SubviewsCollection(items.map(Subview.init))
+        self.subviews = SubviewsCollection(items.map(Subview.init))
     }
 
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
     public func markup() -> Markup {
-        children.map { $0.attributes(attributes).markup() }.joined()
+        subviews.map { $0.attributes(attributes).markup() }.joined()
     }
 }
 
+extension ForEach: ListItemProvider where Content: ListItemProvider {}
 extension ForEach: ColumnProvider where Content: ColumnProvider {}
-
-extension ForEach: @MainActor LinkProvider where Content: LinkProvider {
-    var url: String { "" }
-}
 
 extension ForEach: AccordionElement where Content: AccordionElement {
     /// Creates a new ForEach instance that generates HTML content from a sequence.
@@ -59,13 +56,13 @@ extension ForEach: AccordionElement where Content: AccordionElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = SubviewsCollection(items.map { Subview($0) })
+        self.subviews = SubviewsCollection(items.map { Subview($0) })
     }
 
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
     public func markup() -> Markup {
-        children.map { $0.attributes(attributes).markup() }.joined()
+        subviews.map { $0.attributes(attributes).markup() }.joined()
     }
 }
 
@@ -80,11 +77,11 @@ extension ForEach: TableRowElement where Content: TableRowElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = SubviewsCollection(items.map { Subview($0) })
+        self.subviews = SubviewsCollection(items.map { Subview($0) })
     }
 
     public func markup() -> Markup {
-        children.map { $0.markup() }.joined()
+        subviews.map { $0.markup() }.joined()
     }
 }
 
@@ -99,11 +96,11 @@ extension ForEach: DropdownElement where Content: DropdownElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = SubviewsCollection(items.map { Subview($0) })
+        self.subviews = SubviewsCollection(items.map { Subview($0) })
     }
     
     public func markup() -> Markup {
-        children.map { $0.markup() }.joined()
+        subviews.map { $0.markup() }.joined()
     }
 }
 
@@ -118,11 +115,11 @@ extension ForEach: NavigationElement where Content: NavigationElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = SubviewsCollection(items.map { Subview($0) })
+        self.subviews = SubviewsCollection(items.map { Subview($0) })
     }
     
     public func markup() -> Markup {
-        children.map { $0.markup() }.joined()
+        subviews.map { $0.markup() }.joined()
     }
 }
 
@@ -137,19 +134,10 @@ extension ForEach: CarouselElement where Content: CarouselElement {
     ) {
         self.data = data
         let items = data.map(content).compactMap { $0 as? any HTML }
-        self.children = SubviewsCollection(items.map { Subview($0) })
+        self.subviews = SubviewsCollection(items.map { Subview($0) })
     }
     
     public func markup() -> Markup {
-        children.map { $0.markup() }.joined()
-    }
-}
-
-extension ForEach: ListElement where Content: ListElement {
-    /// Renders the ForEach content when it's part of a `List` and
-    /// its children aren't `ListItem`.
-    /// - Returns: The rendered HTML string.
-    func markupAsListItem() -> Markup {
-        children.map { Markup("<li\(attributes)>\($0.markupString())</li>") }.joined()
+        subviews.map { $0.markup() }.joined()
     }
 }

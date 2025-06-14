@@ -79,7 +79,7 @@ private struct LineSpacingInlineModifier: InlineElementModifier {
             modified.attributes.append(styles: .init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
         case .semantic(let spacing):
             modified.attributes.append(classes: "lh-\(spacing.rawValue)")
-        default: modified
+        default: break
         }
         return modified
     }

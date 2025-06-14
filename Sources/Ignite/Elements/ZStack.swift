@@ -12,7 +12,7 @@
 /// `ZStack` strips its subviews of implicit styles, such as the bottom margin
 /// automatically applied to paragraphs. All styles explicitly
 /// applied through modifiers like `.margin()` will be respected.
-public struct ZStack: HTML {
+public struct ZStack<Content: HTML>: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -23,7 +23,7 @@ public struct ZStack: HTML {
     private var alignment: Alignment
 
     /// The child elements to be stacked.
-    private var content: any HTML
+    private var content: Content
 
     /// Creates a new `ZStack` with the specified alignment and content.
     /// - Parameters:
@@ -31,28 +31,23 @@ public struct ZStack: HTML {
     ///   - items: A closure that returns the elements to be stacked.
     public init(
         alignment: Alignment = .center,
-        @HTMLBuilder content: () -> some HTML
+        @HTMLBuilder content: () -> Content
     ) {
         self.content = content()
         self.alignment = alignment
     }
 
     public func markup() -> Markup {
-        var items = [any HTML]()
-        var index = 0
-//        if let collection = content as? VariadicElement {
-////            collection.forEach { child in
-////                items.append(addAttributesToChild(child, at: index))
-////                index += 1
-////            }
-//        } else {
-//            items.append(content)
-//        }
-
         var attributes = attributes
         attributes.append(styles: .init(.display, value: "grid"))
 
-        let contentHTML = items.map { $0.markupString() }.joined()
+        let contentHTML = content
+            .subviews()
+            .enumerated()
+            .map { index, subview in
+                addAttributesToChild(subview, at: index).markupString()
+            }.joined()
+
         return Markup("<div\(attributes)>\(contentHTML)</div>")
     }
 

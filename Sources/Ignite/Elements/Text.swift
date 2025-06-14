@@ -64,11 +64,18 @@ public struct Text<Content: InlineElement>: HTML, DropdownElement {
             // This works fine for styles like color, but for styles like
             // padding, we'd expect them to apply to the paragraphs
             // collectively. So we'll wrap the paragraphs in a Section.
-            Section(content)
+            return Section(content)
                 .attributes(attributes)
                 .markup()
+        } else if FontStyle.classBasedStyles.contains(fontStyle), let sizeClass = fontStyle.sizeClass {
+            var attributes = attributes.appending(classes: sizeClass)
+            return Markup(
+                "<p\(attributes)>" +
+                content.markupString() +
+                "</p>"
+            )
         } else {
-            Markup(
+            return Markup(
                 "<\(fontStyle.rawValue)\(attributes)>" +
                 content.markupString() +
                 "</\(fontStyle.rawValue)>"

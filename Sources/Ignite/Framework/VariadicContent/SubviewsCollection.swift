@@ -68,12 +68,12 @@ private extension SubviewsCollection {
     }
 
     func collectFlattenedChildren<T: HTML>(_ html: T, into result: inout [Subview]) {
-        guard let subviewsProvider = html as? SubviewsProvider else {
+        guard let subviewsProvider = html as? any SubviewsProvider else {
             result.append(Subview(html))
             return
         }
 
-        for child in subviewsProvider.children.elements.map(\.wrapped) {
+        for child in subviewsProvider.subviews.elements.map(\.wrapped) {
             collectFlattenedChildren(child, into: &result)
         }
     }

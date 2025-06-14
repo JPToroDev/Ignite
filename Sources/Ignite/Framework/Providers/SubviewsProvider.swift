@@ -5,13 +5,8 @@
 // See LICENSE for license information.
 //
 
+/// A type that has `PackHTML` as its root view.
 @MainActor
 protocol SubviewsProvider {
-    var children: SubviewsCollection { get }
+    var subviews: SubviewsCollection { get }
 }
-
-//@MainActor
-//protocol SubviewsProvider {
-//    associatedtype Body: HTML
-//    func body(children: SubviewsCollection) -> Body
-//}

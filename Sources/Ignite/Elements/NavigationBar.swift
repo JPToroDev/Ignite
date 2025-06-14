@@ -153,7 +153,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         var copy = self
         switch width {
         case .viewport:
-            let columnWidth = ColumnWidth.intrinsic.className
+            let columnWidth = ColumnWidth.variable.className
             copy.widthClasses = ["container-fluid", columnWidth]
         case .count(let count):
             let columnWidth = ColumnWidth.count(count).className

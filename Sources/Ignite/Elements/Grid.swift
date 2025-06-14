@@ -135,7 +135,7 @@ public struct Grid<Content: HTML>: HTML {
     }
 
     private func createGridAttributes(columnCount: String) -> CoreAttributes {
-        var attributes = CoreAttributes()
+        var attributes = attributes
         attributes.append(styles: gridItemSizing.inlineStyles)
         attributes.append(styles: .init("--grid-columns", value: columnCount), .init("--grid-gap", value: "20px"))
         return attributes

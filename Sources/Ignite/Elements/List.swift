@@ -68,7 +68,7 @@ public struct List<Content: HTML>: HTML {
 
     /// The items to show in this list. This may contain any page elements,
     /// but if you need specific styling you might want to use `ListItem` objects.
-    var children: SubviewsCollection
+    var content: Content
 
     /// Returns the correct HTML name for this list.
     private var listElementName: String {
@@ -83,8 +83,7 @@ public struct List<Content: HTML>: HTML {
     /// an array of `HTML` objects to display in the list.
     /// - Parameter items: The content you want to display in your list.
     public init(@HTMLBuilder content: () -> Content) {
-        let children = SubviewsCollection(content())
-        self.children = children
+        self.content = content()
     }
 
     /// Creates a new list from a collection of items, along with a function that converts
@@ -98,7 +97,7 @@ public struct List<Content: HTML>: HTML {
         @HTMLBuilder content: @escaping (T) -> RowContent
     ) where S.Element == T, Content == ForEach<Array<T>, RowContent> {
         let content = ForEach(Array(items), content: content)
-        self.children = SubviewsCollection(content)
+        self.content = content
     }
 
     /// Adjusts the style of this list.
@@ -163,9 +162,10 @@ public struct List<Content: HTML>: HTML {
     private func renderListRow(_ content: Subview) -> Markup {
         // Any element that renders its own <li> (e.g. ForEach) should
         // be allowed to handle that itself.
-        if var listItem = content.wrapped as? ListElement {
-            listItem.attributes.append(classes: listStyle != .automatic ? "list-group-item" : nil)
-            return listItem.markupAsListItem()
+        if content.wrapped is any ListItemProvider {
+            var content = content
+            content.attributes.append(classes: listStyle != .automatic ? "list-group-item" : nil)
+            return content.markup()
         } else {
             var item = content
             let styleClass = listStyle == .automatic ? nil : "list-group-item"
@@ -180,7 +180,7 @@ public struct List<Content: HTML>: HTML {
     /// - Returns: The HTML for this element.
     public func markup() -> Markup {
         var output = "<\(listElementName)\(listAttributes)>"
-        output += children.map { renderListRow($0).string }.joined()
+        output += content.subviews().map { renderListRow($0).string }.joined()
         output += "</\(listElementName)>"
         return Markup(output)
     }

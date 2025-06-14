@@ -12,7 +12,9 @@ struct AccordionSubviewsCollection: AccordionElement, RandomAccessCollection {
 
     nonisolated var elements = [AccordionSubview]()
 
-    init() {}
+    init(_ subviews: [AccordionSubview] = []) {
+        self.elements = subviews
+    }
 
     init(_ content: any AccordionElement) {
         self.elements = flattenedChildren(of: content)

@@ -15,7 +15,7 @@ enum ColumnWidth {
     case uniform
 
     /// The columns should be sized based on its content.
-    case intrinsic
+    case variable
 
     /// This element should take up a precise number of columns.
     case count(Int)
@@ -24,7 +24,7 @@ enum ColumnWidth {
     var className: String {
         switch self {
         case .uniform: "col"
-        case .intrinsic: "col-auto"
+        case .variable: "col-auto"
         case .count(let width): "col-md-\(width)"
         }
     }

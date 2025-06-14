@@ -16,6 +16,7 @@ struct ModifiedHTML<Content, Modifier>: Sendable {
     /// The underlying HTML content, unattributed.
     private var content: Content
 
+    /// The modifier applied to the content.
     var modifier: Modifier
 
     init(content: Content, modifier: Modifier) {
@@ -25,6 +26,13 @@ struct ModifiedHTML<Content, Modifier>: Sendable {
 }
 
 extension ModifiedHTML: HTML, VariadicHTML where Content: HTML, Modifier: HTMLModifier {
+    /// Applies the modifier to each child in a collection of HTML subviews.
+    ///
+    /// This method iterates through each child in the provided collection, applies the stored
+    /// modifier to it, and combines the modified children into a new collection.
+    ///
+    /// - Parameter children: A collection of subviews to be modified.
+    /// - Returns: A new `SubviewsCollection` containing the modified children.
     private func modify(children: SubviewsCollection) -> SubviewsCollection {
         var collection = SubviewsCollection()
         for child in children {
@@ -36,9 +44,15 @@ extension ModifiedHTML: HTML, VariadicHTML where Content: HTML, Modifier: HTMLMo
         return collection
     }
 
+    /// Generates the HTML markup for this modified content.
+    ///
+    /// This method determines whether the content is variadic (contains multiple children)
+    /// or singular, then applies the appropriate modification strategy to generate the final markup.
+    ///
+    /// - Returns: A `Markup` object representing the HTML structure after modifications have been applied.
     func markup() -> Markup {
         if let content = content as? any VariadicHTML {
-            return modify(children: content.children).markup()
+            return modify(children: content.subviews).markup()
         } else {
             let proxy = ModifiedContentProxy(content: content, modifier: modifier)
             var modified = modifier.body(content: proxy)
@@ -47,17 +61,20 @@ extension ModifiedHTML: HTML, VariadicHTML where Content: HTML, Modifier: HTMLMo
         }
     }
 
-    var children: SubviewsCollection {
-        var children = (content as? any VariadicHTML)?.children ?? SubviewsCollection(Subview(content))
+    /// The collection of child elements after modifications have been applied.
+    ///
+    /// This computed property first obtains the children from the underlying content,
+    /// then applies the stored modifier to each child. If the content isn't variadic,
+    /// it's treated as a single child.
+    ///
+    /// - Returns: A `SubviewsCollection` containing all modified children.
+    var subviews: SubviewsCollection {
+        let children = (content as? any VariadicHTML)?.subviews ?? SubviewsCollection(Subview(content))
         return modify(children: children)
     }
 }
 
-extension ModifiedHTML: ListElement where Content: ListElement {
-    func markupAsListItem() -> Markup {
-        content.markupAsListItem()
-    }
-}
+extension ModifiedHTML: ListItemProvider where Content: ListItemProvider {}
 
 extension ModifiedHTML: SpacerProvider where Content: SpacerProvider {
     var spacer: Spacer { content.spacer }

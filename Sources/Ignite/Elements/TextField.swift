@@ -208,7 +208,7 @@ public struct TextField<Label: InlineElement>: InlineElement, FormElement {
 
 extension TextField: FormElementRepresentable {
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
-        var copy = self
+        let copy = self
             .size(configuration.controlSize)
             .labelStyle(configuration.labelStyle)
 

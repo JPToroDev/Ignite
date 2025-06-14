@@ -80,7 +80,7 @@ public struct ControlGroup<Content: FormElement>: HTML, FormElement {
 
     public func markup() -> Markup {
         var items = content.subviews().elements
-        if var lastItem = items.last {
+        if let lastItem = items.last {
             items = items.dropLast()
             items.append(lastItem.configuredAsLastItem())
         }
@@ -118,8 +118,6 @@ public struct ControlGroup<Content: FormElement>: HTML, FormElement {
 
 extension ControlGroup: FormElementRepresentable {
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
-        var copy = self
-        copy.labelStyle(configuration.labelStyle)
-        return copy.markup()
+        self.labelStyle(configuration.labelStyle).markup()
     }
 }

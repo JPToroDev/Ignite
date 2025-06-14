@@ -8,7 +8,7 @@
 /// Creates one item in a list. This isn't always needed, because you can place other
 /// elements directly into lists if you wish. Use `ListItem` when you specifically
 /// need a styled HTML <li> element.
-public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML, ListElement {
+public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -68,5 +68,7 @@ public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML, ListEl
         return Markup("<li\(attributes)>\(contentHTML)\(badgeHTML)</li>")
     }
 }
+
+extension ListItem: ListItemProvider {}
 
 extension ListItem: NavigationElement where Content: NavigationElement {}

@@ -5,7 +5,8 @@
 // See LICENSE for license information.
 //
 
+/// A type that applies transformations to its subviews.
 @MainActor
 protocol VariadicHTML {
-    var children: SubviewsCollection { get }
+    var subviews: SubviewsCollection { get }
 }

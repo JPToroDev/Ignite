@@ -21,7 +21,7 @@ extension PackHTML: HTML, SubviewsProvider, VariadicHTML where repeat each Conte
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
     
-    var children: SubviewsCollection {
+    var subviews: SubviewsCollection {
         var children = SubviewsCollection()
         for element in repeat each content {
             // Using the attributes() modifier will change the type to ModifiedHTML,
@@ -34,7 +34,7 @@ extension PackHTML: HTML, SubviewsProvider, VariadicHTML where repeat each Conte
     }
 
     func markup() -> Markup {
-        children.map { $0.markup() }.joined()
+        subviews.map { $0.markup() }.joined()
     }
 }
 
@@ -166,5 +166,3 @@ extension PackHTML: DropdownElement where repeat each Content: DropdownElement {
         return markup
     }
 }
-
-

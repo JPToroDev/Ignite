@@ -5,23 +5,11 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func fontStyleModifier(
-    _ style: Font.Style,
-    content: any HTML
-) -> any HTML {
-    if var provider = content as? any TextProvider & HTML {
-        provider.fontStyle = style
-        return provider
-    } else {
-        return content.class(style.sizeClass)
+private struct FontStyleModifier: HTMLModifier {
+    var style: FontStyle
+    func body(content: Content) -> some HTML {
+        FontStyleModifiedHTML(content: content, style: style)
     }
-}
-
-@MainActor private func fontStyleModifier(
-    _ style: Font.Style,
-    content: some InlineElement
-) -> some InlineElement {
-    content.class(style.sizeClass)
 }
 
 public extension HTML {
@@ -29,15 +17,24 @@ public extension HTML {
     /// - Parameter style: The new heading level.
     /// - Returns: A new `Text` instance with the updated font style.
     func font(_ style: Font.Style) -> some HTML {
-        AnyHTML(fontStyleModifier(style, content: self))
+        modifier(FontStyleModifier(style: style))
     }
 }
 
-public extension InlineElement {
-    /// Adjusts the heading level of this text.
-    /// - Parameter style: The new heading level.
-    /// - Returns: A new `Text` instance with the updated font style.
-    func font(_ style: Font.Style) -> some InlineElement {
-        AnyInlineElement(fontStyleModifier(style, content: self))
+struct FontStyleModifiedHTML: HTML {
+    var body: Never { fatalError() }
+    var attributes = CoreAttributes()
+    var content: any HTML
+    var style: Font.Style
+
+    func markup() -> Markup {
+        var content = content
+        content.attributes.merge(attributes)
+        if var provider = content as? any TextProvider & HTML {
+            provider.fontStyle = style
+            return provider.markup()
+        } else {
+            return content.class(style.sizeClass).markup()
+        }
     }
 }

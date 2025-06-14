@@ -43,14 +43,14 @@ extension Group: HTML, VariadicHTML where Content: HTML {
 
     public func markup() -> Markup {
         if let content = content as? any VariadicHTML {
-            content.children.attributes(attributes).markup()
+            content.subviews.attributes(attributes).markup()
         } else {
             content.attributes(attributes).markup()
         }
     }
 
-    var children: SubviewsCollection {
-        var content = (content as? any VariadicHTML)?.children ?? SubviewsCollection(Subview(content))
+    var subviews: SubviewsCollection {
+        var content = (content as? any SubviewsProvider)?.subviews ?? SubviewsCollection(Subview(content))
         content.attributes.merge(attributes)
         return content
     }

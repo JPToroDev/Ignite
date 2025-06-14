@@ -106,8 +106,6 @@ public struct VStack<Content: HTML>: HTML {
     }
 
     public func markup() -> Markup {
-        var content: any HTML = content
-
         var attributes = attributes
         attributes.append(classes: "vstack")
 
