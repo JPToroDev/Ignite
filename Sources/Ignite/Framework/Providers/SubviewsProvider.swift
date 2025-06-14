@@ -9,3 +9,9 @@
 protocol SubviewsProvider {
     var children: SubviewsCollection { get }
 }
+
+//@MainActor
+//protocol SubviewsProvider {
+//    associatedtype Body: HTML
+//    func body(children: SubviewsCollection) -> Body
+//}

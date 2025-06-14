@@ -18,7 +18,7 @@ public struct ForEach<Data: Sequence, Content>: Sendable {
     var children: SubviewsCollection
 }
 
-extension ForEach: HTML, SubviewsProvider where Content: HTML {
+extension ForEach: HTML, VariadicHTML where Content: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 

@@ -19,7 +19,10 @@ struct ForegroundModifiedInlineElement<Content: InlineElement>: InlineElement {
     }
 
     func markup() -> Markup {
-        switch style {
+        var content = content
+        content.attributes.merge(attributes)
+
+        return switch style {
         case .none:
             content
                 .markup()

@@ -1,20 +1,26 @@
 //
-// InlineSubviewsCollection.swift
+// Children.swift
 // Ignite
 // https://www.github.com/twostraws/Ignite
 // See LICENSE for license information.
 //
 
-struct InlineSubviewsCollection: InlineElement, RandomAccessCollection {
+struct SubviewsCollection: HTML, RandomAccessCollection {
     var body: Never { fatalError() }
 
     var attributes = CoreAttributes()
 
-    nonisolated var elements = [InlineSubview]()
+    nonisolated var elements = [Subview]()
 
-    init() {}
+    init(_ children: [Subview] = []) {
+        self.elements = children
+    }
 
-    init(_ content: any InlineElement) {
+    init(_ children: [any HTML] = []) {
+        self.elements = children.map(Subview.init)
+    }
+
+    init(_ content: any HTML) {
         self.elements = flattenedChildren(of: content)
     }
 
@@ -24,8 +30,8 @@ struct InlineSubviewsCollection: InlineElement, RandomAccessCollection {
 
     // MARK: - RandomAccessCollection Requirements
 
-    typealias Element = InlineSubview
-    typealias Index = Array<InlineSubview>.Index
+    typealias Element = Subview
+    typealias Index = Array<Subview>.Index
 
     nonisolated var startIndex: Index { elements.startIndex }
 
@@ -54,16 +60,16 @@ struct InlineSubviewsCollection: InlineElement, RandomAccessCollection {
     }
 }
 
-private extension InlineSubviewsCollection {
-    func flattenedChildren<T: InlineElement>(of html: T) -> [InlineSubview] {
-        var result: [InlineSubview] = []
+private extension SubviewsCollection {
+    func flattenedChildren<T: HTML>(of html: T) -> [Subview] {
+        var result: [Subview] = []
         collectFlattenedChildren(html, into: &result)
         return result
     }
 
-    func collectFlattenedChildren<T: InlineElement>(_ html: T, into result: inout [InlineSubview]) {
-        guard let subviewsProvider = html as? InlineSubviewsProvider else {
-            result.append(InlineSubview(html))
+    func collectFlattenedChildren<T: HTML>(_ html: T, into result: inout [Subview]) {
+        guard let subviewsProvider = html as? SubviewsProvider else {
+            result.append(Subview(html))
             return
         }
 

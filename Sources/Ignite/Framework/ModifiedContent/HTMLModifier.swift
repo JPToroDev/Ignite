@@ -9,5 +9,5 @@
 public protocol HTMLModifier {
     associatedtype Body: HTML
     typealias Content = ModifiedContentProxy<Self>
-    func body(content: Content) -> Body
+    @HTMLBuilder func body(content: Content) -> Body
 }

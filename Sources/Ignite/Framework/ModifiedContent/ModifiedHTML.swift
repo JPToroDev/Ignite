@@ -24,18 +24,32 @@ struct ModifiedHTML<Content, Modifier>: Sendable {
     }
 }
 
-extension ModifiedHTML: HTML where Content: HTML, Modifier: HTMLModifier {
-    func markup() -> Markup {
-        let proxy = ModifiedContentProxy(content: content, modifier: modifier)
-        var modified = modifier.body(content: proxy)
-        modified.attributes.merge(attributes)
-        return modified.markup()
+extension ModifiedHTML: HTML, VariadicHTML where Content: HTML, Modifier: HTMLModifier {
+    private func modify(children: SubviewsCollection) -> SubviewsCollection {
+        var collection = SubviewsCollection()
+        for child in children {
+            let proxy = ModifiedContentProxy(content: child, modifier: modifier)
+            var modified = modifier.body(content: proxy)
+            modified.attributes.merge(attributes)
+            collection.elements.append(.init(modified))
+        }
+        return collection
     }
-}
 
-extension ModifiedHTML: SubviewsProvider where Content: SubviewsProvider {
+    func markup() -> Markup {
+        if let content = content as? any VariadicHTML {
+            return modify(children: content.children).markup()
+        } else {
+            let proxy = ModifiedContentProxy(content: content, modifier: modifier)
+            var modified = modifier.body(content: proxy)
+            modified.attributes.merge(attributes)
+            return modified.markup()
+        }
+    }
+
     var children: SubviewsCollection {
-        content.children
+        var children = (content as? any VariadicHTML)?.children ?? SubviewsCollection(Subview(content))
+        return modify(children: children)
     }
 }
 

@@ -28,7 +28,7 @@ public struct Group<Content>: Sendable {
     var content: Content
 }
 
-extension Group: HTML where Content: HTML {
+extension Group: HTML, VariadicHTML where Content: HTML {
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.
     public init(@HTMLBuilder content: () -> Content) {
@@ -42,13 +42,17 @@ extension Group: HTML where Content: HTML {
     }
 
     public func markup() -> Markup {
-        content.attributes(attributes).markup()
+        if let content = content as? any VariadicHTML {
+            content.children.attributes(attributes).markup()
+        } else {
+            content.attributes(attributes).markup()
+        }
     }
-}
 
-extension Group: SubviewsProvider where Content: SubviewsProvider {
     var children: SubviewsCollection {
-        content.children
+        var content = (content as? any VariadicHTML)?.children ?? SubviewsCollection(Subview(content))
+        content.attributes.merge(attributes)
+        return content
     }
 }
 

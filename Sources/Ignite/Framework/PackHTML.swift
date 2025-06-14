@@ -17,7 +17,7 @@ struct PackHTML<each Content>: Sendable {
     }
 }
 
-extension PackHTML: HTML, SubviewsProvider where repeat each Content: HTML {
+extension PackHTML: HTML, SubviewsProvider, VariadicHTML where repeat each Content: HTML {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
     
@@ -166,3 +166,5 @@ extension PackHTML: DropdownElement where repeat each Content: DropdownElement {
         return markup
     }
 }
+
+

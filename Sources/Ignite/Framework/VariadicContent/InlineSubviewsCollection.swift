@@ -1,39 +1,23 @@
 //
-// Children.swift
+// InlineSubviewsCollection.swift
 // Ignite
 // https://www.github.com/twostraws/Ignite
 // See LICENSE for license information.
 //
 
-struct SubviewsCollection: HTML, RandomAccessCollection {
+struct InlineSubviewsCollection: InlineElement, RandomAccessCollection {
     var body: Never { fatalError() }
 
     var attributes = CoreAttributes()
 
-    nonisolated var elements = [Subview]()
+    nonisolated var elements = [InlineSubview]()
 
-    init(_ children: [Subview] = []) {
-        self.elements = children
+    init(_ subviews: [InlineSubview] = []) {
+        self.elements = subviews
     }
 
-    init(_ content: any HTML) {
+    init(_ content: any InlineElement) {
         self.elements = flattenedChildren(of: content)
-    }
-
-    init(_ content: any AccordionElement) {
-        if let variad = content as? any SubviewsProvider {
-            self.elements = variad.children.elements
-        } else if let content = content as? any HTML {
-            self.elements = [Subview(content)]
-        }
-    }
-
-    init(_ content: any CarouselElement) {
-        if let variad = content as? any SubviewsProvider {
-            self.elements = variad.children.elements
-        } else if let content = content as? any HTML {
-            self.elements = [Subview(content)]
-        }
     }
 
     func markup() -> Markup {
@@ -42,8 +26,8 @@ struct SubviewsCollection: HTML, RandomAccessCollection {
 
     // MARK: - RandomAccessCollection Requirements
 
-    typealias Element = Subview
-    typealias Index = Array<Subview>.Index
+    typealias Element = InlineSubview
+    typealias Index = Array<InlineSubview>.Index
 
     nonisolated var startIndex: Index { elements.startIndex }
 
@@ -72,16 +56,16 @@ struct SubviewsCollection: HTML, RandomAccessCollection {
     }
 }
 
-private extension SubviewsCollection {
-    func flattenedChildren<T: HTML>(of html: T) -> [Subview] {
-        var result: [Subview] = []
+private extension InlineSubviewsCollection {
+    func flattenedChildren<T: InlineElement>(of html: T) -> [InlineSubview] {
+        var result: [InlineSubview] = []
         collectFlattenedChildren(html, into: &result)
         return result
     }
 
-    func collectFlattenedChildren<T: HTML>(_ html: T, into result: inout [Subview]) {
-        guard let subviewsProvider = html as? SubviewsProvider else {
-            result.append(Subview(html))
+    func collectFlattenedChildren<T: InlineElement>(_ html: T, into result: inout [InlineSubview]) {
+        guard let subviewsProvider = html as? InlineSubviewsProvider else {
+            result.append(InlineSubview(html))
             return
         }
 

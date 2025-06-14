@@ -9,5 +9,5 @@
 public protocol InlineElementModifier {
     associatedtype Body: InlineElement
     typealias Content = InlineModifiedContentProxy<Self>
-    func body(content: Content) -> Body
+    @InlineElementBuilder func body(content: Content) -> Body
 }

@@ -175,7 +175,9 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
     private func renderItems() -> some HTML {
         Section {
-            ForEach(children) { $0 }
+            ForEach(children) {
+                $0.configuredAsCardItem()
+            }
         }
         .class(contentPosition.bodyClasses)
     }
