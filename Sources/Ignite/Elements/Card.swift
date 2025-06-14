@@ -7,18 +7,6 @@
 
 /// A group of information placed inside a gently rounded
 public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
-    /// Styling for this card.
-    public enum Style: CaseIterable, Sendable {
-        /// Default styling.
-        case `default`
-
-        /// Solid background color.
-        case solid
-
-        /// Solid border color.
-        case bordered
-    }
-
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -26,7 +14,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     public var attributes = CoreAttributes()
 
     var role = Role.default
-    var style = Style.default
+    var style = CardStyle.default
 
     var contentPosition = CardContentPosition.default
     var imageOpacity = 1.0
@@ -64,16 +52,16 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
     public init(
         imageName: String? = nil,
-        @HTMLBuilder header: () -> Header,
-        @HTMLBuilder footer: () -> Footer
-    ) where Content == EmptyHTML {
+        @HTMLBuilder content: () -> Content,
+        @HTMLBuilder header: () -> Header
+    ) where Footer == EmptyHTML {
         if let imageName {
             self.image = Image(decorative: imageName)
         }
 
         self.header = header()
-        self.footer = footer()
-        self.children = SubviewsCollection()
+        self.footer = EmptyHTML()
+        self.children = SubviewsCollection(content())
     }
 
     public init(
@@ -103,7 +91,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     /// Adjusts the rendering style of this card.
     /// - Parameter style: The new card style to use.
     /// - Returns: A new `Card` instance with the updated style.
-    public func cardStyle(_ style: Style) -> Card {
+    public func cardStyle(_ style: CardStyle) -> Card {
         var copy = self
         copy.style = style
         return copy

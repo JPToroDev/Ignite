@@ -25,6 +25,6 @@ struct GridItem: HTML {
     }
 
     static var emptyCell: Self {
-        GridItem(Section().class("grid-spacer"))
+        GridItem(Section().class("ig-grid-spacer"))
     }
 }

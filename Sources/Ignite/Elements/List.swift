@@ -160,8 +160,6 @@ public struct List<Content: HTML>: HTML {
 
     /// Renders an individual list row, wrapping it in a `ListItem` when necessary.
     private func renderListRow(_ content: Subview) -> Markup {
-        // Any element that renders its own <li> (e.g. ForEach) should
-        // be allowed to handle that itself.
         if content.wrapped is any ListItemProvider {
             var content = content
             content.attributes.append(classes: listStyle != .automatic ? "list-group-item" : nil)

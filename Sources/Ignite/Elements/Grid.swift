@@ -115,29 +115,22 @@ public struct Grid<Content: HTML>: HTML {
         self.content = content
     }
 
+    /// Controls how grid items size and expand within the grid.
+    /// - Parameter sizing: The sizing behavior to apply to grid items.
+    /// - Returns: A modified copy of this grid with the updated sizing behavior.
     public func gridItemSizing(_ sizing: GridItemSize) -> Self {
         var copy = self
         copy.gridItemSizing = sizing
         return copy
     }
 
-    private func processGridItems(_ children: SubviewsCollection) -> ([GridItem], String) {
-        let gridItems = children.map { $0.resolvedToGridItems() }
-        let maxColumnCount = columnCount ?? gridItems.map(\.count).max() ?? 1
-
-        func padRow(_ row: [GridItem]) -> [GridItem] {
-            guard !(row.count == 1 && row.first?.isFullWidth == true) else { return row }
-            let emptyCellsNeeded = maxColumnCount - row.count
-            return emptyCellsNeeded > 0 ? row + Array(repeating: .emptyCell, count: emptyCellsNeeded) : row
-        }
-
-        return (gridItems.map(padRow).flatMap(\.self), String(maxColumnCount))
-    }
-
-    private func createGridAttributes(columnCount: String) -> CoreAttributes {
+    private func createGridAttributes(columnCount: Int) -> CoreAttributes {
         var attributes = attributes
         attributes.append(styles: gridItemSizing.inlineStyles)
-        attributes.append(styles: .init("--grid-columns", value: columnCount), .init("--grid-gap", value: "20px"))
+        attributes.append(styles:
+            .init("--ig-grid-columns", value: columnCount.formatted()),
+            .init("--ig-grid-gap", value: "20px")
+        )
         return attributes
     }
 
@@ -151,13 +144,72 @@ public struct Grid<Content: HTML>: HTML {
         return Section {
             ForEach(flattenedGridItems) { child in
                 child
-                    .class("grid-item")
+                    .class("ig-grid-item")
             }
         }
         .attributes(attributes)
-        .class("adaptive-grid")
+        .class("ig-adaptive-grid")
         .style(spacingAmount.inlineStyle)
         .style(alignment.gridAlignmentRules)
         .markup()
+    }
+}
+
+private extension Grid {
+    /// Processes child views into grid items and returns flattened items with column count.
+    /// - Parameter children: Collection of subviews to process into grid items
+    /// - Returns: A tuple containing flattened grid items and column count as a string
+    func processGridItems(_ children: SubviewsCollection) -> ([GridItem], Int) {
+        let gridItems = children.map { $0.resolvedToGridItems() }
+
+        if areAllItemsFullWidth(gridItems) {
+            return processFullWidthItems(gridItems)
+        }
+
+        let maxColumnCount = columnCount ?? gridItems.map(\.count).max() ?? 1
+
+        let flattenedItems = gridItems
+            .map { padRow($0, maxColumnCount: maxColumnCount) }
+            .flatMap(\.self)
+
+        return (flattenedItems, maxColumnCount)
+    }
+
+    /// Determines if all grid items are full-width items.
+    /// - Parameter gridItems: 2D array of grid items to check
+    /// - Returns: `true` if all items are full width, `false` otherwise
+    func areAllItemsFullWidth(_ gridItems: [[GridItem]]) -> Bool {
+        gridItems.allSatisfy { row in
+            row.count == 1 && row.first?.isFullWidth == true
+        }
+    }
+
+    /// Pads a row of grid items to match the maximum column count.
+    /// - Parameters:
+    ///   - row: Array of grid items representing a row
+    ///   - maxColumnCount: Maximum number of columns in the grid
+    /// - Returns: Padded array of grid items
+    func padRow(_ row: [GridItem], maxColumnCount: Int) -> [GridItem] {
+        if row.count == 1 && row.first?.isFullWidth == true {
+            guard var item = row.first, let columnCount else { return row }
+            item.attributes.append(styles: .init(.gridColumn, value: "span \(maxColumnCount)"))
+            return [item]
+        }
+
+        let emptyCellsNeeded = maxColumnCount - row.count
+        return emptyCellsNeeded > 0 ? row + Array(repeating: .emptyCell, count: emptyCellsNeeded) : row
+    }
+
+    /// Processes grid items that are all full-width.
+    /// - Parameter gridItems: 2D array of grid items to process
+    /// - Returns: A tuple containing flattened grid items and column count as a string
+    func processFullWidthItems(_ gridItems: [[GridItem]]) -> ([GridItem], Int) {
+        var items = gridItems.flatMap(\.self)
+        items = items.map {
+            var item = $0
+            item.attributes.append(classes: "ig-full-width-grid-item")
+            return item
+        }
+        return (items, columnCount ?? 12)
     }
 }

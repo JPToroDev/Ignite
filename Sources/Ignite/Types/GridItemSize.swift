@@ -16,7 +16,7 @@ public enum GridItemSize: Sendable {
     var inlineStyles: [InlineStyle] {
         switch self {
         case .automatic: []
-        case .adaptive(let minimum): [.init("--grid-min-width", value: minimum.stringValue)]
+        case .adaptive(let minimum): [.init("--ig-grid-item-min-width", value: minimum.stringValue)]
         }
     }
 }
