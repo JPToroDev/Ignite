@@ -10,9 +10,11 @@ public extension HTML {
     /// - Parameter axis: The direction in which resizing is allowed
     /// - Returns: An HTML element that can be resized by the user
     func resizable(_ axis: Axis) -> some HTML {
-        return self
-            .style(.resize, axis.cssValue)
-            .style(.overflow, "auto")
+        self
+            .style(
+                .init(.resize, value: axis.cssValue),
+                .init(.overflow, value: "auto")
+            )
     }
 }
 

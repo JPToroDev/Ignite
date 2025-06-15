@@ -5,5 +5,5 @@
 // See LICENSE for license information.
 //
 
-/// Whether the root view of this HTML resolves to a `Column`.
+/// A type that has a `Column` as its root view.
 protocol ColumnProvider {}

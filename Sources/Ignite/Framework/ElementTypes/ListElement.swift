@@ -5,6 +5,6 @@
 // See LICENSE for license information.
 //
 
-/// An element that handles list rendering by placing its <li> tag manually.
+/// A type whose root view is a `ListItem`.
 @MainActor
 protocol ListItemProvider {}

@@ -73,6 +73,10 @@ public struct Spacer: HTML, NavigationElement {
     }
 }
 
+extension Spacer: SpacerProvider {
+    var spacer: Spacer { self }
+}
+
 extension Spacer: NavigationElementRepresentable {
     func renderAsNavigationElement() -> Markup {
         self.axis(.horizontal).render()

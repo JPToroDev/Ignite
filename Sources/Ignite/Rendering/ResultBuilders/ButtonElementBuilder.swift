@@ -37,10 +37,11 @@ public struct ButtonElementBuilder {
 }
 
 public extension ButtonElementBuilder {
+    /// An HTML representation of the content of a builder-based button group.
     struct Content<C>: HTML where C: ButtonElement {
         public var body: Never { fatalError() }
         public var attributes = CoreAttributes()
-        var content: C
+        private var content: C
 
         init(_ content: C) {
             self.content = content

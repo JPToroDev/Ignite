@@ -38,4 +38,4 @@ public struct Row<Content: HTML>: HTML {
     }
 }
 
-extension Row: TableRowElement {}
+extension Row: TableElement {}

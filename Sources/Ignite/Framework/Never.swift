@@ -5,7 +5,6 @@
 // See LICENSE for license information.
 //
 
-extension Never: @retroactive CustomStringConvertible {}
 extension Never: HTML, InlineElement {
     public var body: Never {
         return fatalError("Never has no body")
@@ -19,3 +18,5 @@ extension Never: HTML, InlineElement {
         fatalError("Never cannot produce markup")
     }
 }
+
+extension Never: @retroactive CustomStringConvertible {}

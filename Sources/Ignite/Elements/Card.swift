@@ -5,9 +5,12 @@
 // See LICENSE for license information.
 //
 
-/// A type that has a distinct configuration when housed in a `Card`.
+/// A type that provides a specialized configuration
+/// when displayed within a card container.
 @MainActor
 protocol CardComponentConfigurable {
+    /// Returns the original element, configured for display
+    /// within in a `Card`, in an opaque wrapper.
     func configuredAsCardComponent() -> CardComponent
 }
 

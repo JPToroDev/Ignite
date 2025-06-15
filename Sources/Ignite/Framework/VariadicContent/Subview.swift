@@ -23,8 +23,7 @@ struct Subview: HTML {
         return wrapped
     }
 
-    /// Creates a new `Child` instance that wraps the given HTML content.
-    /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
+    /// Creates a new `Subview` instance that wraps the given HTML content.
     /// - Parameter content: The HTML content to wrap
     init(_ wrapped: any HTML) {
         self.content = wrapped
@@ -45,6 +44,8 @@ extension Subview: Equatable {
 
 extension Subview {
     func configuredAsCardComponent() -> CardComponent {
+        /// Returns the wrapped element, configured for display
+        /// within in a `Card`, in an opaque wrapper.
         if let wrapped = wrapped as? any CardComponentConfigurable {
             return wrapped.configuredAsCardComponent()
         }
@@ -53,6 +54,7 @@ extension Subview {
 }
 
 extension Subview {
+    /// Converts the wrapped content into an array of grid items.
     func resolvedToGridItems() -> [GridItem] {
         if let row = wrapped as? any GridItemProvider {
             return row.gridItems()

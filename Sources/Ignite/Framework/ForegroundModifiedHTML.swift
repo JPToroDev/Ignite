@@ -14,10 +14,10 @@ struct ForegroundModifiedHTML<Content: HTML>: HTML {
     var attributes = CoreAttributes()
 
     /// The HTML content to be styled.
-    var content: Content
+    private var content: Content
 
     /// The foreground style to apply to the content.
-    var style: ForegroundStyleType
+    private var style: ForegroundStyleType
 
     /// Creates a foreground-modified HTML element.
     /// - Parameters:
@@ -29,50 +29,46 @@ struct ForegroundModifiedHTML<Content: HTML>: HTML {
     }
 
     func render() -> Markup {
+        content is any TextProvider ? renderTextProvider() : renderStandardElement()
+    }
+
+    private func renderTextProvider() -> Markup {
         var content = content
         content.attributes.merge(attributes)
-
         return switch style {
-        case .none:
-            content
-                .render()
-        case .gradient(let gradient) where content is any TextProvider:
-            content
-                .style(gradient.styles)
-                .render()
+        case .none: content.render()
+        case .gradient(let gradient):
+            content.style(gradient.styles).render()
+        case .string(let string):
+            content.style(.color, string).render()
+        case .color(let color):
+            content.style(.color, color.description).render()
+        case .style(let foregroundStyle):
+            content.class(foregroundStyle.rawValue).render()
+        }
+    }
+
+    private func renderStandardElement() -> Markup {
+        var content = content
+        content.attributes.merge(attributes)
+        return switch style {
+        case .none: content.render()
         case .gradient(let gradient):
             Section(content.class("color-inherit"))
                 .style(gradient.styles)
-                .render()
-        case .string(let string) where content is any TextProvider:
-            content
-                .style(.color, string)
                 .render()
         case .string(let string):
             Section(content.class("color-inherit"))
                 .style(.color, string)
                 .render()
-        case .color(let color) where content is any TextProvider:
-            content
-                .style(.color, color.description)
-                .render()
         case .color(let color):
             Section(content.class("color-inherit"))
                 .style(.color, color.description)
                 .render()
-        case .style(let foregroundStyle):
-            content
-                .class(foregroundStyle.rawValue)
+        case .style(let style):
+            Section(content.class("color-inherit"))
+                .style(.color, style.rawValue)
                 .render()
         }
-    }
-}
-
-extension ForegroundModifiedHTML: ColumnProvider where Content: ColumnProvider {}
-
-extension ForegroundModifiedHTML: TextProvider where Content: TextProvider {
-    var fontStyle: FontStyle {
-        get { content.fontStyle }
-        set { content.fontStyle = newValue }
     }
 }

@@ -5,9 +5,13 @@
 // See LICENSE for license information.
 //
 
+/// A modifier that applies margin spacing to inline elements.
 private struct MarginInlineModifier: InlineElementModifier {
+    /// The amount of margin to apply.
     var margin: MarginAmount
+    /// The edges where margin should be applied.
     var edges: Edge
+    
     func body(content: Content) -> some InlineElement {
         var modified = content
 

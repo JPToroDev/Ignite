@@ -196,7 +196,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         let collapsibleItems = items.filter { $0.navigationBarVisibility == .automatic }
         /// The number of controls that aren't `Spacer`,
         /// used to determine the gap class that should be used.
-        let visibleControlCount = pinnedItems.count(where: { !($0.content is any SpacerProvider) })
+        let visibleControlCount = pinnedItems.count(where: { $0.isSpacer })
 
         return Tag("header") {
             Tag("nav") {

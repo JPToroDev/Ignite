@@ -41,11 +41,11 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
     ///   - rows: An array of rows to use in the table.
     public init<C>(
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: () -> C
-    ) where Rows == TableRowElementBuilder.Content<C>, C: TableRowElement, Header == EmptyHTML {
+        @TableElementBuilder rows: () -> C
+    ) where Rows == TableElementBuilder.Content<C>, C: TableElement, Header == EmptyHTML {
         self.filterTitle = filterTitle
         self.header = EmptyHTML()
-        self.rows = TableRowElementBuilder.Content(rows())
+        self.rows = TableElementBuilder.Content(rows())
     }
 
     /// Creates a new `Table` instance from an element builder that returns
@@ -58,11 +58,11 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
     ///   - header: An array of headers to use at the top of the table.
     public init<C>(
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: () -> C,
+        @TableElementBuilder rows: () -> C,
         @HTMLBuilder header: () -> Header
-    ) where Rows == TableRowElementBuilder.Content<C>, C: TableRowElement, Header == EmptyHTML {
+    ) where Rows == TableElementBuilder.Content<C>, C: TableElement, Header == EmptyHTML {
         self.filterTitle = filterTitle
-        self.rows = TableRowElementBuilder.Content(rows())
+        self.rows = TableElementBuilder.Content(rows())
         self.header = header()
     }
 
@@ -77,16 +77,16 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
     public init<C, T, S: Sequence>(
         _ items: S,
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: @escaping (T) -> C
+        @TableElementBuilder rows: @escaping (T) -> C
     ) where
         S.Element == T,
         Header == EmptyHTML,
-        Rows == TableRowElementBuilder.Content<ForEach<Array<T>, C>>,
-        C: TableRowElement
+        Rows == TableElementBuilder.Content<ForEach<Array<T>, C>>,
+        C: TableElement
     {
         self.filterTitle = filterTitle
         let content = ForEach(Array(items), content: rows)
-        self.rows = TableRowElementBuilder.Content(content)
+        self.rows = TableElementBuilder.Content(content)
         self.header = EmptyHTML()
     }
 
@@ -102,16 +102,16 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
     public init<C, T, S: Sequence>(
         _ items: S,
         filterTitle: String? = nil,
-        @TableRowElementBuilder rows: @escaping (T) -> C,
+        @TableElementBuilder rows: @escaping (T) -> C,
         @HTMLBuilder header: () -> Header
     ) where
         S.Element == T,
-        Rows == TableRowElementBuilder.Content<ForEach<Array<T>, C>>,
-        C: TableRowElement
+        Rows == TableElementBuilder.Content<ForEach<Array<T>, C>>,
+        C: TableElement
     {
         self.filterTitle = filterTitle
         let content = ForEach(Array(items), content: rows)
-        self.rows = TableRowElementBuilder.Content(content)
+        self.rows = TableElementBuilder.Content(content)
         self.header = header()
     }
 

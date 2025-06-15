@@ -9,7 +9,11 @@
 /// - Warning: Do not conform to this type directly.
 @MainActor
 public protocol NavigationElement {
+    /// Core attributes for the navigation element.
     var attributes: CoreAttributes { get set }
+
+    /// Renders the element as markup.
+    /// - Returns: The rendered markup for the element.
     func render() -> Markup
 }
 
@@ -27,13 +31,7 @@ public extension NavigationElement where Self: InlineElement {
     }
 }
 
-public extension NavigationElement where Self: HTML {
-    func render() -> Markup {
-        fatalError("This protocol should not be conformed to directly.")
-    }
-}
-
-public extension NavigationElement where Self: InlineElement {
+public extension NavigationElement {
     func render() -> Markup {
         fatalError("This protocol should not be conformed to directly.")
     }

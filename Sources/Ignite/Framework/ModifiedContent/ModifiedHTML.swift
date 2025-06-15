@@ -5,6 +5,10 @@
 // See LICENSE for license information.
 //
 
+/// A container that applies a modifier to HTML content.
+///
+/// Use `ModifiedHTML` to wrap content with styling, attributes, or behavior modifications
+/// while preserving the original content structure.
 @MainActor
 struct ModifiedHTML<Content, Modifier>: Sendable {
     /// The body of this HTML element, which is itself
@@ -19,6 +23,10 @@ struct ModifiedHTML<Content, Modifier>: Sendable {
     /// The modifier applied to the content.
     var modifier: Modifier
 
+    /// Creates a modified HTML container.
+    /// - Parameters:
+    ///   - content: The HTML content to modify.
+    ///   - modifier: The modifier to apply to the content.
     init(content: Content, modifier: Modifier) {
         self.content = content
         self.modifier = modifier

@@ -15,6 +15,8 @@ public protocol Document {
     /// The metadata section of the document.
     var head: Head { get }
 
+    /// Renders the document as markup.
+    /// - Returns: The rendered markup representation.
     func render() -> Markup
 }
 

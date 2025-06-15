@@ -9,7 +9,11 @@
 /// - Warning: Do not conform to this type directly.
 @MainActor
 public protocol HeadElement: Sendable {
+    /// The standard set of control attributes for HTML elements.
     var attributes: CoreAttributes { get set }
+
+    /// Renders the head element as markup.
+    /// - Returns: The rendered markup representation.
     func render() -> Markup
 }
 

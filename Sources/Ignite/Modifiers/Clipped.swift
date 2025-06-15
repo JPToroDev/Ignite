@@ -5,8 +5,14 @@
 // See LICENSE for license information.
 //
 
-struct ClippedModifier: HTMLModifier {
+/// A modifier that controls content clipping behavior.
+private struct ClippedModifier: HTMLModifier {
+    /// Whether content should be clipped to the element's bounds.
     var isClipped: Bool = true
+    
+    /// Applies overflow styling to the content.
+    /// - Parameter content: The HTML content to modify.
+    /// - Returns: The content with overflow styling applied.
     func body(content: Content) -> some HTML {
         content.style(.overflow, isClipped ? "hidden" : "visible")
     }
@@ -17,6 +23,6 @@ public extension HTML {
     /// - Parameter clipped: Whether content should be visible outside the container bounds.
     /// - Returns: A modified copy of the element with clipping applied
     func clipped(_ clipped: Bool = true) -> some HTML {
-        ModifiedHTML(content: self, modifier: ClippedModifier(isClipped: clipped))
+        modifier(ClippedModifier(isClipped: clipped))
     }
 }

@@ -5,15 +5,22 @@
 // See LICENSE for license information.
 //
 
-/// Elements that conform to `DropdownElement` can be shown inside
-/// Dropdown objects.
+/// A protocol for elements that can be displayed within dropdown menus.
+/// - Warning: Do not conform to this type directly.
 @MainActor
 public protocol DropdownElement {
+    /// Core attributes for the dropdown element.
     var attributes: CoreAttributes { get set }
+    
+    /// Renders the element as markup.
+    /// - Returns: The rendered markup for the element.
     func render() -> Markup
 }
 
+/// A protocol for types that render differently when placed inside a dropdown.
 @MainActor
 protocol DropdownElementRepresentable {
+    /// Renders the element specifically for dropdown display.
+    /// - Returns: The rendered markup optimized for dropdown presentation.
     func renderAsDropdownElement() -> Markup
 }

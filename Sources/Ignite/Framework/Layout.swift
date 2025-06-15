@@ -31,8 +31,6 @@ public extension Layout {
     /// The current page being rendered.
     var content: some HTML {
         let environment = PublishingContext.shared.environment
-        return Section(AnyHTML(environment.pageContent))
-            .class("ig-main-content")
-            .class(environment.isUsingFlexDocument ? "d-flex flex-column flex-grow-1" : nil)
+        return PageContent(environment.pageContent)
     }
 }

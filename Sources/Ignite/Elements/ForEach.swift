@@ -69,14 +69,14 @@ extension ForEach: AccordionElement where Content: AccordionElement {
     }
 }
 
-extension ForEach: TableRowElement where Content: TableRowElement {
+extension ForEach: TableElement where Content: TableElement {
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:
     ///   - data: The sequence to iterate over.
     ///   - content: A closure that converts each element into HTML content.
     init(
         _ data: Data,
-        @TableRowElementBuilder content: @escaping (Data.Element) -> Content
+        @TableElementBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.data = data
         self.items = data.map(content)
@@ -100,7 +100,7 @@ extension ForEach: CarouselElement where Content: CarouselElement {
     ///   - content: A closure that converts each element into HTML content.
     init(
         _ data: Data,
-        @TableRowElementBuilder content: @escaping (Data.Element) -> Content
+        @TableElementBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.data = data
         self.items = data.map(content)

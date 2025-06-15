@@ -5,13 +5,6 @@
 // See LICENSE for license information.
 //
 
-@MainActor private func gridColumnWidthModifier(
-    _ width: ColumnWidth,
-    content: some InlineElement
-) -> some HTML {
-    InlineHTML(content).class(width.className)
-}
-
 public extension HTML {
     /// Adjusts the number of columns assigned to this element.
     /// - Parameter width: The new number of columns to use.
@@ -25,7 +18,7 @@ public extension InlineElement {
     /// Adjusts the number of columns assigned to this element.
     /// - Parameter width: The new number of columns to use.
     /// - Returns: A new element with the adjusted column width.
-    func gridCellColumns(_ width: Int) -> some HTML {
-        InlineHTML(self.style(.gridColumn, "span \(width)"))
+    func gridCellColumns(_ width: Int) -> some InlineElement {
+        self.style(.gridColumn, "span \(width)")
     }
 }

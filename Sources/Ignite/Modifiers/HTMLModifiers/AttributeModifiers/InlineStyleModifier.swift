@@ -5,8 +5,12 @@
 // See LICENSE for license information.
 //
 
+/// A modifier that applies inline CSS styles to HTML elements.
 private struct InlineStyleModifier: HTMLModifier {
+    /// The inline styles to apply.
     var styles: [InlineStyle]
+    
+    /// Applies the inline styles to the content.
     func body(content: Content) -> some HTML {
         var content = content
         content.attributes.append(styles: styles)

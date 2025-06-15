@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-/// An opaque value representing the child of another view.
+/// An opaque HTML element representing a subview of an `Carousel`.
 struct CarouselSubview: HTML {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
@@ -23,23 +23,15 @@ struct CarouselSubview: HTML {
         return wrapped
     }
 
-    /// Creates a new `Child` instance that wraps the given HTML content.
-    /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
-    /// - Parameter content: The HTML content to wrap
+    /// Creates a new `CarouselSubview` instance that wraps the element.
+    /// - Parameter wrapped: The element to wrap
     init(_ wrapped: any CarouselElement) {
-        var content = wrapped
-        // Make Child the single source of truth for attributes
-        // and modified attributes directly to keep type unchanged
-        attributes.merge(content.attributes)
-        content.attributes.clear()
-        self.content = content
+        self.content = wrapped
     }
 
     nonisolated func render() -> Markup {
         MainActor.assumeIsolated {
-            var content = wrapped
-            content.attributes.merge(attributes)
-            return content.render()
+            wrapped.render()
         }
     }
 }

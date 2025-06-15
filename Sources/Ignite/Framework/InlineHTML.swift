@@ -31,21 +31,17 @@ public struct InlineHTML<Content: InlineElement>: HTML {
     }
 }
 
-extension InlineHTML: ImageProvider where Content: ImageProvider {}
-
 extension InlineHTML: CardComponentConfigurable where Content: CardComponentConfigurable {
     func configuredAsCardComponent() -> CardComponent {
         content.configuredAsCardComponent()
     }
 }
 
-extension InlineHTML: @MainActor LinkProvider where Content: LinkProvider {
+extension InlineHTML: LinkProvider where Content: LinkProvider {
     var url: String {
         content.url
     }
 }
-
-extension InlineHTML: NavigationElement where Content: NavigationElement {}
 
 extension InlineHTML: NavigationElementRepresentable where Content: NavigationElementRepresentable {
     func renderAsNavigationElement() -> Markup {
@@ -58,3 +54,7 @@ extension InlineHTML: FormElementRepresentable where Content: FormElementReprese
         content.renderAsFormElement(configuration)
     }
 }
+
+extension InlineHTML: NavigationElement where Content: NavigationElement {}
+
+extension InlineHTML: ImageProvider where Content: ImageProvider {}

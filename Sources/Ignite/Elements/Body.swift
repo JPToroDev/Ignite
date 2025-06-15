@@ -178,12 +178,12 @@ public extension Body {
         height: LengthUnit? = nil,
         maxHeight: LengthUnit? = nil
     ) -> Self {
-        let dimensionStyles = Ignite.frameModifier(
-            width: width,
+        let dimensionStyles = FrameInlineModifier.styles(
             minWidth: minWidth,
+            width: width,
             maxWidth: maxWidth,
-            height: height,
             minHeight: minHeight,
+            height: height,
             maxHeight: maxHeight)
         var copy = self
         copy.attributes.append(styles: dimensionStyles)

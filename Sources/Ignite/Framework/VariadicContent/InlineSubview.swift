@@ -24,22 +24,14 @@ struct InlineSubview: InlineElement {
     }
 
     /// Creates a new `Child` instance that wraps the given HTML content.
-    /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
     /// - Parameter content: The HTML content to wrap
     init(_ wrapped: any InlineElement) {
-        var content = wrapped
-        // Make Child the single source of truth for attributes
-        // and modified attributes directly to keep type unchanged
-        attributes.merge(content.attributes)
-        content.attributes.clear()
-        self.content = content
+        self.content = wrapped
     }
 
     nonisolated func render() -> Markup {
         MainActor.assumeIsolated {
-            var content = wrapped
-            content.attributes.merge(attributes)
-            return content.render()
+            wrapped.render()
         }
     }
 }

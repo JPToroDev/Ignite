@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
+/// A collection of navigation subviews that flattens hierarchical navigation elements.
 struct NavigationSubviewsCollection: HTML, RandomAccessCollection {
     var body: Never { fatalError() }
 
@@ -12,19 +13,22 @@ struct NavigationSubviewsCollection: HTML, RandomAccessCollection {
 
     nonisolated var elements = [NavigationSubview]()
 
+    /// Creates a collection by flattening the children of a navigation element.
+    /// - Parameter child: The navigation element to flatten.
     init(_ child: any NavigationElement) {
         self.elements = flattenedChildren(of: child)
     }
     
+    /// Creates an empty collection.
     init() {
         self.elements = []
     }
 
+    /// Renders all elements in the collection as markup.
+    /// - Returns: The joined markup from all rendered elements.
     func render() -> Markup {
         elements.map { $0.render() }.joined()
     }
-
-    // MARK: - RandomAccessCollection Requirements
 
     typealias Element = NavigationSubview
     typealias Index = Array<NavigationSubview>.Index
@@ -56,19 +60,26 @@ struct NavigationSubviewsCollection: HTML, RandomAccessCollection {
 }
 
 private extension NavigationSubviewsCollection {
+    /// Flattens the hierarchy of a navigation element into an array of subviews.
+    /// - Parameter html: The navigation element to flatten.
+    /// - Returns: An array of flattened navigation subviews.
     func flattenedChildren<T: NavigationElement>(of html: T) -> [NavigationSubview] {
         var result: [NavigationSubview] = []
         collectFlattenedChildren(html, into: &result)
         return result
     }
 
+    /// Recursively collects flattened children from a navigation element.
+    /// - Parameters:
+    ///   - html: The navigation element to process.
+    ///   - result: The array to collect flattened children into.
     func collectFlattenedChildren<T: NavigationElement>(_ html: T, into result: inout [NavigationSubview]) {
         guard let subviewsProvider = html as? NavigationSubviewsProvider else {
             result.append(NavigationSubview(html))
             return
         }
 
-        for child in subviewsProvider.children.elements.map(\.content) {
+        for child in subviewsProvider.children.elements.map(\.wrapped) {
             collectFlattenedChildren(child, into: &result)
         }
     }

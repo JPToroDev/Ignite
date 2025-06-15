@@ -9,5 +9,6 @@
 /// during rendering.
 @MainActor
 protocol VariadicHTML {
+    /// The subviews of the element's content.
     var subviews: SubviewsCollection { get }
 }

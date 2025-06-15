@@ -5,15 +5,33 @@
 // See LICENSE for license information.
 //
 
+/// A container that wraps navigation elements and manages their rendering behavior.
 struct NavigationSubview: HTML {
+    /// The content and behavior of this HTML.
     var body: Never { fatalError() }
     
     var attributes = CoreAttributes()
    
-    var content: any NavigationElement
+    /// The navigation element to be rendered.
+    private var content: any NavigationElement
 
+    /// The underlying HTML content, with attributes.
+    var wrapped: any NavigationElement {
+        var wrapped = content
+        wrapped.attributes.merge(attributes)
+        return wrapped
+    }
+
+    /// Whether this element resolves to a `Spacer`.
+    var isSpacer: Bool {
+        content is any SpacerProvider
+    }
+
+    /// Controls the visibility of the navigation bar.
     var navigationBarVisibility: NavigationBarVisibility = .automatic
     
+    /// Creates a navigation subview with the specified content.
+    /// - Parameter content: The navigation element to wrap.
     init(_ content: any NavigationElement) {
         self.content = content
 
@@ -22,14 +40,13 @@ struct NavigationSubview: HTML {
         }
     }
     
+    /// Renders the navigation content as markup.
+    /// - Returns: The rendered markup for the navigation element.
     func render() -> Markup {
-        var content = content
-        content.attributes.merge(attributes)
-
-        return if let element = content as? any NavigationElementRepresentable {
+        return if let element = wrapped as? any NavigationElementRepresentable {
             element.renderAsNavigationElement()
         } else {
-            content.render()
+            wrapped.render()
         }
     }
 }

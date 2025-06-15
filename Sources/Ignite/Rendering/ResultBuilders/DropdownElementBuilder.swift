@@ -41,8 +41,8 @@ public extension DropdownElementBuilder {
     struct Content<C>: HTML where C: DropdownElement {
         public var body: Never { fatalError() }
         public var attributes = CoreAttributes()
-        var content: C
-        
+        private var content: C
+
         init(_ content: C) {
             self.content = content
         }
