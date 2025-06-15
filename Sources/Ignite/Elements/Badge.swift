@@ -17,7 +17,7 @@ public struct Badge<Content: InlineElement>: InlineElement {
     private var style = BadgeStyle.default
     private var role = Role.default
 
-    var badgeClasses: [String] {
+    private var badgeClasses: [String] {
         var outputClasses = ["badge"]
         outputClasses.append(contentsOf: attributes.classes)
 

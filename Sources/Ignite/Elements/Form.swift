@@ -5,13 +5,14 @@
 // See LICENSE for license information.
 //
 
+/// A type that has a unique configuration when placed in a `Form`.
 @MainActor
-protocol FormElementRepresentable: FormElement {
+protocol FormElementRepresentable {
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup
 }
 
 /// A form container for collecting user input
-public struct Form<Content: FormElement>: HTML, NavigationElement {
+public struct Form<Content: HTML>: HTML, NavigationElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -22,7 +23,7 @@ public struct Form<Content: FormElement>: HTML, NavigationElement {
     public var navigationBarVisibility: NavigationBarVisibility = .automatic
 
     /// The form elements to be rendered.
-    private var content: FormElement
+    private var content: Content
 
     /// The configuration of the form.
     private var configuration = FormConfiguration()
@@ -30,7 +31,7 @@ public struct Form<Content: FormElement>: HTML, NavigationElement {
     /// Sets the style for form labels
     /// - Parameter style: How labels should be displayed
     /// - Returns: A modified form with the specified label style
-    public func labelStyle(_ style: ControlLabelStyle) -> some HTML {
+    public func labelStyle(_ style: ControlLabelStyle) -> Self {
         var copy = self
         copy.configuration.labelStyle = style
         return copy
@@ -48,7 +49,8 @@ public struct Form<Content: FormElement>: HTML, NavigationElement {
     /// Adjusts the number of columns that can be fitted into this section.
     /// - Parameter columns: The number of columns to use
     /// - Returns: A new `Section` instance with the updated column count.
-    public func columns(_ columns: Int) -> some HTML {
+    @available(*, deprecated, message: "All forms now have a fixed width of 12 columns.")
+    public func columns(_ columns: Int) -> Self {
         var copy = self
         copy.configuration.columnCount = columns
         return copy
@@ -60,7 +62,7 @@ public struct Form<Content: FormElement>: HTML, NavigationElement {
     ///   - content: A closure that returns the form's elements.
     public init(
         spacing: SemanticSpacing = .medium,
-        @FormElementBuilder content: () -> Content
+        @HTMLBuilder content: () -> Content
     ) {
         self.content = content()
         self.configuration.spacing = spacing
@@ -80,30 +82,12 @@ public struct Form<Content: FormElement>: HTML, NavigationElement {
 
         return Tag("form") {
             ForEach(items) { item in
-                item
+                FormItem(item.wrapped)
                     .formConfiguration(configuration)
-                    .class(getColumnClass(for: item))
             }
         }
         .attributes(attributes)
         .class(configuration.labelStyle == .leading ? nil : "row g-\(configuration.spacing.rawValue)")
         .markup()
-    }
-
-    /// Calculates the appropriate Bootstrap column class for an HTML element.
-    /// - Parameters:
-    ///   - item: The HTML element to calculate the column class for.
-    ///   - totalColumns: The total number of columns in the form's grid.
-    /// - Returns: A string containing the appropriate Bootstrap column class.
-    private func getColumnClass(for item: any HTML) -> String {
-        if let widthClass = item.attributes.classes.first(where: { $0.starts(with: "col-md-") }),
-           let width = Int(widthClass.dropFirst("col-md-".count)) {
-            let bootstrapColumns = 12 * width / configuration.columnCount
-            return "col-md-\(bootstrapColumns)"
-        } else if item.attributes.classes.contains("col") {
-            return "col"
-        } else {
-            return "col-auto"
-        }
     }
 }

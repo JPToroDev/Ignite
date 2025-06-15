@@ -21,27 +21,16 @@ public struct Section<Content>: Sendable {
     public var attributes = CoreAttributes()
 
     /// The heading text of the section.
-    var header: String?
+    private var header: String?
 
     /// The heading's semantic font size.
-    var headerStyle: Font.Style = .title2
+    private var headerStyle: Font.Style = .title2
 
-    var content: Content
+    /// The content of the section.
+    private var content: Content
 }
 
-extension Section: HTML where Content: HTML {
-    init(_ content: Content) {
-        self.content = content
-    }
-
-    init() where Content == EmptyHTML {
-        self.content = EmptyHTML()
-    }
-
-    init<T: InlineElement>(_ content: T) where Content == InlineHTML<T> {
-        self.content = InlineHTML(content)
-    }
-
+extension Section: HTML, FormElementRepresentable where Content: HTML {
     /// Creates a section that renders as a `div` element.
     /// - Parameter content: The content to display within this section.
     public init(@HTMLBuilder content: () -> Content) {
@@ -55,6 +44,18 @@ extension Section: HTML where Content: HTML {
     public init(_ header: String, @HTMLBuilder content: () -> Content) {
         self.content = content()
         self.header = header
+    }
+
+    init(_ content: Content) {
+        self.content = content
+    }
+
+    init() where Content == EmptyHTML {
+        self.content = EmptyHTML()
+    }
+
+    init<T: InlineElement>(_ content: T) where Content == InlineHTML<T> {
+        self.content = InlineHTML(content)
     }
 
     /// Adjusts the semantic importance of the section's header by changing its font style.
@@ -73,12 +74,6 @@ extension Section: HTML where Content: HTML {
             return Markup("<section\(attributes)>\(headerHTML + contentHTML)</section>")
         }
         return Markup("<div\(attributes)>\(contentHTML)</div>")
-    }
-}
-
-extension Section: FormElement, FormElementRepresentable where Content: FormElement {
-    public func markup() -> Markup {
-        content.markup()
     }
 
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
@@ -104,7 +99,8 @@ extension Section: FormElement, FormElementRepresentable where Content: FormElem
             }
 
             ForEach(subviews) { item in
-                item.formConfiguration(configuration)
+                FormItem(item)
+                    .formConfiguration(configuration)
             }
         }
         .markup()

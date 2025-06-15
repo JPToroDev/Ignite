@@ -20,7 +20,7 @@ public struct ArticlePreview: HTML {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    var article: Article
+    private var article: Article
 
     /// Custom style for the article preview.
     private var style: ArticlePreviewStyle?

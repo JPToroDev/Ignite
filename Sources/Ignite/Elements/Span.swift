@@ -7,7 +7,7 @@
 
 /// An inline subsection of another element, useful when you need to style
 /// just part of some text, for example.
-public struct Span<Content: InlineElement>: InlineElement, NavigationElement, FormElement {
+public struct Span<Content: InlineElement>: InlineElement, NavigationElement, ControlGroupElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 

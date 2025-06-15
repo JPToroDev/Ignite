@@ -47,3 +47,18 @@ extension ConditionalHTML: InlineElement, CustomStringConvertible where TrueCont
         }
     }
 }
+
+extension ConditionalHTML: ControlGroupElement where TrueContent: ControlGroupElement, FalseContent: ControlGroupElement {
+    public func markup() -> Markup {
+        switch storage {
+        case .trueContent(let content):
+            var content = content
+            content.attributes.merge(attributes)
+            return content.markup()
+        case .falseContent(let content):
+            var content = content
+            content.attributes.merge(attributes)
+            return content.markup()
+        }
+    }
+}

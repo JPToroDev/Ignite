@@ -6,7 +6,7 @@
 //
 
 /// A clickable button with a label and styling.
-public struct Button<Label: InlineElement>: InlineElement, FormElement {
+public struct Button<Label: InlineElement>: InlineElement, ControlGroupElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -14,19 +14,19 @@ public struct Button<Label: InlineElement>: InlineElement, FormElement {
     public var attributes = CoreAttributes()
 
     /// Whether this button should submit a form or not. Defaults to `.plain`.
-    var type = ButtonType.plain
+    private var type = ButtonType.plain
 
     /// How large this button should be drawn. Defaults to `.medium`.
-    var size = ButtonSize.medium
+    private var size = ButtonSize.medium
 
     /// How this button should be styled on the screen. Defaults to `.default`.
-    var role = Role.default
+    private var role = Role.default
 
     /// Elements to render inside this button.
-    var label: any InlineElement
+    private var label: Label
 
     /// The icon element to display before the title.
-    var systemImage: String?
+    private var systemImage: String?
 
     /// Whether the button is disabled and cannot be interacted with.
     private var isDisabled = false
@@ -177,15 +177,6 @@ public struct Button<Label: InlineElement>: InlineElement, FormElement {
         }
         labelHTML += label.markupString()
         return Markup("<button type=\"\(type.htmlName)\"\(buttonAttributes)>\(labelHTML)</button>")
-    }
-}
-
-public extension Button {
-    /// Adjusts the number of columns assigned to this element.
-    /// - Parameter width: The new number of columns to use.
-    /// - Returns: A copy of the current element with the adjusted column width.
-    func width(_ width: Int) -> some InlineElement {
-        self.class("w-100", ColumnWidth.count(width).className)
     }
 }
 

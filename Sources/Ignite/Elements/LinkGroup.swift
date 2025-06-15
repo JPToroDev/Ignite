@@ -16,7 +16,7 @@ public struct LinkGroup<Content: HTML>: HTML {
     public var attributes = CoreAttributes()
 
     /// The content to display inside this link.
-    var content: Content
+    private var content: Content
 
     /// The location to which this link should direct users.
     var url: String

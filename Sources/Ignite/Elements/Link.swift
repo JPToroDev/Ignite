@@ -19,22 +19,22 @@ public struct Link<Content: InlineElement>: InlineElement, NavigationElement, Dr
     public var navigationBarVisibility: NavigationBarVisibility = .automatic
 
     /// The content to display inside this link.
-    var content: Content
+    private var content: Content
 
     /// The location to which this link should direct users.
     var url: String
 
     /// The style for this link. Defaults to `.automatic`.
-    var style = LinkStyle.automatic
+    private var style = LinkStyle.automatic
 
     /// When rendered with the `.button` style, this controls the button's size.
-    var size = ButtonSize.medium
+    private var size = ButtonSize.medium
 
     /// The role of this link, which applies various styling effects.
-    var role = Role.default
+    private var role = Role.default
 
     /// Returns an array containing the correct CSS classes to style this link.
-    var linkClasses: [String] {
+    private var linkClasses: [String] {
         var outputClasses = [String]()
 
         switch style {

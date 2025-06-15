@@ -32,10 +32,10 @@ public struct Embed: HTML, LazyLoadable {
     public var attributes = CoreAttributes()
 
     /// The URL we're embedding inside our page.
-    let url: String
+    private let url: String
 
     /// A title that describes this content.
-    let title: String
+    private let title: String
 
     /// Creates a new `Embed` instance from the titl and URL provided.
     /// - Parameters:

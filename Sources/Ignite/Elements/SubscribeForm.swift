@@ -160,41 +160,43 @@ public struct SubscribeForm: HTML, NavigationElement {
     }
 
     public func markup() -> Markup {
-        var formOutput = Markup()
-//        Form {
-//            TextField(emailFieldLabel, prompt: emailFieldLabel)
-//                .type(.text)
-//                .id(service.emailFieldID)
-//                .class(controlSize.controlClass)
-//                .customAttribute(name: "name", value: service.emailFieldName!)
-//                .class(formStyle == .inline ? "col" : "col-md-12")
-//
-//            Button(subscribeButtonLabel)
-//                .type(.submit)
-//                .role(subscribeButtonRole)
-//                .style(.color, subscribeButtonForegroundStyle != nil ? subscribeButtonForegroundStyle!.description : "")
-//                .class(controlSize.buttonClass)
-//                .class(formStyle == .inline ? nil : "w-100")
-//                .class(formStyle == .inline ? "col-auto" : "col")
-//
-//            if let honeypotName = service.honeypotFieldName {
-//                Section {
-//                    TextField(EmptyInlineElement(), prompt: nil)
-//                        .id("")
-//                        .labelStyle(.hidden)
-//                        .customAttribute(name: "name", value: honeypotName)
-//                        .customAttribute(name: "tabindex", value: "-1")
-//                        .customAttribute(name: "value", value: "")
-//                        .customAttribute(name: "autocomplete", value: "off")
-//                }
-//                .customAttribute(name: "style", value: "position: absolute; left: -5000px;")
-//                .customAttribute(name: "aria-hidden", value: "true")
-//            }
-//        }
-//        .configuredAsNavigationItem(isNavigationItem)
-//        .labelStyle(labelStyle == .floating ? .floating : .hidden)
-//        .attributes(attributes)
-//        .markup()
+        var formOutput = Form {
+            Section {
+                TextField(emailFieldLabel, prompt: emailFieldLabel)
+                    .labelStyle(labelStyle == .floating ? .floating : .hidden)
+                    .type(.text)
+                    .id(service.emailFieldID)
+                    .class(controlSize.controlClass)
+                    .customAttribute(name: "name", value: service.emailFieldName!)
+            }
+            .class(formStyle == .inline ? "col" : "col-md-12")
+
+            Section {
+                Button(subscribeButtonLabel)
+                    .type(.submit)
+                    .role(subscribeButtonRole)
+                    .style(.color, subscribeButtonForegroundStyle != nil ? subscribeButtonForegroundStyle!.description : "")
+                    .class(controlSize.buttonClass)
+                    .class(formStyle == .inline ? "h-100" : "w-100")
+            }
+            .class(formStyle == .inline ? "col-auto" : "col")
+
+            if let honeypotName = service.honeypotFieldName {
+                Section {
+                    TextField(EmptyInlineElement(), prompt: nil)
+                        .labelStyle(.hidden)
+                        .id("")
+                        .customAttribute(name: "name", value: honeypotName)
+                        .customAttribute(name: "tabindex", value: "-1")
+                        .customAttribute(name: "value", value: "")
+                        .customAttribute(name: "autocomplete", value: "off")
+                }
+                .customAttribute(name: "style", value: "position: absolute; left: -5000px;")
+                .customAttribute(name: "aria-hidden", value: "true")
+            }
+        }
+        .attributes(attributes)
+        .markup()
 
         if let script = service.script {
             formOutput += Script(file: URL(static: script))
@@ -206,10 +208,69 @@ public struct SubscribeForm: HTML, NavigationElement {
     }
 }
 
-//extension SubscribeForm: NavigationElementRepresentable {
-//    func configuredAsNavigationItem() -> some NavigationElement {
-//        var copy = self
-//        copy.isNavigationItem = true
-//        return copy
-//    }
-//}
+extension SubscribeForm: NavigationElementRepresentable {
+    func renderAsNavigationElement() -> Markup {
+        var copy = self
+        copy.isNavigationItem = true
+        return copy.markup()
+    }
+}
+
+struct FormColumn<Content: HTML>: HTML {
+    var body: Never { fatalError() }
+    var attributes = CoreAttributes()
+    var content: Content
+    var width: Int
+
+    init(width: Int, content: Content) {
+        self.content = content
+        self.width = width
+    }
+    init<T: InlineElement>(width: Int, content: T) where Content == InlineHTML<T> {
+        self.content = InlineHTML(content)
+        self.width = width
+    }
+
+    func markup() -> Markup {
+        return Section(content)
+            .attributes(attributes)
+            .class(ColumnWidth.count(width).className)
+            .markup()
+    }
+}
+
+extension FormColumn: FormElementRepresentable where Content: FormElementRepresentable {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        var attributes = attributes
+        attributes.append(classes: ColumnWidth.count(width).className)
+        let markup = content.renderAsFormElement(configuration)
+        return Markup("<div\(attributes)>\(markup.string)</div>")
+    }
+}
+
+public extension HTML {
+    /// Adjusts the number of columns assigned to this element.
+    /// - Parameter width: The new number of columns to use.
+    /// - Returns: A new element with the adjusted column width.
+    func formControlWidth(_ width: Int) -> some HTML {
+        FormColumn(width: width, content: self)
+    }
+}
+
+public extension InlineElement {
+    /// Adjusts the number of columns assigned to this element.
+    /// - Parameter width: The new number of columns to use.
+    /// - Returns: A new element with the adjusted column width.
+    func formControlWidth(_ width: Int) -> some HTML {
+        FormColumn(width: width, content: self)
+    }
+}
+
+public extension Button {
+    /// Adjusts the number of columns assigned to this element.
+    /// - Parameter width: The new number of columns to use.
+    /// - Returns: A copy of the current element with the adjusted column width.
+    func formControlWidth(_ width: Int) -> some HTML {
+        FormColumn(width: width, content: self.class("w-100 h-100"))
+    }
+}

@@ -14,7 +14,7 @@ public struct Strikethrough<Content: InlineElement>: InlineElement {
     public var attributes = CoreAttributes()
 
     /// The content that should be stricken.
-    var content: Content
+    private var content: Content
 
     /// Creates a new `Strikethrough` instance using an inline element builder
     /// that returns an array of content to place inside.

@@ -53,10 +53,10 @@ public struct MetaLink: HeadElement, Sendable {
     public var attributes = CoreAttributes()
 
     /// The target of this link.
-    var href: String
+    private var href: String
 
     /// The relationship of this link to the current page.
-    var rel: String
+    private var rel: String
 
     /// Creates a new `MetaLink` object using the target and relationship provided.
     /// - Parameters:

@@ -19,18 +19,18 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    var role = Role.default
-    var style = CardStyle.default
+    private var role = Role.default
+    private var style = CardStyle.default
 
-    var contentPosition = CardContentPosition.default
-    var imageOpacity = 1.0
+    private var contentPosition = CardContentPosition.default
+    private var imageOpacity = 1.0
 
-    var image: Image?
+    private var image: Image?
     private var header: Header
     private var footer: Footer
     private var content: Content
 
-    var cardClasses: String? {
+    private var cardClasses: String? {
         switch style {
         case .default:
             nil

@@ -17,14 +17,14 @@ public struct Image: InlineElement, LazyLoadable {
 
     /// The path of the image, either relative to the
     /// root of your site, e.g. /images/dog.jpg., or as a web address.
-    var path: URL?
+    private var path: URL?
 
     /// Loads an image from one of the built-in icons. See
     /// https://icons.getbootstrap.com for the list.
-    var systemImage: String?
+    private var systemImage: String?
 
     /// An accessibility label for this image, suitable for screen readers.
-    var description: String?
+    private var description: String?
 
     /// Creates a new `Image` instance from the specified path. For an image contained
     /// in your site's assets, this should be specified relative to the root of your

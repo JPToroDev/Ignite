@@ -6,7 +6,7 @@
 //
 
 /// A text input field for collecting user information in forms.
-public struct TextField<Label: InlineElement>: InlineElement, FormElement {
+public struct TextField<Label: InlineElement>: InlineElement, ControlGroupElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 

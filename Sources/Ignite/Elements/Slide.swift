@@ -5,8 +5,6 @@
 // See LICENSE for license information.
 //
 
-
-
 /// One slide in a `Carousel`.
 public struct Slide<Content: HTML>: CarouselElement {
     /// The standard set of control attributes for HTML elements.
@@ -14,14 +12,14 @@ public struct Slide<Content: HTML>: CarouselElement {
 
     /// An optional background image to use for this slide. This should be
     /// specified relative to the root of your site, e.g. /images/dog.jpg.
-    var background: String?
+    private var background: String?
 
     /// Other items to display inside this slide.
-    var content: Content
+    private var content: Content
 
     /// How opaque the background image should be. Use values lower than 1.0
     /// to progressively dim the background image.
-    var backgroundOpacity = 1.0
+    private var backgroundOpacity = 1.0
 
     /// Creates a new `Slide` object using a background image.
     /// - Parameter background: An optional background image to use for

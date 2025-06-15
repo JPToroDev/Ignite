@@ -15,7 +15,7 @@ protocol DropdownItemConfigurable {
 /// Renders a button that presents a menu of information when pressed.
 /// Can be used as a free-floating element on your page, or in
 /// a `NavigationBar`.
-public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationElement, FormElement {
+public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationElement, ControlGroupElement {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -34,12 +34,12 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
     /// How this dropdown should be styled on the screen. Defaults to `.defaut`.
     private var role = Role.default
 
+    /// The color of the dropdown's label.
+    private var labelColor: Color?
+
     /// Controls whether this dropdown needs to be created as its own element,
     /// or whether it uses the structure provided by a parent like `NavigationBar`.
     var configuration = DropdownConfiguration.standalone
-
-    /// The color of the dropdown's label.
-    var labelColor: Color?
 
     /// Creates a new dropdown button using a title and an element that builder
     /// that returns an array of types conforming to `DropdownItem`.

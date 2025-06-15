@@ -6,7 +6,7 @@
 //
 
 /// An opaque value representing the child of another view.
-struct FormSubview: HTML {
+struct ControlGroupSubview: HTML {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
 
@@ -14,27 +14,32 @@ struct FormSubview: HTML {
     var attributes = CoreAttributes()
 
     /// The underlying HTML content, unattributed.
-    private var content: any FormElement
+    private var content: any ControlGroupElement
 
     /// The underlying HTML content, with attributes.
-    var wrapped: any FormElement {
+    var wrapped: any ControlGroupElement {
         var wrapped = content
         wrapped.attributes.merge(attributes)
         return wrapped
     }
 
-    var configuration = FormConfiguration()
+    private var configuration = FormConfiguration()
 
     /// Creates a new `Child` instance that wraps the given HTML content.
     /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
     /// - Parameter content: The HTML content to wrap
-    init(_ wrapped: any FormElement) {
-        var content = wrapped
-        // Make Child the single source of truth for attributes
-        // and modified attributes directly to keep type unchanged
-        attributes.merge(content.attributes)
-        content.attributes.clear()
-        self.content = content
+    init(_ wrapped: any ControlGroupElement) {
+        self.content = wrapped
+    }
+
+    nonisolated func markup() -> Markup {
+        MainActor.assumeIsolated {
+            return if let element = wrapped as? FormElementRepresentable {
+                element.renderAsFormElement(configuration)
+            } else {
+                wrapped.markup()
+            }
+        }
     }
 
     func formConfiguration(_ configuration: FormConfiguration) -> Self {
@@ -53,26 +58,13 @@ struct FormSubview: HTML {
     func configuredAsLastItem() -> Self {
         if var item = wrapped as? DropdownItemConfigurable {
             item.configuration = .lastControlGroupItem
-            return FormSubview(item as! FormElement)
+            return ControlGroupSubview(item as! ControlGroupElement)
         }
         return self
     }
-
-    nonisolated func markup() -> Markup {
-        MainActor.assumeIsolated {
-            var content = wrapped
-            content.attributes.merge(attributes)
-
-            return if let element = content as? FormElementRepresentable {
-                element.renderAsFormElement(configuration)
-            } else {
-                content.markup()
-            }
-        }
-    }
 }
 
-extension FormSubview: Equatable {
+extension ControlGroupSubview: Equatable {
     nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.markup() == rhs.markup()
     }

@@ -11,9 +11,9 @@ public struct Body: Sendable {
     public var attributes = CoreAttributes()
 
     /// Whether this HTML uses Bootstrap's `container` class to determine page width.
-    var isBoundByContainer: Bool = true
+    private var isBoundByContainer: Bool = true
 
-    var content: any HTML
+    private var content: any HTML
 
     public init(@HTMLBuilder _ content: () -> some HTML) {
         self.content = content()
@@ -100,7 +100,7 @@ public extension Body {
     ///   - name: The name of the custom attribute
     ///   - value: The value of the custom attribute
     /// - Returns: The modified `HTML` element
-    func customAttribute(name: String, value: String) -> Self {
+    func attribute(_ name: String, _ value: String) -> Self {
         var copy = self
         copy.attributes.append(customAttributes: .init(name: name, value: value))
         return copy

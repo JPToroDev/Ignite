@@ -7,5 +7,5 @@
 
 @MainActor
 protocol FormSubviewsProvider {
-    var children: FormSubviewsCollection { get }
+    var children: ControlGroupSubviewsCollection { get }
 }

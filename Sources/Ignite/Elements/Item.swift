@@ -5,8 +5,7 @@
 // See LICENSE for license information.
 //
 
-
-
+/// A type that inherits data from a containing `Accordion`.
 @MainActor
 protocol AccordionItemAssignable: AccordionElement {
     func assigned(to parentID: String, openMode: AccordionOpenMode) -> Self
@@ -106,7 +105,7 @@ public struct Item<Header: InlineElement, Content: HTML>: HTML {
         return Section {
             Text {
                 Button(title)
-                    .class("accordion-button", startsOpen ? "" : "collapsed")
+                    .class("accordion-button", startsOpen ? nil : "collapsed")
                     .data("bs-toggle", "collapse")
                     .data("bs-target", "#\(itemID)")
                     .aria(.expanded, startsOpen ? "true" : "false")

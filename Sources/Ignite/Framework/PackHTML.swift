@@ -134,11 +134,11 @@ extension PackHTML: CarouselElement, CarouselSubviewsProvider where repeat each 
     }
 }
 
-extension PackHTML: FormElement, FormSubviewsProvider where repeat each Content: FormElement {
-    var children: FormSubviewsCollection {
-        var children = FormSubviewsCollection()
+extension PackHTML: ControlGroupElement, FormSubviewsProvider where repeat each Content: ControlGroupElement {
+    var children: ControlGroupSubviewsCollection {
+        var children = ControlGroupSubviewsCollection()
         for element in repeat each content {
-            var child = FormSubview(element)
+            var child = ControlGroupSubview(element)
             child.attributes.merge(attributes)
             children.elements.append(child)
         }

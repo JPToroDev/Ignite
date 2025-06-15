@@ -11,18 +11,18 @@
 /// handling common control flow patterns like conditionals, loops, and switch statements.
 @MainActor
 @resultBuilder
-public struct FormElementBuilder {
+public struct ControlGroupElementBuilder {
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildExpression<Content: FormElement>(_ content: Content) -> Content {
+    public static func buildExpression<Content: ControlGroupElement>(_ content: Content) -> Content {
         content
     }
 
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildBlock<Content: FormElement>(_ content: Content) -> Content {
+    public static func buildBlock<Content: ControlGroupElement>(_ content: Content) -> Content {
         content
     }
 
@@ -31,7 +31,7 @@ public struct FormElementBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content: FormElement>(_ content: repeat each Content) -> some FormElement {
+    public static func buildBlock<each Content: ControlGroupElement>(_ content: repeat each Content) -> some ControlGroupElement {
         PackHTML(repeat each content)
     }
 }

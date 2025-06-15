@@ -5,12 +5,14 @@
 // See LICENSE for license information.
 //
 
-@MainActor protocol ControlGroupItemConfigurable {
+/// A type that has a distinct configuration when housed in a `ControlGroup`.
+@MainActor
+protocol ControlGroupItemConfigurable {
     func configuredAsControlGroupItem(_ labelStyle: ControlLabelStyle) -> ControlGroupItem
 }
 
 /// A container that groups related form controls into a unified visual component.
-public struct ControlGroup<Content: FormElement>: HTML, FormElement {
+public struct ControlGroup<Content: ControlGroupElement>: HTML {
     /// Defines the size variants available for control groups.
     public enum ControlSize: String, Sendable, CaseIterable {
         /// Creates a smaller, more compact control group.
@@ -48,7 +50,7 @@ public struct ControlGroup<Content: FormElement>: HTML, FormElement {
     ///   - items: A closure returning an array of form items to include in the group.
     public init(
         _ label: String? = nil,
-        @FormElementBuilder content: () -> Content
+        @ControlGroupElementBuilder content: () -> Content
     ) {
         self.label = label
         self.content = content()

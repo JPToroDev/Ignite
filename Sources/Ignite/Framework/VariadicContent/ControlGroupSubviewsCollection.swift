@@ -5,16 +5,16 @@
 // See LICENSE for license information.
 //
 
-struct FormSubviewsCollection: FormElement, RandomAccessCollection {
+struct ControlGroupSubviewsCollection: ControlGroupElement, RandomAccessCollection {
     var body: Never { fatalError() }
 
     var attributes = CoreAttributes()
 
-    nonisolated var elements = [FormSubview]()
+    nonisolated var elements = [ControlGroupSubview]()
 
     init() {}
 
-    init(_ content: any FormElement) {
+    init(_ content: any ControlGroupElement) {
         self.elements = flattenedChildren(of: content)
     }
 
@@ -24,8 +24,8 @@ struct FormSubviewsCollection: FormElement, RandomAccessCollection {
 
     // MARK: - RandomAccessCollection Requirements
 
-    typealias Element = FormSubview
-    typealias Index = Array<FormSubview>.Index
+    typealias Element = ControlGroupSubview
+    typealias Index = Array<ControlGroupSubview>.Index
 
     nonisolated var startIndex: Index { elements.startIndex }
 
@@ -54,16 +54,16 @@ struct FormSubviewsCollection: FormElement, RandomAccessCollection {
     }
 }
 
-private extension FormSubviewsCollection {
-    func flattenedChildren<T: FormElement>(of html: T) -> [FormSubview] {
-        var result: [FormSubview] = []
+private extension ControlGroupSubviewsCollection {
+    func flattenedChildren<T: ControlGroupElement>(of html: T) -> [ControlGroupSubview] {
+        var result: [ControlGroupSubview] = []
         collectFlattenedChildren(html, into: &result)
         return result
     }
 
-    func collectFlattenedChildren<T: FormElement>(_ html: T, into result: inout [FormSubview]) {
+    func collectFlattenedChildren<T: ControlGroupElement>(_ html: T, into result: inout [ControlGroupSubview]) {
         guard let subviewsProvider = html as? FormSubviewsProvider else {
-            result.append(FormSubview(html))
+            result.append(ControlGroupSubview(html))
             return
         }
 

@@ -45,9 +45,6 @@ extension ForEach: HTML, VariadicHTML where Content: HTML {
     }
 }
 
-extension ForEach: ListItemProvider where Content: ListItemProvider {}
-extension ForEach: ColumnProvider where Content: ColumnProvider {}
-
 extension ForEach: AccordionElement where Content: AccordionElement {
     /// Creates a new ForEach instance that generates HTML content from a sequence.
     /// - Parameters:
@@ -119,3 +116,7 @@ extension ForEach: CarouselElement where Content: CarouselElement {
         }.joined()
     }
 }
+
+extension ForEach: ListItemProvider where Content: ListItemProvider {}
+
+extension ForEach: ColumnProvider where Content: ColumnProvider {}

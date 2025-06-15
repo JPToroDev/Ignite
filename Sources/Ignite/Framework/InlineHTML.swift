@@ -52,3 +52,9 @@ extension InlineHTML: NavigationElementRepresentable where Content: NavigationEl
         content.renderAsNavigationElement()
     }
 }
+
+extension InlineHTML: FormElementRepresentable where Content: FormElementRepresentable {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
+        content.renderAsFormElement(configuration)
+    }
+}

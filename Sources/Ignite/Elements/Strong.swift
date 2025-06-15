@@ -14,7 +14,7 @@ public struct Strong<Content: InlineElement>: InlineElement {
     public var attributes = CoreAttributes()
 
     /// The content that should be strengthened.
-    var content: Content
+    private var content: Content
 
     /// Creates a new `Strong` instance using an inline element builder
     /// that returns an array of content to place inside.

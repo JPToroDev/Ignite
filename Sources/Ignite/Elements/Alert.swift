@@ -14,11 +14,11 @@ public struct Alert<Content: HTML>: HTML {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
-    var content: Content
+    private var content: Content
 
-    var role = Role.default
+    private var role = Role.default
 
-    var alertClasses: [String] {
+    private var alertClasses: [String] {
         var outputClasses = ["alert"]
         outputClasses.append(contentsOf: attributes.classes)
 

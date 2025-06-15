@@ -68,7 +68,7 @@ public struct List<Content: HTML>: HTML {
 
     /// The items to show in this list. This may contain any page elements,
     /// but if you need specific styling you might want to use `ListItem` objects.
-    var content: Content
+    private var content: Content
 
     /// Returns the correct HTML name for this list.
     private var listElementName: String {
