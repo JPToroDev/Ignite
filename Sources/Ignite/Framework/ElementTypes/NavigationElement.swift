@@ -28,13 +28,13 @@ public extension NavigationElement where Self: InlineElement {
 }
 
 public extension NavigationElement where Self: HTML {
-    func markup() -> Markup {
+    func render() -> Markup {
         fatalError("This protocol should not be conformed to directly.")
     }
 }
 
 public extension NavigationElement where Self: InlineElement {
-    func markup() -> Markup {
+    func render() -> Markup {
         fatalError("This protocol should not be conformed to directly.")
     }
 }

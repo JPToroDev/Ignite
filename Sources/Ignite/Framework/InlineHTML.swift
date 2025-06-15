@@ -24,7 +24,7 @@ public struct InlineHTML<Content: InlineElement>: HTML {
 
     /// Renders the wrapped HTML content using the given publishing context
     /// - Returns: The rendered HTML string
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var content = content
         content.attributes.merge(attributes)
         return content.render()

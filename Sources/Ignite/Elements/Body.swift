@@ -36,7 +36,7 @@ public struct Body: Sendable {
         return copy
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var attributes = attributes
         var output = content.render()
 

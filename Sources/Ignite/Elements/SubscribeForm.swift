@@ -159,7 +159,7 @@ public struct SubscribeForm: HTML, NavigationElement {
         return copy
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var formOutput = Form {
             Section {
                 TextField(emailFieldLabel, prompt: emailFieldLabel)
@@ -212,7 +212,7 @@ extension SubscribeForm: NavigationElementRepresentable {
     func renderAsNavigationElement() -> Markup {
         var copy = self
         copy.isNavigationItem = true
-        return copy.markup()
+        return copy.render()
     }
 }
 

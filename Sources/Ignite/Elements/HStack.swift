@@ -56,7 +56,7 @@ public struct HStack<Content: HTML>: HTML {
         self.spacingAmount = .semantic(spacing)
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let items: [any HTML] = children.map {
             var elementAttributes = CoreAttributes()
             elementAttributes.append(classes: "mb-0")

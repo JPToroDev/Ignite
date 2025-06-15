@@ -37,7 +37,7 @@ public struct ZStack<Content: HTML>: HTML {
         self.alignment = alignment
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var attributes = attributes
         attributes.append(styles: .init(.display, value: "grid"))
 
