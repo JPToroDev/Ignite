@@ -22,14 +22,14 @@ struct NavigationSubview: HTML {
         }
     }
     
-    func markup() -> Markup {
+    func render() -> Markup {
         var content = content
         content.attributes.merge(attributes)
 
         return if let element = content as? any NavigationElementRepresentable {
             element.renderAsNavigationElement()
         } else {
-            content.markup()
+            content.render()
         }
     }
 }

@@ -40,7 +40,7 @@ struct ContainerRelativeFrame<Content: HTML>: HTML {
         self.alignment = alignment
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         let content = content
             .style(.marginBottom, "0")
             .style(alignment.itemAlignmentRules)
@@ -59,6 +59,6 @@ struct ContainerRelativeFrame<Content: HTML>: HTML {
             .style(alignment.flexAlignmentRules)
             .style(.width, "100%")
             .style(.height, "100%")
-            .markup()
+            .render()
     }
 }

@@ -47,8 +47,8 @@ public extension CarouselElementBuilder {
         
         var content: C
         
-        public func markup() -> Markup {
-            content.markup()
+        public func render() -> Markup {
+            content.render()
         }
     }
 }

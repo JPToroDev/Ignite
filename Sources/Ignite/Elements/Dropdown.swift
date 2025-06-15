@@ -96,16 +96,16 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         if configuration == .standalone {
             Section(renderDropdownContent())
                 .attributes(attributes)
                 .class("dropdown")
-                .markup()
+                .render()
         } else {
             renderDropdownContent()
                 .attributes(attributes)
-                .markup()
+                .render()
         }
     }
 
@@ -169,7 +169,7 @@ extension Dropdown: NavigationElementRepresentable {
         var copy = ListItem(self.configuration(.navigationBarItem))
         copy.attributes.append(classes: "nav-item", "dropdown")
         copy.attributes.append(styles: .init(.listStyleType, value: "none"))
-        return copy.markup()
+        return copy.render()
     }
 }
 

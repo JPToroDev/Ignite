@@ -131,7 +131,7 @@ public struct SplitView<Sidebar: HTML, Content: HTML>: HTML {
 
     /// Generates the HTML markup for this split view.
     /// - Returns: The markup representation of this split view.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         publishingContext.environment.pageResources.insert(.splitViewJS)
         return Section {
             Section {
@@ -174,6 +174,6 @@ public struct SplitView<Sidebar: HTML, Content: HTML>: HTML {
         .class("splitview")
         .layoutPriority(1)
         .attributes(attributes)
-        .markup()
+        .render()
     }
 }

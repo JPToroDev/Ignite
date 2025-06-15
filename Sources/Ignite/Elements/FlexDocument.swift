@@ -21,7 +21,7 @@ public struct FlexDocument: Document {
         self.head = content().head
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var attributes = attributes
         attributes.append(customAttributes: .init(name: "lang", value: language.rawValue))
         if let themeAttribute {

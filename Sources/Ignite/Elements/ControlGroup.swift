@@ -84,7 +84,7 @@ public struct ControlGroup<Content: ControlGroupElement>: HTML {
         return copy
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var items = content.subviews().elements
         if let lastItem = items.last {
             items = items.dropLast()
@@ -102,7 +102,7 @@ public struct ControlGroup<Content: ControlGroupElement>: HTML {
         .class(size?.rawValue)
 
         guard label != nil || helpText != nil else {
-            return content.markup()
+            return content.render()
         }
 
         return Section {
@@ -118,12 +118,12 @@ public struct ControlGroup<Content: ControlGroupElement>: HTML {
                     .class("form-text")
             }
         }
-        .markup()
+        .render()
     }
 }
 
 extension ControlGroup: FormElementRepresentable {
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
-        self.labelStyle(configuration.labelStyle).markup()
+        self.labelStyle(configuration.labelStyle).render()
     }
 }

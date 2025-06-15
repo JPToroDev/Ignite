@@ -35,7 +35,7 @@ public struct InlineGroup<Content: InlineElement>: InlineElement {
         self.content = content
     }
 
-    public func markup() -> Markup {
-        content.attributes(attributes).markup()
+    public func render() -> Markup {
+        content.attributes(attributes).render()
     }
 }

@@ -149,7 +149,7 @@ public struct TextField<Label: InlineElement>: InlineElement, ControlGroupElemen
         return copy
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         switch style {
         case .top:
             renderTopLabeledTextField()
@@ -170,7 +170,7 @@ public struct TextField<Label: InlineElement>: InlineElement, ControlGroupElemen
             input
                 .attributes(attributes)
         }
-        .markup()
+        .render()
     }
 
     private func renderFrontLabeledTextField() -> Markup {
@@ -184,7 +184,7 @@ public struct TextField<Label: InlineElement>: InlineElement, ControlGroupElemen
             }.class("col-sm-10")
         }
         .class("row")
-        .markup()
+        .render()
     }
 
     private func renderFloatingTextField() -> Markup {
@@ -196,13 +196,13 @@ public struct TextField<Label: InlineElement>: InlineElement, ControlGroupElemen
             }
         }
         .class("form-floating")
-        .markup()
+        .render()
     }
 
     private func renderPlainTextField() -> Markup {
         input
             .attributes(attributes)
-            .markup()
+            .render()
     }
 }
 
@@ -213,8 +213,8 @@ extension TextField: FormElementRepresentable {
             .labelStyle(configuration.labelStyle)
 
         return switch configuration.labelStyle {
-        case .leading: copy.markup()
-        default: Section(copy).markup()
+        case .leading: copy.render()
+        default: Section(copy).render()
         }
     }
 }

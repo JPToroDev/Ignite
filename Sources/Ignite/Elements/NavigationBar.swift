@@ -191,7 +191,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let pinnedItems = items.filter { $0.navigationBarVisibility == .always }
         let collapsibleItems = items.filter { $0.navigationBarVisibility == .automatic }
         /// The number of controls that aren't `Spacer`,
@@ -236,7 +236,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
             .class("navbar", "navbar-expand-md")
             .data("bs-theme", theme(for: style))
         }
-        .markup()
+        .render()
     }
 
     private func renderPinnedItems(_ items: [NavigationSubview]) -> some HTML {

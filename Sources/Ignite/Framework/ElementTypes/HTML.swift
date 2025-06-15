@@ -20,7 +20,7 @@ public protocol HTML: Sendable {
 
     /// Converts this element and its children into HTML markup.
     /// - Returns: A string containing the HTML markup
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 public extension HTML {
@@ -31,8 +31,8 @@ public extension HTML {
     }
 
     /// Generates the complete `HTML` string representation of the element.
-    func markup() -> Markup {
-        body.markup()
+    func render() -> Markup {
+        body.render()
     }
 }
 
@@ -45,7 +45,7 @@ extension HTML {
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
-        markup().string
+        render().string
     }
     
     /// The default status as a primitive element.
@@ -55,13 +55,13 @@ extension HTML {
 
     /// Checks if this element is an empty HTML element.
     var isEmptyHTML: Bool {
-        markup().isEmpty
+        render().isEmpty
     }
 
     /// Whether the outermost element of this type is a `<div>`
     /// that can position its contents.
     var requiresPositioningContext: Bool {
-        markup().string.hasPrefix("<div") == false
+        render().string.hasPrefix("<div") == false
     }
 }
 

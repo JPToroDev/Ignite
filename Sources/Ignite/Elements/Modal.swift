@@ -121,7 +121,7 @@ public struct Modal<Header: HTML, Footer: HTML, Content: HTML>: HTML {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         Section {
             Section {
                 Section {
@@ -154,6 +154,6 @@ public struct Modal<Header: HTML, Footer: HTML, Content: HTML>: HTML {
         .id(htmlID)
         .aria(.labelledBy, "modalLabel")
         .aria(.hidden, "true")
-        .markup()
+        .render()
     }
 }

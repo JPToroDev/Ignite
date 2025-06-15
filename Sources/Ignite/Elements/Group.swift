@@ -41,11 +41,11 @@ extension Group: HTML, VariadicHTML where Content: HTML {
         self.content = content
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         if let content = content as? any VariadicHTML {
-            content.subviews.attributes(attributes).markup()
+            content.subviews.attributes(attributes).render()
         } else {
-            content.attributes(attributes).markup()
+            content.attributes(attributes).render()
         }
     }
 

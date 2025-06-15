@@ -10,7 +10,7 @@
 @MainActor
 public protocol NavigationElement {
     var attributes: CoreAttributes { get set }
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 public extension NavigationElement where Self: HTML {

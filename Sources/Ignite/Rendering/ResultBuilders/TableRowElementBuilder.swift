@@ -46,8 +46,8 @@ public extension TableRowElementBuilder {
             self.content = content
         }
 
-        public func markup() -> Markup {
-            content.markup()
+        public func render() -> Markup {
+            content.render()
         }
     }
 }

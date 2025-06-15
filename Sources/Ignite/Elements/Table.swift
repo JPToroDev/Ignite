@@ -185,7 +185,7 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
         }
 
         output += "<tbody>"
-        output += rows.markup().string
+        output += rows.render().string
         output += "</tbody>"
         output += "</table>"
         return Markup(output)

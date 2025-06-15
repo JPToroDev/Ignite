@@ -5,7 +5,7 @@
 // See LICENSE for license information.
 //
 
-/// A type that has a unique configuration when placed in a `Form`.
+/// A type that is rendered differently when placed in a `Form`.
 @MainActor
 protocol FormElementRepresentable {
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup
@@ -69,7 +69,7 @@ public struct Form<Content: HTML>: HTML, NavigationElement {
         attributes.id = UUID().uuidString.truncatedHash
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let items = content.subviews().map { item in
             if configuration.labelStyle == .leading {
                 var item = item
@@ -88,6 +88,6 @@ public struct Form<Content: HTML>: HTML, NavigationElement {
         }
         .attributes(attributes)
         .class(configuration.labelStyle == .leading ? nil : "row g-\(configuration.spacing.rawValue)")
-        .markup()
+        .render()
     }
 }

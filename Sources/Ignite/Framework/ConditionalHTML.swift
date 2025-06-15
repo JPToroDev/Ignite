@@ -25,12 +25,12 @@ public struct ConditionalHTML<TrueContent, FalseContent>: Sendable {
 extension ConditionalHTML: HTML where TrueContent: HTML, FalseContent: HTML {
     public var body: Never { fatalError() }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         switch storage {
         case .trueContent(let content):
-            content.attributes(attributes).markup()
+            content.attributes(attributes).render()
         case .falseContent(let content):
-            content.attributes(attributes).markup()
+            content.attributes(attributes).render()
         }
     }
 }
@@ -38,27 +38,27 @@ extension ConditionalHTML: HTML where TrueContent: HTML, FalseContent: HTML {
 extension ConditionalHTML: InlineElement, CustomStringConvertible where TrueContent: InlineElement, FalseContent: InlineElement {
     public var body: Never { fatalError() }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         switch storage {
         case .trueContent(let content):
-            content.attributes(attributes).markup()
+            content.attributes(attributes).render()
         case .falseContent(let content):
-            content.attributes(attributes).markup()
+            content.attributes(attributes).render()
         }
     }
 }
 
 extension ConditionalHTML: ControlGroupElement where TrueContent: ControlGroupElement, FalseContent: ControlGroupElement {
-    public func markup() -> Markup {
+    public func render() -> Markup {
         switch storage {
         case .trueContent(let content):
             var content = content
             content.attributes.merge(attributes)
-            return content.markup()
+            return content.render()
         case .falseContent(let content):
             var content = content
             content.attributes.merge(attributes)
-            return content.markup()
+            return content.render()
         }
     }
 }

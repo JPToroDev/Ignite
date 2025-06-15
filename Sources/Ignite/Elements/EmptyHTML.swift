@@ -16,7 +16,7 @@ public struct EmptyHTML: HTML {
 
     /// Renders this element as an empty string
     /// - Returns: An empty string
-    public func markup() -> Markup {
+    public func render() -> Markup {
         Markup()
     }
 }

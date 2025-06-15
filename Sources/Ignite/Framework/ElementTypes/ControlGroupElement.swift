@@ -10,14 +10,14 @@
 @MainActor
 public protocol ControlGroupElement {
     var attributes: CoreAttributes { get set }
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 extension ControlGroupElement {
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
-        markup().string
+        render().string
     }
 
     func subviews() -> ControlGroupSubviewsCollection {
@@ -44,12 +44,12 @@ struct FormItem: HTML {
         return copy
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         var content = content
         content.attributes.merge(attributes)
         if let content = content as? any FormElementRepresentable {
             return content.renderAsFormElement(configuration)
         }
-        return content.markup()
+        return content.render()
     }
 }

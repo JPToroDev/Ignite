@@ -33,8 +33,8 @@ extension PackHTML: HTML, SubviewsProvider, VariadicHTML where repeat each Conte
         return children
     }
 
-    func markup() -> Markup {
-        subviews.map { $0.markup() }.joined()
+    func render() -> Markup {
+        subviews.map { $0.render() }.joined()
     }
 }
 
@@ -52,8 +52,8 @@ extension PackHTML: InlineElement, InlineSubviewsProvider, CustomStringConvertib
         return children
     }
 
-    func markup() -> Markup {
-        children.map { $0.markup() }.joined()
+    func render() -> Markup {
+        children.map { $0.render() }.joined()
     }
 }
 
@@ -69,7 +69,7 @@ extension PackHTML: NavigationElement, NavigationSubviewsProvider where repeat e
         return children
     }
     
-    func markup() -> Markup {
+    func render() -> Markup {
         // This method is required by NavigationElement, but we'll always
         // deconstruct PackHTML before rendering it.
         fatalError("Please file a bug report with the Ignite project.")
@@ -87,7 +87,7 @@ extension PackHTML: AccordionElement, AccordionSubviewsProvider where repeat eac
         return children
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         // This method is required by AccordionElement, but we'll always
         // deconstruct PackHTML before rendering it.
         fatalError("Please file a bug report with the Ignite project.")
@@ -95,22 +95,22 @@ extension PackHTML: AccordionElement, AccordionSubviewsProvider where repeat eac
 }
 
 extension PackHTML: ButtonElement where repeat each Content: ButtonElement {
-    func markup() -> Markup {
+    func render() -> Markup {
         var markup = Markup()
         for var element in repeat each content {
             element.attributes.merge(attributes)
-            markup += element.markup()
+            markup += element.render()
         }
         return markup
     }
 }
 
 extension PackHTML: TableRowElement where repeat each Content: TableRowElement {
-    func markup() -> Markup {
+    func render() -> Markup {
         var markup = Markup()
         for var element in repeat each content {
             element.attributes.merge(attributes)
-            markup += element.markup()
+            markup += element.render()
         }
         return markup
     }
@@ -127,7 +127,7 @@ extension PackHTML: CarouselElement, CarouselSubviewsProvider where repeat each 
         return children
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         // This method is required by CarouselElement, but we'll always
         // deconstruct PackHTML before rendering it.
         fatalError("Please file a bug report with the Ignite project.")
@@ -145,7 +145,7 @@ extension PackHTML: ControlGroupElement, FormSubviewsProvider where repeat each 
         return children
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         // This method is required by CarouselElement, but we'll always
         // deconstruct PackHTML before rendering it.
         fatalError("Please file a bug report with the Ignite project.")
@@ -153,14 +153,14 @@ extension PackHTML: ControlGroupElement, FormSubviewsProvider where repeat each 
 }
 
 extension PackHTML: DropdownElement where repeat each Content: DropdownElement {
-    func markup() -> Markup {
+    func render() -> Markup {
         var markup = Markup()
         for var element in repeat each content {
             element.attributes.merge(attributes)
             if let element = element as? any DropdownElementRepresentable {
                 markup += element.renderAsDropdownElement()
             } else {
-                markup += element.markup()
+                markup += element.render()
             }
         }
         return markup

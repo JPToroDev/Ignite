@@ -38,8 +38,8 @@ public struct GridRow<Content: HTML>: HTML {
 
     /// Generates the HTML markup for this grid row.
     /// - Returns: The markup representation of this grid row.
-    public func markup() -> Markup {
-        content.attributes(attributes).markup()
+    public func render() -> Markup {
+        content.attributes(attributes).render()
     }
 }
 

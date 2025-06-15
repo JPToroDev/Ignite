@@ -37,8 +37,8 @@ struct NavigationItem<Content: NavigationElement>: NavigationElement {
         self.content = content
     }
 
-    func markup() -> Markup {
-        content.markup()
+    func render() -> Markup {
+        content.render()
     }
 }
 

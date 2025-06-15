@@ -31,7 +31,7 @@ public struct Strikethrough<Content: InlineElement>: InlineElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let contentHTML = content.markupString()
         return Markup("<s\(attributes)>\(contentHTML)</s>")
     }

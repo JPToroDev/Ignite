@@ -30,16 +30,16 @@ struct Subview: HTML {
         self.content = wrapped
     }
 
-    nonisolated func markup() -> Markup {
+    nonisolated func render() -> Markup {
         MainActor.assumeIsolated {
-           wrapped.markup()
+           wrapped.render()
         }
     }
 }
 
 extension Subview: Equatable {
     nonisolated static func == (lhs: Subview, rhs: Subview) -> Bool {
-        lhs.markup() == rhs.markup()
+        lhs.render() == rhs.render()
     }
 }
 

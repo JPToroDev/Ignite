@@ -41,7 +41,7 @@ public struct Tag<Content: HTML>: HTML {
     /// Renders this element using publishing context passed in.
     /// - Parameter context: The current publishing context.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let contentHTML = content.markupString()
         return Markup("<\(name)\(attributes)>\(contentHTML)</\(name)>")
     }

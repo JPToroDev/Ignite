@@ -20,11 +20,11 @@ public struct InlineModifiedContentProxy<Modifier: InlineElementModifier>: Inlin
         self.content = content
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         if content.isPrimitive {
             var content = content
             content.attributes.merge(attributes)
-            return content.markup()
+            return content.render()
         } else {
             return Markup("<span\(attributes)>\(content.markupString())</span>")
         }

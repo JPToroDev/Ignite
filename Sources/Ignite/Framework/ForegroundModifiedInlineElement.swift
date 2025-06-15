@@ -18,30 +18,30 @@ struct ForegroundModifiedInlineElement<Content: InlineElement>: InlineElement {
         self.style = style
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         var content = content
         content.attributes.merge(attributes)
 
         return switch style {
         case .none:
             content
-                .markup()
+                .render()
         case .gradient(let gradient):
             content
                 .style(gradient.styles)
-                .markup()
+                .render()
         case .string(let string):
             content
                 .style(.color, string)
-                .markup()
+                .render()
         case .color(let color):
             content
                 .style(.color, color.description)
-                .markup()
+                .render()
         case .style(let foregroundStyle):
             content
                 .class(foregroundStyle.rawValue)
-                .markup()
+                .render()
         }
     }
 }

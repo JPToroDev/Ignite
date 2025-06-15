@@ -18,28 +18,28 @@ struct LineSpacedHTML<Content: HTML>: HTML {
         self.spacing = spacing
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         if content is any TextProvider {
             switch spacing {
             case .exact(let spacing):
                 content.style(.init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
-                    .markup()
+                    .render()
             case .semantic(let spacing):
                 content.class("lh-\(spacing.rawValue)")
-                    .markup()
-            default: content.markup()
+                    .render()
+            default: content.render()
             }
         } else {
             switch spacing {
             case .exact(let spacing):
                 Section(content.class("line-height-inherit"))
                     .style(.lineHeight, spacing.formatted(.nonLocalizedDecimal))
-                    .markup()
+                    .render()
             case .semantic(let spacing):
                 Section(content.class("line-height-inherit"))
                     .class("lh-\(spacing.rawValue)")
-                    .markup()
-            default: content.markup()
+                    .render()
+            default: content.render()
             }
         }
     }

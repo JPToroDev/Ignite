@@ -20,8 +20,8 @@ struct GridItem: HTML {
         self.content = content
     }
 
-    func markup() -> Markup {
-        content.attributes(attributes).markup()
+    func render() -> Markup {
+        content.attributes(attributes).render()
     }
 
     static var emptyCell: Self {

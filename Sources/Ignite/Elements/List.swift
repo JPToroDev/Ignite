@@ -163,20 +163,20 @@ public struct List<Content: HTML>: HTML {
         if content.wrapped is any ListItemProvider {
             var content = content
             content.attributes.append(classes: listStyle != .automatic ? "list-group-item" : nil)
-            return content.markup()
+            return content.render()
         } else {
             var item = content
             let styleClass = listStyle == .automatic ? nil : "list-group-item"
             item.attributes.append(classes: "m-0")
             return ListItem(item)
                 .class(styleClass)
-                .markup()
+                .render()
         }
     }
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var output = "<\(listElementName)\(listAttributes)>"
         output += content.subviews().map { renderListRow($0).string }.joined()
         output += "</\(listElementName)>"

@@ -105,7 +105,7 @@ public struct VStack<Content: HTML>: HTML {
         self.spacingAmount = .semantic(spacing)
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var attributes = attributes
         attributes.append(classes: "vstack")
 

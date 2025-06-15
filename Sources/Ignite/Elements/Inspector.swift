@@ -113,7 +113,7 @@ public struct Inspector<Content: HTML, Header: HTML>: HTML {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         Section {
             Section {
                 if header.isEmptyHTML == false {
@@ -140,6 +140,6 @@ public struct Inspector<Content: HTML, Header: HTML>: HTML {
         .aria(.labelledBy, "offcanvasLabel")
         .tabFocus(.focusable)
         .id(htmlID)
-        .markup()
+        .render()
     }
 }

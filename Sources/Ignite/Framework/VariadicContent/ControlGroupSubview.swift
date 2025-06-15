@@ -32,12 +32,12 @@ struct ControlGroupSubview: HTML {
         self.content = wrapped
     }
 
-    nonisolated func markup() -> Markup {
+    nonisolated func render() -> Markup {
         MainActor.assumeIsolated {
             return if let element = wrapped as? FormElementRepresentable {
                 element.renderAsFormElement(configuration)
             } else {
-                wrapped.markup()
+                wrapped.render()
             }
         }
     }
@@ -66,6 +66,6 @@ struct ControlGroupSubview: HTML {
 
 extension ControlGroupSubview: Equatable {
     nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.markup() == rhs.markup()
+        lhs.render() == rhs.render()
     }
 }

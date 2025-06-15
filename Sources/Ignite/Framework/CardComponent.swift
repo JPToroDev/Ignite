@@ -15,9 +15,9 @@ struct CardComponent: HTML {
     init<T: InlineElement>(_ content: T) {
         self.content = InlineHTML(content)
     }
-    func markup() -> Markup {
+    func render() -> Markup {
         var content = content
         content.attributes.merge(attributes)
-        return content.markup()
+        return content.render()
     }
 }

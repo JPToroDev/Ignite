@@ -27,7 +27,7 @@ public struct InlineHTML<Content: InlineElement>: HTML {
     public func markup() -> Markup {
         var content = content
         content.attributes.merge(attributes)
-        return content.markup()
+        return content.render()
     }
 }
 

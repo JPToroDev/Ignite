@@ -40,8 +40,8 @@ extension ForEach: HTML, VariadicHTML where Content: HTML {
 
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
-    public func markup() -> Markup {
-        subviews.attributes(attributes).markup()
+    public func render() -> Markup {
+        subviews.attributes(attributes).render()
     }
 }
 
@@ -60,11 +60,11 @@ extension ForEach: AccordionElement where Content: AccordionElement {
 
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         items.map {
             var item = $0
             item.attributes.merge(attributes)
-            return item.markup()
+            return item.render()
         }.joined()
     }
 }
@@ -84,11 +84,11 @@ extension ForEach: TableRowElement where Content: TableRowElement {
 
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         items.map {
             var item = $0
             item.attributes.merge(attributes)
-            return item.markup()
+            return item.render()
         }.joined()
     }
 }
@@ -108,11 +108,11 @@ extension ForEach: CarouselElement where Content: CarouselElement {
     
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         items.map {
             var item = $0
             item.attributes.merge(attributes)
-            return item.markup()
+            return item.render()
         }.joined()
     }
 }

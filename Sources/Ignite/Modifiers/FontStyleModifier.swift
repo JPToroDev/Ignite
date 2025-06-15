@@ -27,14 +27,14 @@ struct FontStyleModifiedHTML: HTML {
     var content: any HTML
     var style: Font.Style
 
-    func markup() -> Markup {
+    func render() -> Markup {
         var content = content
         content.attributes.merge(attributes)
         if var provider = content as? any TextProvider & HTML {
             provider.fontStyle = style
-            return provider.markup()
+            return provider.render()
         } else {
-            return content.class(style.sizeClass).markup()
+            return content.class(style.sizeClass).render()
         }
     }
 }

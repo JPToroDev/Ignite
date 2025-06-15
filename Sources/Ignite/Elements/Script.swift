@@ -41,7 +41,7 @@ public struct Script: HTML, HeadElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var attributes = attributes
         let publishingContext = PublishingContext.shared
         if let file {

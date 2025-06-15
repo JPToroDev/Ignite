@@ -35,17 +35,17 @@ struct CarouselSubview: HTML {
         self.content = content
     }
 
-    nonisolated func markup() -> Markup {
+    nonisolated func render() -> Markup {
         MainActor.assumeIsolated {
             var content = wrapped
             content.attributes.merge(attributes)
-            return content.markup()
+            return content.render()
         }
     }
 }
 
 extension CarouselSubview: Equatable {
     nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.markup() == rhs.markup()
+        lhs.render() == rhs.render()
     }
 }

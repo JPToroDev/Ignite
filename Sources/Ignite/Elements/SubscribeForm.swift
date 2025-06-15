@@ -196,12 +196,12 @@ public struct SubscribeForm: HTML, NavigationElement {
             }
         }
         .attributes(attributes)
-        .markup()
+        .render()
 
         if let script = service.script {
             formOutput += Script(file: URL(static: script))
                 .customAttribute(name: "charset", value: "utf-8")
-                .markup()
+                .render()
         }
 
         return formOutput
@@ -231,11 +231,11 @@ struct FormColumn<Content: HTML>: HTML {
         self.width = width
     }
 
-    func markup() -> Markup {
-        return Section(content)
+    func render() -> Markup {
+        Section(content)
             .attributes(attributes)
             .class(ColumnWidth.count(width).className)
-            .markup()
+            .render()
     }
 }
 

@@ -20,17 +20,17 @@ public struct ModifiedContentProxy<Modifier: HTMLModifier>: HTML {
         self.content = content
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         if content.isPrimitive {
             var content = content
             content.attributes.merge(attributes)
-            return content.markup()
-        } else if content.body.isPrimitive, content.markup().string.hasPrefix("<div") {
+            return content.render()
+        } else if content.body.isPrimitive, content.render().string.hasPrefix("<div") {
             // Unnecessarily adding an extra <div> can break positioning
             // contexts and advanced flex layouts.
             var content = content.body
             content.attributes.merge(attributes)
-            return content.markup()
+            return content.render()
         } else {
             return Markup("<div\(attributes)>\(content.markupString())</div>")
         }

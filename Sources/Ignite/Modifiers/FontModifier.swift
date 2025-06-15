@@ -120,15 +120,15 @@ private struct FontModifiedHTML<Content: HTML>: HTML {
         self.font = font
     }
 
-    func markup() -> Markup {
+    func render() -> Markup {
         if var text = content as? any TextProvider & HTML {
             if let style = font.style { text.fontStyle = style }
             return text.attributes(getAttributes(for: font, includeStyle: false))
-                .markup()
+                .render()
         }
 
         return Section(content.class("font-inherit"))
             .attributes(getAttributes(for: font, includeStyle: true))
-            .markup()
+            .render()
     }
 }

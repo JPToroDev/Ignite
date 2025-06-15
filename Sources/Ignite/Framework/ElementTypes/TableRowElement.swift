@@ -8,5 +8,5 @@
 @MainActor
 public protocol TableRowElement {
     var attributes: CoreAttributes { get set }
-    func markup() -> Markup
+    func render() -> Markup
 }

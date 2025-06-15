@@ -20,7 +20,7 @@ public protocol InlineElement: CustomStringConvertible, Sendable {
 
     /// Converts this element and its children into HTML markup.
     /// - Returns: A string containing the HTML markup
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 public extension InlineElement {
@@ -31,8 +31,8 @@ public extension InlineElement {
     }
 
     /// Generates the complete HTML string representation of the element.
-    func markup() -> Markup {
-        body.markup()
+    func render() -> Markup {
+        body.render()
     }
 
     /// The complete string representation of the element.
@@ -56,7 +56,7 @@ extension InlineElement {
 
     /// Checks if this element is `EmptyInlineElement`
     var isEmptyInlineElement: Bool {
-        markup().isEmpty
+        render().isEmpty
     }
 }
 
@@ -64,7 +64,7 @@ extension InlineElement {
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
-        markup().string
+        render().string
     }
 
     func subviews() -> InlineSubviewsCollection {

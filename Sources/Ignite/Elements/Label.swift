@@ -51,7 +51,7 @@ public struct Label<Title: InlineElement, Icon: InlineElement>: InlineElement {
         self.icon = icon()
     }
 
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var icon = icon
 
         if !icon.attributes.styles.contains(where: { $0.property == Property.marginRight() }) &&

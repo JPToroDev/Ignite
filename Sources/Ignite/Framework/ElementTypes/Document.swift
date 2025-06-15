@@ -15,14 +15,14 @@ public protocol Document {
     /// The metadata section of the document.
     var head: Head { get }
 
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 extension Document {
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
-        markup().string
+        render().string
     }
 
     /// The publishing context of this site.

@@ -10,7 +10,7 @@
 @MainActor
 public protocol DropdownElement {
     var attributes: CoreAttributes { get set }
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 @MainActor

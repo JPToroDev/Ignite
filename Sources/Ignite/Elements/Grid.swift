@@ -136,7 +136,7 @@ public struct Grid<Content: HTML>: HTML {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let subviews = content.subviews()
         let (flattenedGridItems, columnCount) = processGridItems(subviews)
         let attributes = createGridAttributes(columnCount: columnCount)
@@ -151,7 +151,7 @@ public struct Grid<Content: HTML>: HTML {
         .class("ig-adaptive-grid")
         .style(spacingAmount.inlineStyle)
         .style(alignment.gridAlignmentRules)
-        .markup()
+        .render()
     }
 }
 

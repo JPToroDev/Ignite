@@ -47,14 +47,14 @@ public extension DropdownElementBuilder {
             self.content = content
         }
         
-        public func markup() -> Markup {
+        public func render() -> Markup {
             var content = content
             content.attributes.merge(attributes)
 
             return if let content = content as? any DropdownElementRepresentable {
                 content.renderAsDropdownElement()
             } else {
-                content.markup()
+                content.render()
             }
         }
     }

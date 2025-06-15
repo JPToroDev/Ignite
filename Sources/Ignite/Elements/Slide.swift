@@ -55,7 +55,7 @@ public struct Slide<Content: HTML>: CarouselElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         Section {
             if let slideBackground = background {
                 Image(slideBackground, description: "")
@@ -76,6 +76,6 @@ public struct Slide<Content: HTML>: CarouselElement {
         .attributes(attributes)
         .class("carousel-item")
         .style(.backgroundColor, "black")
-        .markup()
+        .render()
     }
 }

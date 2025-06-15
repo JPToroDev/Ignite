@@ -50,14 +50,14 @@ extension ModifiedHTML: HTML, VariadicHTML where Content: HTML, Modifier: HTMLMo
     /// or singular, then applies the appropriate modification strategy to generate the final markup.
     ///
     /// - Returns: A `Markup` object representing the HTML structure after modifications have been applied.
-    func markup() -> Markup {
+    func render() -> Markup {
         if let content = content as? any VariadicHTML {
-            return modify(children: content.subviews).markup()
+            return modify(children: content.subviews).render()
         } else {
             let proxy = ModifiedContentProxy(content: content, modifier: modifier)
             var modified = modifier.body(content: proxy)
             modified.attributes.merge(attributes)
-            return modified.markup()
+            return modified.render()
         }
     }
 

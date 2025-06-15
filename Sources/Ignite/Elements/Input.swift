@@ -13,7 +13,7 @@ struct Input: InlineElement {
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()
 
-    func markup() -> Markup {
+    func render() -> Markup {
         Markup("<input\(attributes) />")
     }
 }

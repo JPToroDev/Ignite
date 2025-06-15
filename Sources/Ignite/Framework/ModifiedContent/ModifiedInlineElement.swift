@@ -26,11 +26,11 @@ struct ModifiedInlineElement<Content, Modifier>: Sendable {
 
 extension ModifiedInlineElement: InlineElement, CustomStringConvertible
 where Content: InlineElement, Modifier: InlineElementModifier {
-    func markup() -> Markup {
+    func render() -> Markup {
         let proxy = InlineModifiedContentProxy(content: content, modifier: modifier)
         var modified = modifier.body(content: proxy)
         modified.attributes.merge(attributes)
-        return modified.markup()
+        return modified.render()
     }
 }
 

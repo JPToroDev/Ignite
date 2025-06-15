@@ -162,7 +162,7 @@ public struct Button<Label: InlineElement>: InlineElement, ControlGroupElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         var buttonAttributes = attributes
             .appending(classes: size.classes(forRole: role))
             .appending(aria: role.aria())
@@ -191,7 +191,7 @@ extension Button: FormElementRepresentable {
         }
         .class("d-flex")
         .class(configuration.labelStyle == .floating ? "align-items-stretch" : "align-items-end")
-        .markup()
+        .render()
     }
 }
 

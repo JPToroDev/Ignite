@@ -15,7 +15,7 @@ extension Never: HTML, InlineElement {
         set {}
     }
     public var isPrimitive: Bool { true }
-    public func markup() -> Markup {
+    public func render() -> Markup {
         fatalError("Never cannot produce markup")
     }
 }

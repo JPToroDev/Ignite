@@ -58,7 +58,7 @@ public struct Text<Content: InlineElement>: HTML, DropdownElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         if isMultilineMarkdown {
             // HTMLCollection will pass its attributes to each child.
             // This works fine for styles like color, but for styles like
@@ -66,7 +66,7 @@ public struct Text<Content: InlineElement>: HTML, DropdownElement {
             // collectively. So we'll wrap the paragraphs in a Section.
             return Section(content)
                 .attributes(attributes)
-                .markup()
+                .render()
         } else if FontStyle.classBasedStyles.contains(fontStyle), let sizeClass = fontStyle.sizeClass {
             var attributes = attributes.appending(classes: sizeClass)
             return Markup(
@@ -192,7 +192,7 @@ extension Text: DropdownElementRepresentable {
         ListItem {
             self.class("dropdown-header")
         }
-        .markup()
+        .render()
     }
 }
 

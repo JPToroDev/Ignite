@@ -190,7 +190,7 @@ public struct Link<Content: InlineElement>: InlineElement, NavigationElement, Dr
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         isPrivacySensitive
             ? renderPrivacyProtectedLink()
             : renderStandardLink()
@@ -253,7 +253,7 @@ extension Link: NavigationElementRepresentable {
         var listItem = ListItem(link)
         listItem.attributes.append(classes: "nav-item")
         listItem.attributes.append(styles: .init(.listStyleType, value: "none"))
-        return listItem.markup()
+        return listItem.render()
     }
 }
 
@@ -265,7 +265,7 @@ extension Link: DropdownElementRepresentable {
                 .class(publishingContext.currentRenderingPath == url ? "active" : nil)
                 .aria(.current, publishingContext.currentRenderingPath == url ? "page" : nil)
         }
-        .markup()
+        .render()
     }
 }
 

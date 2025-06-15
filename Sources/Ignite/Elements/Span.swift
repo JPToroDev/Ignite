@@ -42,7 +42,7 @@ public struct Span<Content: InlineElement>: InlineElement, NavigationElement, Co
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let contentHTML = content.markupString()
         return Markup("<span\(attributes)>\(contentHTML)</span>")
     }
@@ -52,7 +52,7 @@ extension Span: NavigationElementRepresentable {
     func renderAsNavigationElement() -> Markup {
         var copy = self
         copy.attributes.append(classes: "navbar-text")
-        return copy.markup()
+        return copy.render()
     }
 }
 
@@ -65,7 +65,7 @@ extension Span: FormElementRepresentable {
 
         return Section(InlineHTML(self))
             .class("d-flex", "align-items-center")
-            .markup()
+            .render()
     }
 }
 

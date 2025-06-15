@@ -84,10 +84,10 @@ public struct Badge<Content: InlineElement>: InlineElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let badgeAttributes = attributes.appending(classes: badgeClasses)
         return Span(content)
             .attributes(badgeAttributes)
-            .markup()
+            .render()
     }
 }

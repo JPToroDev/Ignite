@@ -62,7 +62,7 @@ public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         let contentHTML = content.markupString()
         let badgeHTML = badge?.markupString() ?? ""
         return Markup("<li\(attributes)>\(contentHTML)\(badgeHTML)</li>")

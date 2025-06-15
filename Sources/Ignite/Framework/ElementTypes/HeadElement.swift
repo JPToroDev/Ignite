@@ -10,7 +10,7 @@
 @MainActor
 public protocol HeadElement: Sendable {
     var attributes: CoreAttributes { get set }
-    func markup() -> Markup
+    func render() -> Markup
 }
 
 extension HeadElement {
@@ -22,6 +22,6 @@ extension HeadElement {
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
-        markup().string
+        render().string
     }
 }

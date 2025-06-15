@@ -20,8 +20,8 @@ struct NavigationSubviewsCollection: HTML, RandomAccessCollection {
         self.elements = []
     }
 
-    func markup() -> Markup {
-        elements.map { $0.markup() }.joined()
+    func render() -> Markup {
+        elements.map { $0.render() }.joined()
     }
 
     // MARK: - RandomAccessCollection Requirements

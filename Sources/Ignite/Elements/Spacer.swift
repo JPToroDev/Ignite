@@ -52,21 +52,21 @@ public struct Spacer: HTML, NavigationElement {
 
     /// Renders this element using publishing context passed in.
     /// - Returns: The HTML for this element.
-    public func markup() -> Markup {
+    public func render() -> Markup {
         if case .automatic = spacingAmount {
             Section {}
                 .class(axis == .horizontal ? "ms-auto" : nil)
                 .class(axis == .vertical ? "mt-auto" : nil)
-                .markup()
+                .render()
         } else if case let .semantic(spacingAmount) = spacingAmount {
             Section {}
                 .margin(axis == .vertical ? .top : .leading, spacingAmount)
-                .markup()
+                .render()
         } else if case let .exact(int) = spacingAmount {
             Section {}
                 .frame(width: axis == .horizontal ? .px(int) : nil)
                 .frame(height: axis == .vertical ? .px(int) : nil)
-                .markup()
+                .render()
         } else {
             fatalError("Unknown spacing amount: \(String(describing: spacingAmount))")
         }
@@ -75,6 +75,6 @@ public struct Spacer: HTML, NavigationElement {
 
 extension Spacer: NavigationElementRepresentable {
     func renderAsNavigationElement() -> Markup {
-        self.axis(.horizontal).markup()
+        self.axis(.horizontal).render()
     }
 }

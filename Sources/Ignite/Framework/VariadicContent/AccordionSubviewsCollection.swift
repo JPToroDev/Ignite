@@ -20,8 +20,8 @@ struct AccordionSubviewsCollection: AccordionElement, RandomAccessCollection {
         self.elements = flattenedChildren(of: content)
     }
 
-    func markup() -> Markup {
-        elements.map { $0.attributes(attributes).markup() }.joined()
+    func render() -> Markup {
+        elements.map { $0.attributes(attributes).render() }.joined()
     }
 
     // MARK: - RandomAccessCollection Requirements
