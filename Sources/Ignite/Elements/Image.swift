@@ -7,8 +7,6 @@
 
 import Foundation
 
-protocol ImageElement {}
-
 /// An image on your page. Can be vector (SVG) or raster (JPG, PNG, GIF).
 public struct Image: InlineElement, LazyLoadable {
     /// The content and behavior of this HTML.
@@ -214,4 +212,10 @@ private extension Image {
     }
 }
 
-extension Image: ImageElement {}
+extension Image: ImageProvider {}
+
+extension Image: CardComponentConfigurable {
+    func configuredAsCardComponent() -> CardComponent {
+        CardComponent(self.class("card-img"))
+    }
+}

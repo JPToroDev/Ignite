@@ -5,7 +5,8 @@
 // See LICENSE for license information.
 //
 
-public struct Body: MarkupElement {
+@MainActor
+public struct Body: Sendable {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 

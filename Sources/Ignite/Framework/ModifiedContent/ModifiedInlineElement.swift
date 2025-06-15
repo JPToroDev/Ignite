@@ -40,6 +40,6 @@ extension ModifiedInlineElement: LinkProvider where Content: LinkProvider {
     }
 }
 
-extension ModifiedInlineElement: ImageElement where Content: ImageElement {}
+extension ModifiedInlineElement: ImageProvider where Content: ImageProvider {}
 
 extension ModifiedInlineElement: ColumnProvider where Content: ColumnProvider {}

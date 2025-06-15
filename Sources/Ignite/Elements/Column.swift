@@ -5,8 +5,6 @@
 // See LICENSE for license information.
 //
 
-protocol ColumnProvider {}
-
 /// A column inside a table row.
 public struct Column<Content: HTML>: HTML {
     /// How to vertically align the contents of this column.

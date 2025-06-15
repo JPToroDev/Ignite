@@ -5,26 +5,20 @@
 // See LICENSE for license information.
 //
 
-/// A type-erasing wrapper that can hold any `HTML` content while maintaining protocol conformance.
-/// This wrapper also handles unwrapping nested `AnyHTML` instances to prevent unnecessary wrapping layers.
+/// A type that represents the HTML representation of `InlineElement`.
 public struct InlineHTML<Content: InlineElement>: HTML {
-    /// The body of this HTML element, which is itself
+    /// The body of this HTML element.
     public var body: Never { fatalError() }
 
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
     /// The underlying HTML content, unattributed.
-    var content: Content
+    private var content: Content
 
-    /// Creates a new AnyHTML instance that wraps the given HTML content.
-    /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
+    /// Creates a new `InlineHTML` instance that wraps the given HTML content.
     /// - Parameter content: The HTML content to wrap
     init(_ content: Content) {
-        var content = content
-        // Make ModifiedHTML the single source of truth for attributes
-        attributes.merge(content.attributes)
-        content.attributes.clear()
         self.content = content
     }
 
@@ -37,7 +31,13 @@ public struct InlineHTML<Content: InlineElement>: HTML {
     }
 }
 
-extension InlineHTML: ImageElement where Content == Image {}
+extension InlineHTML: ImageProvider where Content: ImageProvider {}
+
+extension InlineHTML: CardComponentConfigurable where Content: CardComponentConfigurable {
+    func configuredAsCardComponent() -> CardComponent {
+        content.configuredAsCardComponent()
+    }
+}
 
 extension InlineHTML: @MainActor LinkProvider where Content: LinkProvider {
     var url: String {

@@ -5,11 +5,9 @@
 // See LICENSE for license information.
 //
 
-struct FormConfiguration: Sendable {
-    var columnCount: Int = 12
-    var spacing: SemanticSpacing = .medium
-    var labelStyle: ControlLabelStyle = .floating
-    var controlSize: ControlSize = .medium
+@MainActor
+protocol FormElementRepresentable: FormElement {
+    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup
 }
 
 /// A form container for collecting user input
@@ -108,13 +106,4 @@ public struct Form<Content: FormElement>: HTML, NavigationElement {
             return "col-auto"
         }
     }
-}
-
-@MainActor
-protocol FormElementRepresentable: FormElement {
-    func renderAsFormElement(_ configuration: FormConfiguration) -> Markup
-}
-
-@MainActor protocol ControlGroupItemConfigurable {
-    func configuredAsControlGroupItem(_ labelStyle: ControlLabelStyle) -> ControlGroupItem
 }

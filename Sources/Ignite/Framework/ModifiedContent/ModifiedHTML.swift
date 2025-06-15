@@ -74,8 +74,6 @@ extension ModifiedHTML: HTML, VariadicHTML where Content: HTML, Modifier: HTMLMo
     }
 }
 
-extension ModifiedHTML: ListItemProvider where Content: ListItemProvider {}
-
 extension ModifiedHTML: SpacerProvider where Content: SpacerProvider {
     var spacer: Spacer { content.spacer }
 }
@@ -100,6 +98,17 @@ extension ModifiedHTML: DropdownItemConfigurable where Content: DropdownItemConf
     }
 }
 
-extension ModifiedHTML: ImageElement where Content: ImageElement {}
+extension ModifiedHTML: CardComponentConfigurable where Content: CardComponentConfigurable & HTML, Modifier: HTMLModifier {
+    func configuredAsCardComponent() -> CardComponent {
+        let cardContent = content.configuredAsCardComponent()
+        let proxy = ModifiedContentProxy(content: cardContent, modifier: modifier)
+        var modified = modifier.body(content: proxy)
+        return CardComponent(modified)
+    }
+}
+
+extension ModifiedHTML: ImageProvider where Content: ImageProvider {}
 
 extension ModifiedHTML: ColumnProvider where Content: ColumnProvider {}
+
+extension ModifiedHTML: ListItemProvider where Content: ListItemProvider {}

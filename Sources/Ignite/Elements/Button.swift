@@ -5,12 +5,6 @@
 // See LICENSE for license information.
 //
 
-@MainActor
-public protocol ButtonElement {
-    var attributes: CoreAttributes { get set }
-    func markup() -> Markup
-}
-
 /// A clickable button with a label and styling.
 public struct Button<Label: InlineElement>: InlineElement, FormElement {
     /// The content and behavior of this HTML.

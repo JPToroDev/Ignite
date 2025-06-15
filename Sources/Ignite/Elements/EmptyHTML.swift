@@ -21,11 +21,4 @@ public struct EmptyHTML: HTML {
     }
 }
 
-extension EmptyHTML: MarkupElement {
-    public var attributes: CoreAttributes {
-        get { CoreAttributes() }
-        set {}
-    }
-}
-
 extension EmptyHTML: NavigationElement {}

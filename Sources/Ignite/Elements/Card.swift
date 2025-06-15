@@ -5,6 +5,12 @@
 // See LICENSE for license information.
 //
 
+/// A type that has a distinct configuration when housed in a `Card`.
+@MainActor
+protocol CardComponentConfigurable {
+    func configuredAsCardComponent() -> CardComponent
+}
+
 /// A group of information placed inside a gently rounded
 public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     /// The content and behavior of this HTML.
@@ -22,7 +28,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
     var image: Image?
     private var header: Header
     private var footer: Footer
-    private var children: SubviewsCollection
+    private var content: Content
 
     var cardClasses: String? {
         switch style {
@@ -47,7 +53,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = header()
         self.footer = footer()
-        self.children = SubviewsCollection(content())
+        self.content = content()
     }
 
     public init(
@@ -61,7 +67,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = header()
         self.footer = EmptyHTML()
-        self.children = SubviewsCollection(content())
+        self.content = content()
     }
 
     public init(
@@ -74,7 +80,7 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
         self.header = EmptyHTML()
         self.footer = EmptyHTML()
-        self.children = SubviewsCollection(content())
+        self.content = content()
     }
 
     public func role(_ role: Role) -> Card {
@@ -163,8 +169,8 @@ public struct Card<Header: HTML, Content: HTML, Footer: HTML>: HTML {
 
     private func renderItems() -> some HTML {
         Section {
-            ForEach(children) {
-                $0.configuredAsCardItem()
+            ForEach(content.subviews()) {
+                $0.configuredAsCardComponent()
             }
         }
         .class(contentPosition.bodyClasses)

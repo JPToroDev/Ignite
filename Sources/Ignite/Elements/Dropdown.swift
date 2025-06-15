@@ -5,6 +5,8 @@
 // See LICENSE for license information.
 //
 
+/// A type for elements that have different configurations
+/// when places in a `Dropdown`.
 @MainActor
 protocol DropdownItemConfigurable {
     var configuration: DropdownConfiguration { get set }
@@ -35,6 +37,9 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
     /// Controls whether this dropdown needs to be created as its own element,
     /// or whether it uses the structure provided by a parent like `NavigationBar`.
     var configuration = DropdownConfiguration.standalone
+
+    /// The color of the dropdown's label.
+    var labelColor: Color?
 
     /// Creates a new dropdown button using a title and an element that builder
     /// that returns an array of types conforming to `DropdownItem`.
@@ -80,11 +85,12 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
         return copy
     }
 
+    /// Sets the color of the dropdown's label.
+    /// - Parameter color: The color to apply to the dropdown label.
+    /// - Returns: A modified dropdown with the specified label color.
     public func labelColor(_ color: Color) -> Self {
         var copy = self
-        copy.attributes.append(styles: .init("--bs-nav-link-color", value: color.description))
-        copy.attributes.append(styles: .init("--bs-nav-link-hover-color", value: color.description))
-        copy.attributes.append(styles: .init("--bs-navbar-active-color", value: color.description))
+        copy.labelColor = color
         return copy
     }
 
@@ -103,11 +109,25 @@ public struct Dropdown<Label: InlineElement, Content: HTML>: HTML, NavigationEle
         }
     }
 
+    /// Returns the title attributes with optional color styling applied.
+    /// - Returns: A `CoreAttributes` instance containing the title's
+    /// attributes with optional color styling.
+    private func titleAttributes() -> CoreAttributes {
+        var attributes = title.attributes
+        if let labelColor {
+            let color = labelColor.description
+            attributes.append(styles: .init("--bs-nav-link-color", value: color))
+            attributes.append(styles: .init("--bs-nav-link-hover-color", value: color))
+            attributes.append(styles: .init("--bs-navbar-active-color", value: color))
+        }
+        return attributes
+    }
+
     /// Creates the internal dropdown structure including the trigger button and menu items.
     /// - Returns: A group containing the dropdown's trigger and menu list.
     @HTMLBuilder private func renderDropdownContent() -> some HTML {
         if configuration == .navigationBarItem {
-            let titleAttributes = title.attributes
+            let titleAttributes = titleAttributes()
             let title = title.clearingAttributes()
 
             Link(title, target: "#")

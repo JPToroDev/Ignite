@@ -7,8 +7,6 @@
 
 import Foundation
 
-
-
 /// A hyperlink to another resource on this site or elsewhere.
 public struct Link<Content: InlineElement>: InlineElement, NavigationElement, DropdownElement {
     /// The content and behavior of this HTML.
@@ -273,4 +271,8 @@ extension Link: DropdownElementRepresentable {
 
 extension Link: LinkProvider {}
 
-extension Link: MarkupElement {}
+extension Link: CardComponentConfigurable {
+    func configuredAsCardComponent() -> CardComponent {
+        CardComponent(self.class("card-link"))
+    }
+}

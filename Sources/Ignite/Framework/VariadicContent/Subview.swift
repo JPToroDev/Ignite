@@ -27,19 +27,12 @@ struct Subview: HTML {
     /// If the content is already an AnyHTML instance, it will be unwrapped to prevent nesting.
     /// - Parameter content: The HTML content to wrap
     init(_ wrapped: any HTML) {
-        var content = wrapped
-        // Make Child the single source of truth for attributes
-        // and modified attributes directly to keep type unchanged
-        attributes.merge(content.attributes)
-        content.attributes.clear()
-        self.content = content
+        self.content = wrapped
     }
 
     nonisolated func markup() -> Markup {
         MainActor.assumeIsolated {
-            var content = wrapped
-            content.attributes.merge(attributes)
-            return content.markup()
+           wrapped.markup()
         }
     }
 }
@@ -50,29 +43,12 @@ extension Subview: Equatable {
     }
 }
 
-#warning("need to fix")
 extension Subview {
-    func configuredAsCardItem() -> Self {
-        switch wrapped {
-        case let text as any TextProvider & HTML where text.fontStyle == .body || text.fontStyle == .lead:
-            var item = Subview(text)
-            item.attributes.append(classes: "card-text")
-            return item
-        case is any TextProvider:
-            var item = Subview(wrapped)
-            item.attributes.append(classes: "card-title")
-            return item
-        case is any LinkProvider:
-            var item = Subview(wrapped)
-            item.attributes.append(classes: "card-link")
-            return item
-        case is any ImageElement:
-            var item = Subview(wrapped)
-            item.attributes.append(classes: "card-img")
-            return item
-        default:
-            return self
+    func configuredAsCardComponent() -> CardComponent {
+        if let wrapped = wrapped as? any CardComponentConfigurable {
+            return wrapped.configuredAsCardComponent()
         }
+        return CardComponent(self)
     }
 }
 

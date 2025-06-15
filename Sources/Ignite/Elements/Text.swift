@@ -179,6 +179,14 @@ extension Text where Content == String {
     }
 }
 
+extension Text {
+    func fontStyle(_ font: Font.Style) -> Self {
+        var copy = self
+        copy.fontStyle = font
+        return copy
+    }
+}
+
 extension Text: DropdownElementRepresentable {
     func renderAsDropdownElement() -> Markup {
         ListItem {
@@ -188,10 +196,13 @@ extension Text: DropdownElementRepresentable {
     }
 }
 
-extension Text: TextProvider {
-    func fontStyle(_ font: Font.Style) -> Self {
-        var copy = self
-        copy.fontStyle = font
-        return copy
+extension Text: CardComponentConfigurable {
+    func configuredAsCardComponent() -> CardComponent {
+        if fontStyle == .body || FontStyle.classBasedStyles.contains(fontStyle) {
+            return CardComponent(self.class("card-text"))
+        }
+        return CardComponent(self.class("card-title"))
     }
 }
+
+extension Text: TextProvider {}

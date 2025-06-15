@@ -47,12 +47,6 @@ public struct NavigationElementBuilder {
         InlineHTML(content)
     }
 
-    /// Creates an empty HTML element when no content is provided.
-    /// - Returns: An empty HTML element
-    public static func buildBlock() -> some NavigationElement {
-        EmptyHTML()
-    }
-
     /// Passes through a single HTML element unchanged.
     /// - Parameter content: The HTML element to pass through
     /// - Returns: The same HTML element

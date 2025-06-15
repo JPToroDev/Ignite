@@ -91,8 +91,3 @@ public struct Badge<Content: InlineElement>: InlineElement {
             .markup()
     }
 }
-
-/// The different options for styling this badge.
-public enum BadgeStyle: Sendable, CaseIterable {
-    case `default`, subtle, subtleBordered
-}

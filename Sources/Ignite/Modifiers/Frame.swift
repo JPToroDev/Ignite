@@ -53,10 +53,10 @@
         return Section {
             content
                 .style(alignment.itemAlignmentRules)
-                .style(content is any ImageElement ? dimensions : [])
+                .style(content is any ImageProvider ? dimensions : [])
         }
         .style(.display, "flex")
-        .style(content is any ImageElement ? .init(.flexDirection, value: "column") : nil)
+        .style(content is any ImageProvider ? .init(.flexDirection, value: "column") : nil)
         .style(.overflow, "hidden")
         .style(alignment.flexAlignmentRules)
         .style(dimensions)
