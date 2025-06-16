@@ -37,16 +37,21 @@ struct LineSpacedHTML<Content: HTML>: HTML {
     /// Renders the line-spaced content as HTML markup.
     /// - Returns: The rendered HTML markup with applied line spacing.
     func render() -> Markup {
-        switch spacing {
+        return switch spacing {
         case .exact(let spacing):
             Section(content.class("line-height-inherit"))
+                .attributes(attributes)
                 .style(.lineHeight, spacing.formatted(.nonLocalizedDecimal))
                 .render()
         case .semantic(let spacing):
             Section(content.class("line-height-inherit"))
+                .attributes(attributes)
                 .class("lh-\(spacing.rawValue)")
                 .render()
-        default: content.render()
+        default:
+            content
+                .attributes(attributes)
+                .render()
         }
     }
 }
