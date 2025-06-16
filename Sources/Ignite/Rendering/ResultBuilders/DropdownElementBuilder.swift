@@ -40,8 +40,6 @@ public struct DropdownElementBuilder {
 
 /// An HTML representation of the content of a Dropdown.
 public extension DropdownElementBuilder {
-    // We've marked this as a ListItemProvider so that List doesn't wrap it in
-    // <li> tags. A hack, but a problem for another day.
     struct Content<C>: HTML, ListItemProvider where C: DropdownElement {
         public var body: Never { fatalError() }
         public var attributes = CoreAttributes()

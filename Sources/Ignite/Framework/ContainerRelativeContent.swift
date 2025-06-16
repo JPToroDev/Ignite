@@ -49,6 +49,7 @@ struct ContainerRelativeContent<Content: HTML>: HTML {
         }
 
         return finalContent
+            .attributes(attributes)
             .style(.display, "flex")
             .style(self is any ImageProvider ? .init(.flexDirection, value: "column") : nil)
             .style(.overflow, "hidden")
