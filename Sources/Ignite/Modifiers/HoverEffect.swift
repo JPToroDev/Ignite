@@ -9,7 +9,7 @@
 private struct HoverEffectModifier<Effect: HTML>: HTMLModifier {
     /// The effect closure that defines the hover behavior.
     var effect: (EmptyHoverEffect) -> Effect
-    
+
     /// Creates the modified content with hover effect applied.
     /// - Parameter content: The content to modify
     /// - Returns: The content with hover effects applied

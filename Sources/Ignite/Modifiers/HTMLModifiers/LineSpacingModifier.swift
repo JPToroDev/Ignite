@@ -9,7 +9,7 @@
 private struct LineSpacingModifier: HTMLModifier {
     /// The line spacing amount to apply.
     var spacing: LineSpacingAmount
-    
+
     /// Creates the modified HTML content with the specified line spacing.
     /// - Parameter content: The HTML content to modify.
     /// - Returns: HTML content with applied line spacing.

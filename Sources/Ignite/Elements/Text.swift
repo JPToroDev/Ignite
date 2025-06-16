@@ -66,7 +66,7 @@ public struct Text<Content: InlineElement>: HTML, DropdownElement {
                 .attributes(attributes)
                 .render()
         } else if FontStyle.classBasedStyles.contains(fontStyle), let sizeClass = fontStyle.sizeClass {
-            var attributes = attributes.appending(classes: sizeClass)
+            let attributes = attributes.appending(classes: sizeClass)
             return Markup(
                 "<p\(attributes)>" +
                 content.markupString() +
@@ -177,10 +177,94 @@ extension Text where Content == String {
     }
 }
 
-extension Text {
-    func fontStyle(_ font: Font.Style) -> Self {
+public extension Text {
+    /// Adjusts the heading level of this text.
+    /// - Parameter style: The new heading level.
+    /// - Returns: A new `Text` instance with the updated font style.
+    func font(_ style: Font.Style) -> Self {
         var copy = self
-        copy.fontStyle = font
+        copy.fontStyle = style
+        return copy
+    }
+
+    /// Adjusts the font of this text.
+    /// - Parameter font: The font configuration to apply.
+    /// - Returns: A new instance with the updated font.
+    func font(_ font: Font) -> Self {
+        var copy = self
+        if let style = font.style { copy.fontStyle = style }
+        let attributes = FontModifier.attributes(for: font, includeStyle: false)
+        copy.attributes.merge(attributes)
+        return copy
+    }
+
+    /// Adjusts the font of this text using responsive sizing.
+    /// - Parameter font: The responsive font configuration to apply.
+    /// - Returns: A new instance with the updated font.
+    func font(_ font: Font.Responsive) -> Self {
+        var copy = self
+        let font = font.font
+        if let style = font.style { copy.fontStyle = style }
+        let attributes = FontModifier.attributes(for: font, includeStyle: false)
+        copy.attributes.merge(attributes)
+        return copy
+    }
+}
+
+public extension Text {
+    /// Sets the line height of the element using a custom value.
+    /// - Parameter spacing: The line height multiplier to use.
+    /// - Returns: The modified HTML element.
+    func lineSpacing(_ spacing: Double) -> Self {
+        var copy = self
+        copy.attributes.append(styles: .init(.lineHeight, value: spacing.formatted(.nonLocalizedDecimal)))
+        return copy
+    }
+
+    /// Sets the line height of the element using a predefined Bootstrap value.
+    /// - Parameter spacing: The predefined line height to use.
+    /// - Returns: The modified HTML element.
+    func lineSpacing(_ spacing: LineSpacing) -> Self {
+        var copy = self
+        copy.attributes.append(classes: "lh-\(spacing.rawValue)")
+        return copy
+    }
+}
+
+public extension Text {
+    /// Applies a foreground color to the current element.
+    /// - Parameter color: The style to apply, specified as a `Color` object.
+    /// - Returns: The current element with the updated color applied.
+    func foregroundStyle(_ color: Color) -> Self {
+        var copy = self
+        copy.attributes.append(styles: .init(.color, value: color.description))
+        return copy
+    }
+
+    /// Applies a foreground color to the current element.
+    /// - Parameter color: The style to apply, specified as a string.
+    /// - Returns: The current element with the updated color applied.
+    func foregroundStyle(_ color: String) -> Self {
+        var copy = self
+        copy.attributes.append(styles: .init(.color, value: color))
+        return copy
+    }
+
+    /// Applies a foreground color to the current element.
+    /// - Parameter style: The style to apply, specified as a `Color` object.
+    /// - Returns: The current element with the updated color applied.
+    func foregroundStyle(_ style: ForegroundStyle) -> Self {
+        var copy = self
+        copy.attributes.append(classes: style.rawValue)
+        return copy
+    }
+
+    /// Applies a foreground color to the current element.
+    /// - Parameter gradient: The style to apply, specified as a `Gradient` object.
+    /// - Returns: The current element with the updated color applied.
+    func foregroundStyle(_ gradient: Gradient) -> Self {
+        var copy = self
+        copy.attributes.append(styles: gradient.styles)
         return copy
     }
 }
@@ -202,5 +286,3 @@ extension Text: CardComponentConfigurable {
         return CardComponent(self.class("card-title"))
     }
 }
-
-extension Text: TextProvider {}

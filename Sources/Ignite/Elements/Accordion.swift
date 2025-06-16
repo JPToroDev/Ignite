@@ -38,7 +38,7 @@ public struct Accordion<Content: AccordionElement>: HTML {
     public init<T, S: Sequence, ItemContent: AccordionElement>(
         _ items: S,
         content: @escaping (T) -> ItemContent
-    ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+    ) where S.Element == T, Content == ForEach<[T], ItemContent> {
         let content = ForEach(Array(items), content: content)
         self.content = content
     }

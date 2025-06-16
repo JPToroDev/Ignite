@@ -13,13 +13,13 @@ import Testing
 /// Tests for the `Modal` element.
 @Suite("Modal Tests")
 @MainActor
-struct ModalTests {
+class ModalTests: IgniteTestSuite {
     @Test("Show Modals")
     func showModal() async throws {
         let element = Modal(id: "showModalId") {
             Text("Dismiss me by clicking on the backdrop.")
-                .horizontalAlignment(.center)
                 .font(.title3)
+                .horizontalAlignment(.center)
                 .margin(.xLarge)
         }
         let output = element.markupString()
@@ -46,8 +46,8 @@ struct ModalTests {
             .horizontalAlignment(.trailing)
 
             Text("Dismiss me by clicking on the close button.")
-                .horizontalAlignment(.center)
                 .font(.title3)
+                .horizontalAlignment(.center)
                 .margin(.xLarge)
         }
         let output = element.markupString()
@@ -67,12 +67,12 @@ struct ModalTests {
     }
 
     @Test("Modal Size",
-          arguments: Modal.Size.allCases)
-    func checkModalSizes(sizeOption: Modal.Size) async throws {
+          arguments: ModalSize.allCases)
+    func checkModalSizes(sizeOption: ModalSize) async throws {
         let element = Modal(id: "ModalId") {
             Text(markdown: "Modal with size")
-                .horizontalAlignment(.center)
                 .font(.title3)
+                .horizontalAlignment(.center)
                 .margin(.xLarge)
         }
         .size(sizeOption)
@@ -89,12 +89,12 @@ struct ModalTests {
         }
     }
 
-    @Test("Modal Position", arguments: Modal.Position.allCases)
-    func checkModalPosition(positionOption: Modal.Position) async throws {
+    @Test("Modal Position", arguments: ModalPosition.allCases)
+    func checkModalPosition(positionOption: ModalPosition) async throws {
         let element = Modal(id: "topModalId") {
             Text(markdown: "Modal with `Position`")
-                .horizontalAlignment(.center)
                 .font(.title3)
+                .horizontalAlignment(.center)
                 .margin(.xLarge)
         }
             .modalPosition(positionOption)
@@ -154,7 +154,7 @@ struct ModalTests {
             }
             .role(.primary)
         }
-        let output = element.markup()
+        let output = element.render()
 
         #expect(output.string == """
         <div id="footerModalId" tabindex="-1" class="modal fade" \
@@ -175,7 +175,8 @@ struct ModalTests {
         let element = Modal(id: "headerAndFooterModalId") {
             Text("Body")
         } header: {
-            Text("Header").font(.title5)
+            Text("Header")
+                .font(.title5)
 
             Button().role(.close).onClick {
                 DismissModal(id: "headerAndFooterModalId")
@@ -191,7 +192,7 @@ struct ModalTests {
             }
             .role(.primary)
         }
-        let output = element.markup()
+        let output = element.render()
 
         #expect(output.string == """
         <div id="headerAndFooterModalId" tabindex="-1" class="modal fade" \

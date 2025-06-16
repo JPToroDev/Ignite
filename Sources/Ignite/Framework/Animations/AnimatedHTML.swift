@@ -48,16 +48,16 @@ struct AnimatedHTML<Content: HTML>: HTML {
         assignHoverClass(&innerAttributes)
         assignAppearClasses(&innerAttributes)
 
-        var content = content
+        var content: AnyHTML = AnyHTML(content)
         content.attributes.remove(styles: .background, .backgroundColor, .color)
 
-//        if innerAttributes.isEmpty == false {
-//            content = Section(content).attributes(innerAttributes)
-//        }
-//
-//        if outerAttributes.isEmpty == false {
-//            content = Section(content).attributes(outerAttributes)
-//        }
+        if innerAttributes.isEmpty == false {
+            content = AnyHTML(Section(content).attributes(innerAttributes))
+        }
+
+        if outerAttributes.isEmpty == false {
+            content = AnyHTML(Section(content).attributes(outerAttributes))
+        }
 
         return content.attributes(attributes).render()
 

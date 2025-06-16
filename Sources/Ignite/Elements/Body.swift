@@ -6,7 +6,7 @@
 //
 
 @MainActor
-public struct Body: Sendable {
+public struct Body {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 

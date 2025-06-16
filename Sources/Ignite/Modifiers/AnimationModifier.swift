@@ -11,7 +11,7 @@ private struct AnimationModifier: HTMLModifier {
     var animation: Animation
     /// The trigger that starts the animation.
     var trigger: AnimationTrigger
-    
+
     func body(content: Content) -> some HTML {
         AnimatedHTML(content, animation: animation, trigger: trigger)
     }

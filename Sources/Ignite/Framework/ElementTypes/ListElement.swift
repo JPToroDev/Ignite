@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
-/// A type whose root view is a `ListItem`.
+/// A type that does not need to be wrapped in <li>
+/// if processed in a List.
 @MainActor
 protocol ListItemProvider {}

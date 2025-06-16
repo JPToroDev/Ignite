@@ -10,7 +10,7 @@
 /// Use `ModifiedHTML` to wrap content with styling, attributes, or behavior modifications
 /// while preserving the original content structure.
 @MainActor
-struct ModifiedHTML<Content, Modifier>: Sendable {
+struct ModifiedHTML<Content, Modifier>: Sendable { // swiftlint:disable:this redundant_sendable
     /// The body of this HTML element, which is itself
     var body: Never { fatalError() }
 
@@ -86,13 +86,6 @@ extension ModifiedHTML: SpacerProvider where Content: SpacerProvider {
     var spacer: Spacer { content.spacer }
 }
 
-extension ModifiedHTML: TextProvider where Content: TextProvider {
-    var fontStyle: FontStyle {
-        get { content.fontStyle }
-        set { content.fontStyle = newValue }
-    }
-}
-
 extension ModifiedHTML: LinkProvider where Content: LinkProvider {
     var url: String {
         content.url
@@ -106,11 +99,12 @@ extension ModifiedHTML: DropdownItemConfigurable where Content: DropdownItemConf
     }
 }
 
-extension ModifiedHTML: CardComponentConfigurable where Content: CardComponentConfigurable & HTML, Modifier: HTMLModifier {
+extension ModifiedHTML: CardComponentConfigurable
+where Content: CardComponentConfigurable & HTML, Modifier: HTMLModifier {
     func configuredAsCardComponent() -> CardComponent {
         let cardContent = content.configuredAsCardComponent()
         let proxy = ModifiedContentProxy(content: cardContent, modifier: modifier)
-        var modified = modifier.body(content: proxy)
+        let modified = modifier.body(content: proxy)
         return CardComponent(modified)
     }
 }

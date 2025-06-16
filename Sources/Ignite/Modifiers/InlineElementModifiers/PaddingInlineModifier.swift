@@ -11,7 +11,7 @@ private struct PaddingInlineModifier: InlineElementModifier {
     var padding: PaddingAmount
     /// The edges where padding should be applied.
     var edges: Edge
-    
+
     func body(content: Content) -> some InlineElement {
         var modified = content
 

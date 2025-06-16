@@ -65,6 +65,7 @@ struct ControlGroupSubview: HTML {
     func configuredAsLastItem() -> Self {
         if var item = wrapped as? DropdownItemConfigurable {
             item.configuration = .lastControlGroupItem
+            // swiftlint:disable:next force_cast
             return ControlGroupSubview(item as! ControlGroupElement)
         }
         return self

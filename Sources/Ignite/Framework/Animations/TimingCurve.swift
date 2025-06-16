@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
+// swiftlint:disable identifier_name
 /// Defines the available timing functions for animations
 public enum TimingCurve: CSSRepresentable, Sendable, Hashable {
     /// Spring animation (response: 0.55, dampingFraction: 1.0)
@@ -41,6 +42,7 @@ public enum TimingCurve: CSSRepresentable, Sendable, Hashable {
         }
     }
 }
+// swiftlint:enable identifier_name
 
 public extension TimingCurve {
     /// A smooth spring animation with minimal bounce, matching SwiftUI's default spring animation

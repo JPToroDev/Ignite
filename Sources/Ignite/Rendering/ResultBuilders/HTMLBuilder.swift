@@ -105,7 +105,9 @@ public struct HTMLBuilder {
     /// Handles optional content in if statements.
     /// - Parameter component: An optional HTML element
     /// - Returns: Either the wrapped element or an empty element
-    public static func buildOptional<Content: InlineElement>(_ content: Content?) -> ConditionalHTML<InlineHTML<Content>, EmptyHTML> {
+    public static func buildOptional<Content: InlineElement>(
+        _ content: Content?
+    ) -> ConditionalHTML<InlineHTML<Content>, EmptyHTML> {
         guard let content else {
             return buildEither(second: EmptyHTML())
         }
@@ -124,7 +126,9 @@ public struct HTMLBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content>(_ content: repeat each Content) -> some HTML where repeat each Content: HTML {
+    public static func buildBlock<each Content>(
+        _ content: repeat each Content
+    ) -> some HTML where repeat each Content: HTML {
         PackHTML(repeat each content)
     }
 }

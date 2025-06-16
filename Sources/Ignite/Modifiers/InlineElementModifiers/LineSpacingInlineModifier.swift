@@ -9,7 +9,7 @@
 private struct LineSpacingInlineModifier: InlineElementModifier {
     /// The line spacing configuration to apply.
     var spacing: Amount<Double, LineSpacing>
-    
+
     /// Applies the line spacing configuration to the provided content.
     /// - Parameter content: The content to modify.
     /// - Returns: The modified inline element with line spacing applied.
@@ -37,6 +37,7 @@ public extension InlineElement {
     /// Sets the line height of the element using a predefined Bootstrap value.
     /// - Parameter spacing: The predefined line height to use.
     /// - Returns: The modified InlineElement element.
-    func lineSpacing(_ spacing: LineSpacing) -> some InlineElement { modifier(LineSpacingInlineModifier(spacing: .semantic(spacing)))
+    func lineSpacing(_ spacing: LineSpacing) -> some InlineElement {
+        modifier(LineSpacingInlineModifier(spacing: .semantic(spacing)))
     }
 }

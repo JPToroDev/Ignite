@@ -7,18 +7,6 @@
 
 /// A column inside a table row.
 public struct Column<Content: HTML>: HTML {
-    /// How to vertically align the contents of this column.
-    public enum VerticalAlignment: String, Sendable, CaseIterable {
-        /// Align contents to the top of the column.
-        case top
-
-        /// Align contents to the middle of the column.
-        case middle
-
-        /// Align contents to the bottom of the column.
-        case bottom
-    }
-
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -30,7 +18,7 @@ public struct Column<Content: HTML>: HTML {
 
     /// How the contents of this column should be vertically aligned.
     /// Defaults to `.top`.
-    private var verticalAlignment = VerticalAlignment.top
+    private var verticalAlignment = ColumnVerticalAlignment.top
 
     /// The items to render inside this column.
     private var content: Content
@@ -54,7 +42,7 @@ public struct Column<Content: HTML>: HTML {
     /// Adjusts the vertical alignment of this carousel.
     /// - Parameter alignment: The new style.
     /// - Returns: A new `Column` instance with the updated vertical alignment.
-    public func verticalAlignment(_ alignment: VerticalAlignment) -> Self {
+    public func verticalAlignment(_ alignment: ColumnVerticalAlignment) -> Self {
         var copy = self
         copy.verticalAlignment = alignment
         return copy

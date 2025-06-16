@@ -21,14 +21,6 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
         case dark
     }
 
-    /// The new number of columns to use.
-    public enum Width: Sendable {
-        /// Viewport sets column width
-        case viewport
-        /// Specific count sets column width
-        case count(Int)
-    }
-
     /// How navigation bar items should be aligned horizontally.
     public enum ItemAlignment: String {
         /// Items are aligned to the leading edge
@@ -118,7 +110,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     ///   - logo: The logo to use in the top-left edge of your bar.
     ///   - items: Basic navigation items like `Link` and `Span` that will be
     ///   collapsed into a hamburger menu at small screen sizes.
-    public init(logo: Logo, @NavigationElementBuilder items: () -> Content) where Logo == String {
+    public init(logo: Logo, @NavigationElementBuilder items: () -> Content) {
         self.logo = logo
         self.items = NavigationSubviewsCollection(items())
     }
@@ -149,7 +141,7 @@ public struct NavigationBar<Logo: InlineElement, Content: NavigationElement>: HT
     /// It does not have an effect on the navigation bar itself.
     /// - Parameter width: The new number of columns to use.
     /// - Returns: A new `NavigationBar` instance with the adjusted column width.
-    public func width(_ width: Width) -> Self {
+    public func width(_ width: NavigationBarWidth) -> Self {
         var copy = self
         switch width {
         case .viewport:

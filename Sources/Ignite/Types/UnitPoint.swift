@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
 // An x/y coordinate in the ranges 0 through 1.
 public struct UnitPoint: Hashable, Sendable {
     var x: Double
@@ -44,3 +45,4 @@ public struct UnitPoint: Hashable, Sendable {
     public static let bottom = UnitPoint(x: 0.5, y: 1)
     public static let bottomTrailing = UnitPoint(x: 1, y: 1)
 }
+// swiftlint:enable identifier_name

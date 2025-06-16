@@ -175,7 +175,8 @@ public struct SubscribeForm: HTML, NavigationElement {
                 Button(subscribeButtonLabel)
                     .type(.submit)
                     .role(subscribeButtonRole)
-                    .style(.color, subscribeButtonForegroundStyle != nil ? subscribeButtonForegroundStyle!.description : "")
+                    .style(.color, subscribeButtonForegroundStyle != nil ?
+                           subscribeButtonForegroundStyle!.description : "")
                     .class(controlSize.buttonClass)
                     .class(formStyle == .inline ? "h-100" : "w-100")
             }

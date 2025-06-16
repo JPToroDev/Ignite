@@ -9,12 +9,14 @@
 private struct FontStyleModifier: HTMLModifier {
     /// The font style to apply.
     var style: FontStyle
-    
+
     /// Creates the modified HTML content with the specified font style.
     /// - Parameter content: The content to modify.
     /// - Returns: HTML content with the applied font style.
     func body(content: Content) -> some HTML {
-        FontStyleModifiedHTML(content: content, style: style)
+        var modified = content
+        modified.attributes.append(classes: style.sizeClass)
+        return modified
     }
 }
 

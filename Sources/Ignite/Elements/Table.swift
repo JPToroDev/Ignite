@@ -81,9 +81,9 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
     ) where
         S.Element == T,
         Header == EmptyHTML,
-        Rows == TableElementBuilder.Content<ForEach<Array<T>, C>>,
+        Rows == TableElementBuilder.Content<ForEach<[T], C>>,
         C: TableElement
-    {
+    { // swiftlint:disable:this opening_brace
         self.filterTitle = filterTitle
         let content = ForEach(Array(items), content: rows)
         self.rows = TableElementBuilder.Content(content)
@@ -108,7 +108,7 @@ public struct Table<Header: HTML, Rows: HTML>: HTML {
         S.Element == T,
         Rows == TableElementBuilder.Content<ForEach<Array<T>, C>>,
         C: TableElement
-    {
+    { // swiftlint:disable:this opening_brace
         self.filterTitle = filterTitle
         let content = ForEach(Array(items), content: rows)
         self.rows = TableElementBuilder.Content(content)

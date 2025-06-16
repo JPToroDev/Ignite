@@ -14,12 +14,11 @@ struct PreferredColorSchemeInlineModifier: InlineElementModifier {
     func body(content: Content) -> some InlineElement {
         var modified = content
         guard let colorScheme else { return modified }
-        var attributes = PreferredColorSchemeModifier.attributes(for: colorScheme)
+        let attributes = PreferredColorSchemeModifier.attributes(for: colorScheme)
         modified.attributes.merge(attributes)
         return modified
     }
 }
-
 
 public extension InlineElement {
     /// A modifier that sets the preferred color scheme for a container element.

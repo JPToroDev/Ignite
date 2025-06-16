@@ -67,9 +67,9 @@ extension Process {
         let outputData = output.fileHandleForReading.readDataToEndOfFile()
         let errorData = error.fileHandleForReading.readDataToEndOfFile()
 
-        let outputString = String(decoding: outputData, as: UTF8.self)
-        let errorString = String(decoding: errorData, as: UTF8.self)
+        let outputString = String(bytes: outputData, encoding: .utf8)
+        let errorString = String(bytes: errorData, encoding: .utf8)
 
-        return (outputString, errorString)
+        return (outputString ?? "", errorString ?? "")
     }
 }

@@ -24,11 +24,10 @@ public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML {
     /// Configures this list item to properly display a badge.
     /// - Parameter badge: The badge to display.
     /// - Returns: A modified list item with proper badge styling.
-    public func badge(_ badge: Badge<BadgeContent>) -> Self {
-        var copy = self
-        copy.badge = badge
-        copy.attributes.append(classes: "d-flex", "justify-content-between", "align-items-center")
-        return copy
+    public func badge<T: InlineElement>(_ badge: Badge<T>) -> some HTML {
+        var item = ListItem<Content, T>(self.content, badge: badge)
+        item.attributes.append(classes: "d-flex", "justify-content-between", "align-items-center")
+        return item
     }
 
     /// Sets the role for this list item, which controls its appearance.
@@ -52,6 +51,15 @@ public struct ListItem<Content: HTML, BadgeContent: InlineElement>: HTML {
     /// - Parameter content: The content you want to display in your list.
     init(_ content: Content) where BadgeContent == EmptyInlineElement {
         self.content = content
+    }
+
+    /// Creates a new `ListItem` object from a peice of HTML content.
+    /// - Parameters:
+    ///    - content: The content you want to display in your list.
+    ///    - badge: The badge to display at the end of the item.
+    init(_ content: Content, badge: Badge<BadgeContent>) {
+        self.content = content
+        self.badge = badge
     }
 
     /// Creates a new `ListItem` object from a peice of HTML content.

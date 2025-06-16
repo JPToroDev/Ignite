@@ -126,7 +126,7 @@ struct RunCommand: ParsableCommand {
                                 nil, socklen_t(0), NI_NUMERICHOST)
 
                     let ipAddressBytes = hostNameBuffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
-                    let ipAddress = String(decoding: ipAddressBytes, as: UTF8.self)
+                    let ipAddress = String(bytes: ipAddressBytes, encoding: .utf8)
 
                     // Pick the first non-loopback address
                     if interfaceName != "lo0" {
@@ -148,10 +148,10 @@ struct RunCommand: ParsableCommand {
         guard let indexData = FileManager.default.contents(atPath: "\(directory)/index.html") else { return nil }
 
         // Locate and extract the canonical url 
-        let indexString = String(decoding: indexData, as: UTF8.self)
+        let indexString = String(bytes: indexData, encoding: .utf8)
         // Tag intentionally not closed to allow space and `>`, `/>`
         let regex = #/<link href="([^"]+)" rel="canonical"/#
-        guard let urlSubString = indexString.firstMatch(of: regex)?.1 else { return nil }
+        guard let urlSubString = indexString?.firstMatch(of: regex)?.1 else { return nil }
 
         // Checks if it's an URL
         guard let url = URL(string: String(urlSubString)) else { return nil }

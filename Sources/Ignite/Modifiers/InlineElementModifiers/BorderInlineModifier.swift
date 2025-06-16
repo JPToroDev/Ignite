@@ -15,7 +15,7 @@ private struct BorderInlineModifier: InlineElementModifier {
     var style: BorderStyle
     /// The edges to apply the border to.
     var edges: Edge
-    
+
     func body(content: Content) -> some InlineElement {
         var modified = content
         let styles = BorderModifier.styles(color: color, width: width, style: style, edges: edges)

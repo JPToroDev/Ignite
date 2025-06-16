@@ -15,7 +15,7 @@ struct FormColumn<Content: HTML>: HTML {
 
     /// The content to display within the column.
     var content: Content
-    
+
     /// The width of the column in grid units.
     var width: Int
 
@@ -27,7 +27,7 @@ struct FormColumn<Content: HTML>: HTML {
         self.content = content
         self.width = width
     }
-    
+
     /// Creates a form column with the specified width and inline element content.
     /// - Parameters:
     ///   - width: The column width in grid units.

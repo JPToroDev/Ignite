@@ -35,6 +35,7 @@ public enum AnchorPoint: Sendable {
     /// Places the transform origin at the center of the right edge (100% 50%)
     case right
 
+    // swiftlint:disable identifier_name
     /// Allows for custom positioning of the transform origin using CSS units
     /// - Parameters:
     ///   - x: Horizontal position (e.g., "50%", "100px")
@@ -56,4 +57,5 @@ public enum AnchorPoint: Sendable {
         case .custom(let x, let y): "\(x) \(y)"
         }
     }
+    // swiftlint:enable identifier_name
 }

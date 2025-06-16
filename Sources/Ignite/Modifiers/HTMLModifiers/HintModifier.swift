@@ -37,7 +37,7 @@ enum HintDataType {
 struct HintModifier: HTMLModifier {
     /// The hint data to apply.
     var data: HintDataType
-    
+
     func body(content: Content) -> some HTML {
         var modified = content
         modified.attributes.append(dataAttributes: data.attributes)

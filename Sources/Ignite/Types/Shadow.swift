@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
+// swiftlint:disable identifier_name
 /// A type used to define a box-shadow
 public struct Shadow: CustomStringConvertible {
     /// The shadow's color.
@@ -49,3 +50,4 @@ public struct Shadow: CustomStringConvertible {
         self.inset = inset
     }
 }
+// swiftlint:enable identifier_name

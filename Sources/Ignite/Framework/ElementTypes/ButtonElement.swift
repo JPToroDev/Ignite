@@ -11,7 +11,7 @@
 public protocol ButtonElement {
     /// The core attributes applied to this button element.
     var attributes: CoreAttributes { get set }
-    
+
     /// Renders the button element as markup.
     /// - Returns: The rendered markup representation.
     func render() -> Markup

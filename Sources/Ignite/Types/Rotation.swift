@@ -14,7 +14,7 @@ public enum Rotation: Sendable {
     case left
 
     /// Rotates -360 degrees around the X axis (bottom to top)
-    case up
+    case up // swiftlint:disable:this identifier_name
 
     /// Rotates 360 degrees around the X axis (top to bottom)
     case down

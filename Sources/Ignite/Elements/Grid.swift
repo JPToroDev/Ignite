@@ -85,7 +85,7 @@ public struct Grid<Content: HTML>: HTML {
         alignment: Alignment = .center,
         spacing: Int,
         @HTMLBuilder content: @escaping (T) -> ItemContent
-    ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+    ) where S.Element == T, Content == ForEach<[T], ItemContent> {
         self.spacingAmount = .exact(spacing)
         self.alignment = alignment
         self.columnCount = columns
@@ -107,7 +107,7 @@ public struct Grid<Content: HTML>: HTML {
         alignment: Alignment = .center,
         spacing: SemanticSpacing = .medium,
         @HTMLBuilder content: @escaping (T) -> ItemContent
-    ) where S.Element == T, Content == ForEach<Array<T>, ItemContent> {
+    ) where S.Element == T, Content == ForEach<[T], ItemContent> {
         self.spacingAmount = .semantic(spacing)
         self.alignment = alignment
         self.columnCount = columns
@@ -191,7 +191,7 @@ private extension Grid {
     /// - Returns: Padded array of grid items
     func padRow(_ row: [GridItem], maxColumnCount: Int) -> [GridItem] {
         if row.count == 1 && row.first?.isFullWidth == true {
-            guard var item = row.first, let columnCount else { return row }
+            guard var item = row.first, columnCount != nil else { return row }
             item.attributes.append(styles: .init(.gridColumn, value: "span \(maxColumnCount)"))
             return [item]
         }

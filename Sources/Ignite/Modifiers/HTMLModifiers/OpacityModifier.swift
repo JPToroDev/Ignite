@@ -15,7 +15,7 @@ enum OpacityType {
 struct OpacityModifier: HTMLModifier {
     /// The opacity value to apply.
     var opacity: OpacityType
-    
+
     func body(content: Content) -> some HTML {
         var modified = content
         let styles = Self.styles(for: opacity)

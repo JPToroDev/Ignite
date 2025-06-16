@@ -13,7 +13,7 @@
 /// - Note: Unlike ``Group``, modifiers applied to a `Section` affect the
 ///         containing element rather than being propagated to child elements.
 @MainActor
-public struct Section<Content>: Sendable {
+public struct Section<Content> {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -30,7 +30,7 @@ public struct Section<Content>: Sendable {
     private var content: Content
 }
 
-extension Section: HTML, FormElementRepresentable where Content: HTML {
+extension Section: HTML, Sendable, FormElementRepresentable where Content: HTML {
     /// Creates a section that renders as a `div` element.
     /// - Parameter content: The content to display within this section.
     public init(@HTMLBuilder content: () -> Content) {
@@ -70,7 +70,7 @@ extension Section: HTML, FormElementRepresentable where Content: HTML {
     public func render() -> Markup {
         let contentHTML = content.markupString()
         if let header = header {
-            let headerHTML = Text(header).fontStyle(headerStyle).markupString()
+            let headerHTML = Text(header).font(headerStyle).markupString()
             return Markup("<section\(attributes)>\(headerHTML + contentHTML)</section>")
         }
         return Markup("<div\(attributes)>\(contentHTML)</div>")

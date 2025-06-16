@@ -11,7 +11,7 @@
 public protocol CarouselElement {
     /// The core attributes for styling and configuration.
     var attributes: CoreAttributes { get set }
-    
+
     /// Renders the element as markup.
     /// - Returns: The rendered markup representation.
     func render() -> Markup

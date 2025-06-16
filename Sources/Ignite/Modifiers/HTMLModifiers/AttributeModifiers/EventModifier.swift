@@ -11,7 +11,7 @@ private struct EventModifier: HTMLModifier {
     var type: EventType
     /// The actions to execute when the event occurs.
     var actions: [Action]
-    
+
     /// Applies event handling to the provided HTML content.
     /// - Parameter content: The HTML content to modify.
     /// - Returns: The modified HTML content with event handling attached.

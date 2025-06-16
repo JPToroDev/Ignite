@@ -25,6 +25,7 @@ public struct AnimatableData: Hashable, Sendable {
     /// The delay before the animation begins, in seconds.
     var delay: Double = 0
 
+    // swiftlint:disable identifier_name
     /// Creates a new value animation for a specific CSS property.
     /// - Parameters:
     ///   - property: The CSS property to animate
@@ -35,6 +36,7 @@ public struct AnimatableData: Hashable, Sendable {
         self.initial = from
         self.final = to
     }
+    // swiftlint:enable identifier_name
 
     public init(_ property: AnimatableProperty, value: String) {
         self.property = property

@@ -33,7 +33,7 @@ public struct Row<Content: HTML>: HTML {
                 Markup("<td>\(column.markupString())</td>")
             }
         }.joined()
-        
+
         return Markup("<tr\(attributes)>\(output.string)</tr>")
     }
 }

@@ -7,15 +7,16 @@
 
 extension Never: HTML, InlineElement {
     public var body: Never {
-        return fatalError("Never has no body")
+        return fatalError("Never has no body.")
     }
+
     public var attributes: CoreAttributes {
         get { CoreAttributes() }
-        set {}
+        set {} // swiftlint:disable:this unused_setter_value
     }
-    public var isPrimitive: Bool { true }
+
     public func render() -> Markup {
-        fatalError("Never cannot produce markup")
+        fatalError("Never cannot produce markup.")
     }
 }
 

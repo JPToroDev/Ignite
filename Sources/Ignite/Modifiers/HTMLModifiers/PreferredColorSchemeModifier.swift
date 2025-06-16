@@ -9,11 +9,11 @@
 struct PreferredColorSchemeModifier: HTMLModifier {
     /// The color scheme to apply, or `nil` to use the default.
     var colorScheme: ColorScheme?
-    
+
     func body(content: Content) -> some HTML {
         var modified = content
         guard let colorScheme else { return modified }
-        var attributes = Self.attributes(for: colorScheme)
+        let attributes = Self.attributes(for: colorScheme)
         modified.attributes.merge(attributes)
         return modified
     }

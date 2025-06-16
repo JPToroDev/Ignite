@@ -31,7 +31,9 @@ public struct AccordionElementBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content: AccordionElement>(_ content: repeat each Content) -> some AccordionElement {
+    public static func buildBlock<each Content: AccordionElement>(
+        _ content: repeat each Content
+    ) -> some AccordionElement {
         PackHTML(repeat each content)
     }
 }

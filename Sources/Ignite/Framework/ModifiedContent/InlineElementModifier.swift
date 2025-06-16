@@ -10,10 +10,10 @@
 public protocol InlineElementModifier {
     /// The type of inline element that this modifier produces.
     associatedtype Body: InlineElement
-    
+
     /// A proxy that provides access to the content being modified.
     typealias Content = InlineModifiedContentProxy<Self>
-    
+
     /// Creates the modified inline element.
     /// - Parameter content: The content to be modified.
     /// - Returns: The modified inline element.

@@ -14,12 +14,12 @@ import Testing
 @Suite("TextField Tests")
 @MainActor
 class TextFieldTests: IgniteTestSuite {
-    @Test("TextField with Text Type", arguments: TextField.TextType.allCases)
-    func textFieldWithInputTextType(textType: TextField.TextType) async throws {
+    @Test("TextField with Text Type", arguments: TextFieldTextType.allCases)
+    func textFieldWithInputTextType(textType: TextFieldTextType) async throws {
         let element = TextField("Paul", prompt: "Enter your name here")
             .type(textType)
             .id("field")
-        let output = element.markupString()
+        let output = element.render().string
 
         #expect(output == """
         <div class="form-floating">\
@@ -34,7 +34,7 @@ class TextFieldTests: IgniteTestSuite {
         let element = TextField("Paul", prompt: "Enter your name here")
             .required()
             .id("field")
-        let output = element.markupString()
+        let output = element.render().string
 
         #expect(output == """
         <div class="form-floating">\
@@ -49,7 +49,7 @@ class TextFieldTests: IgniteTestSuite {
         let element = TextField("Paul", prompt: "Enter your name here")
             .disabled()
             .id("field")
-        let output = element.markupString()
+        let output = element.render().string
 
         #expect(output == """
         <div class="form-floating">\
@@ -64,7 +64,7 @@ class TextFieldTests: IgniteTestSuite {
         let element = TextField("Paul")
             .readOnly("Read only")
             .id("field")
-        let output = element.markupString()
+        let output = element.render().string
 
         #expect(output == """
         <div class="form-floating">\

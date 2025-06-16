@@ -95,7 +95,7 @@ public struct List<Content: HTML>: HTML {
     public init<T, S: Sequence, RowContent: HTML>(
         _ items: S,
         @HTMLBuilder content: @escaping (T) -> RowContent
-    ) where S.Element == T, Content == ForEach<Array<T>, RowContent> {
+    ) where S.Element == T, Content == ForEach<[T], RowContent> {
         let content = ForEach(Array(items), content: content)
         self.content = content
     }
@@ -165,10 +165,8 @@ public struct List<Content: HTML>: HTML {
             content.attributes.append(classes: listStyle != .automatic ? "list-group-item" : nil)
             return content.render()
         } else {
-            var item = content
             let styleClass = listStyle == .automatic ? nil : "list-group-item"
-            item.attributes.append(classes: "m-0")
-            return ListItem(item)
+            return ListItem(content)
                 .class(styleClass)
                 .render()
         }

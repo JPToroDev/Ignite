@@ -9,7 +9,7 @@
 private struct ContainerRelativeFrameModifier: HTMLModifier {
     /// The alignment of content within the container.
     var alignment: Alignment
-    
+
     func body(content: Content) -> some HTML {
         ContainerRelativeContent(content, alignment: alignment)
     }

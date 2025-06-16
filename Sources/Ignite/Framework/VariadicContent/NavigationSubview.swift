@@ -9,9 +9,9 @@
 struct NavigationSubview: HTML {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
-    
+
     var attributes = CoreAttributes()
-   
+
     /// The navigation element to be rendered.
     private var content: any NavigationElement
 
@@ -29,7 +29,7 @@ struct NavigationSubview: HTML {
 
     /// Controls the visibility of the navigation bar.
     var navigationBarVisibility: NavigationBarVisibility = .automatic
-    
+
     /// Creates a navigation subview with the specified content.
     /// - Parameter content: The navigation element to wrap.
     init(_ content: any NavigationElement) {
@@ -39,7 +39,7 @@ struct NavigationSubview: HTML {
             self.navigationBarVisibility = provider.navigationBarVisibility
         }
     }
-    
+
     /// Renders the navigation content as markup.
     /// - Returns: The rendered markup for the navigation element.
     func render() -> Markup {
@@ -50,3 +50,5 @@ struct NavigationSubview: HTML {
         }
     }
 }
+
+extension NavigationSubview: ListItemProvider {}

@@ -11,7 +11,7 @@
 public protocol DropdownElement {
     /// Core attributes for the dropdown element.
     var attributes: CoreAttributes { get set }
-    
+
     /// Renders the element as markup.
     /// - Returns: The rendered markup for the element.
     func render() -> Markup

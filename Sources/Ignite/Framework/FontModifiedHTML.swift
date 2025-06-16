@@ -25,14 +25,6 @@ struct FontModifiedHTML<Content: HTML>: HTML {
     /// Renders the font-styled content as markup.
     /// - Returns: The rendered markup with font attributes applied.
     func render() -> Markup {
-        if var text = content as? any TextProvider & HTML {
-            if let style = font.style { text.fontStyle = style }
-            let attributes = FontModifier.attributes(for: font, includeStyle: false)
-            return text
-                .attributes(attributes)
-                .render()
-        }
-
         let attributes = FontModifier.attributes(for: font, includeStyle: true)
         return Section(content.class("font-inherit"))
             .attributes(attributes)

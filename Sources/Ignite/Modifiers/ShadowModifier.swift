@@ -5,6 +5,7 @@
 // See LICENSE for license information.
 //
 
+// swiftlint:disable identifier_name
 public extension HTML {
     /// Applies an inner shadow to this element.
     /// - Parameters:
@@ -82,3 +83,4 @@ public extension ElementProxy {
         return self.style(.boxShadow, shadow.description)
     }
 }
+// swiftlint:enable identifier_name

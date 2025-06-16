@@ -51,7 +51,7 @@ public struct Carousel<Slides: CarouselElement>: HTML {
     public init<T, S: Sequence, SlideContent: CarouselElement>(
         _ items: S,
         @CarouselElementBuilder slides: @escaping (T) -> SlideContent
-    ) where S.Element == T, Slides == ForEach<Array<T>, SlideContent> {
+    ) where S.Element == T, Slides == ForEach<[T], SlideContent> {
         let items = items.map(slides)
         self.slides = CarouselSubviewsCollection(items.map(CarouselSubview.init))
     }

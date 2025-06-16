@@ -9,7 +9,7 @@
 struct HorizontalAlignmentInlineModifier: InlineElementModifier {
     /// The alignment configuration to apply.
     var alignment: AlignmentType
-    
+
     /// Applies the horizontal alignment to the content.
     /// - Parameter content: The content to modify.
     /// - Returns: The modified content with alignment applied.

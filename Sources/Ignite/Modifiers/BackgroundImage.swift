@@ -15,7 +15,7 @@ private struct BackgroundImageModifier: HTMLModifier {
     var repeats: Bool
     /// The position of the background image within its container.
     var position: BackgroundPosition
-    
+
     func body(content: Content) -> some HTML {
         content
             .style(

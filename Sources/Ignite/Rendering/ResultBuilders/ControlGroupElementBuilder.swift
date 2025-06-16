@@ -31,7 +31,9 @@ public struct ControlGroupElementBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content: ControlGroupElement>(_ content: repeat each Content) -> some ControlGroupElement {
+    public static func buildBlock<each Content: ControlGroupElement>(
+        _ content: repeat each Content
+    ) -> some ControlGroupElement {
         PackHTML(repeat each content)
     }
 }

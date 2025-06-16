@@ -6,7 +6,7 @@
 //
 
 @MainActor
-public struct ConditionalHTML<TrueContent, FalseContent>: Sendable {
+public struct ConditionalHTML<TrueContent, FalseContent>: Sendable { // swiftlint:disable:this redundant_sendable
 
     public var attributes = CoreAttributes()
 
@@ -35,7 +35,8 @@ extension ConditionalHTML: HTML where TrueContent: HTML, FalseContent: HTML {
     }
 }
 
-extension ConditionalHTML: InlineElement, CustomStringConvertible where TrueContent: InlineElement, FalseContent: InlineElement {
+extension ConditionalHTML: InlineElement, CustomStringConvertible
+where TrueContent: InlineElement, FalseContent: InlineElement {
     public var body: Never { fatalError() }
 
     public func render() -> Markup {
@@ -48,7 +49,8 @@ extension ConditionalHTML: InlineElement, CustomStringConvertible where TrueCont
     }
 }
 
-extension ConditionalHTML: ControlGroupElement where TrueContent: ControlGroupElement, FalseContent: ControlGroupElement {
+extension ConditionalHTML: ControlGroupElement
+where TrueContent: ControlGroupElement, FalseContent: ControlGroupElement {
     public func render() -> Markup {
         switch storage {
         case .trueContent(let content):

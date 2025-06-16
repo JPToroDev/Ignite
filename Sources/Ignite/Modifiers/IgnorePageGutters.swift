@@ -9,7 +9,7 @@
 private struct IgnorePageGuttersModifier: HTMLModifier {
     /// Whether the content should ignore page gutters and extend full width.
     var shouldIgnore: Bool
-    
+
     /// Applies the gutter behavior to the provided content.
     /// - Parameter content: The HTML content to modify.
     /// - Returns: Modified content with appropriate width and margin styles.

@@ -10,7 +10,7 @@
 /// Use `PackHTML` to group HTML elements while maintaining their individual types
 /// and applying shared attributes across all contained elements.
 @MainActor
-struct PackHTML<each Content>: Sendable {
+struct PackHTML<each Content>: Sendable { // swiftlint:disable:this redundant_sendable
     /// The standard set of control attributes for HTML elements.
     var attributes = CoreAttributes()
 
@@ -27,7 +27,7 @@ struct PackHTML<each Content>: Sendable {
 extension PackHTML: HTML, SubviewsProvider, VariadicHTML where repeat each Content: HTML {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
-    
+
     /// Returns the packed elements as a collection of subviews.
     var subviews: SubviewsCollection {
         var children = SubviewsCollection()
@@ -47,7 +47,8 @@ extension PackHTML: HTML, SubviewsProvider, VariadicHTML where repeat each Conte
     }
 }
 
-extension PackHTML: InlineElement, InlineSubviewsProvider, CustomStringConvertible where repeat each Content: InlineElement {
+extension PackHTML: InlineElement, InlineSubviewsProvider, CustomStringConvertible
+where repeat each Content: InlineElement {
     /// The content and behavior of this HTML.
     var body: Never { fatalError() }
 
@@ -68,7 +69,8 @@ extension PackHTML: InlineElement, InlineSubviewsProvider, CustomStringConvertib
     }
 }
 
-extension PackHTML: NavigationElement, NavigationSubviewsProvider where repeat each Content: NavigationElement {
+extension PackHTML: NavigationElement, NavigationSubviewsProvider
+where repeat each Content: NavigationElement {
 
     /// Returns the packed navigation elements as a collection.
     var children: NavigationSubviewsCollection {
@@ -80,7 +82,7 @@ extension PackHTML: NavigationElement, NavigationSubviewsProvider where repeat e
         }
         return children
     }
-    
+
     func render() -> Markup {
         // This method is required by NavigationElement, but we'll always
         // deconstruct PackHTML before rendering it.
@@ -88,7 +90,8 @@ extension PackHTML: NavigationElement, NavigationSubviewsProvider where repeat e
     }
 }
 
-extension PackHTML: AccordionElement, AccordionSubviewsProvider where repeat each Content: AccordionElement {
+extension PackHTML: AccordionElement, AccordionSubviewsProvider
+where repeat each Content: AccordionElement {
     /// Returns the packed accordion elements as a collection.
     var children: AccordionSubviewsCollection {
         var children = AccordionSubviewsCollection()
@@ -131,7 +134,8 @@ extension PackHTML: TableElement where repeat each Content: TableElement {
     }
 }
 
-extension PackHTML: CarouselElement, CarouselSubviewsProvider where repeat each Content: CarouselElement {
+extension PackHTML: CarouselElement, CarouselSubviewsProvider
+where repeat each Content: CarouselElement {
     /// Returns the packed carousel elements as a collection.
     var children: CarouselSubviewsCollection {
         var children = CarouselSubviewsCollection()
@@ -151,7 +155,8 @@ extension PackHTML: CarouselElement, CarouselSubviewsProvider where repeat each 
     }
 }
 
-extension PackHTML: ControlGroupElement, ControlGroupSubviewsProvider where repeat each Content: ControlGroupElement {
+extension PackHTML: ControlGroupElement, ControlGroupSubviewsProvider
+where repeat each Content: ControlGroupElement {
     /// Returns the packed control-group elements as a collection.
     var children: ControlGroupSubviewsCollection {
         var children = ControlGroupSubviewsCollection()

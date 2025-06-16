@@ -18,27 +18,27 @@ struct FrameModifiedHTML<Content: HTML>: HTML {
 
     /// The HTML content to be framed.
     var content: Content
-    
+
     /// The minimum width constraint.
-    var minWidth: LengthUnit? = nil
-    
+    var minWidth: LengthUnit?
+
     /// The width constraint.
-    var width: LengthUnit? = nil
-    
+    var width: LengthUnit?
+
     /// The maximum width constraint.
-    var maxWidth: LengthUnit? = nil
-    
+    var maxWidth: LengthUnit?
+
     /// The minimum height constraint.
-    var minHeight: LengthUnit? = nil
-    
+    var minHeight: LengthUnit?
+
     /// The height constraint.
-    var height: LengthUnit? = nil
-    
+    var height: LengthUnit?
+
     /// The maximum height constraint.
-    var maxHeight: LengthUnit? = nil
-    
+    var maxHeight: LengthUnit?
+
     /// The alignment for positioning the content within the frame.
-    var alignment: Alignment? = nil
+    var alignment: Alignment?
 
     /// Renders the framed content as HTML markup.
     /// - Returns: The rendered HTML markup with applied frame modifications.

@@ -8,20 +8,20 @@
 /// A modifier that applies frame constraints to HTML elements.
 struct FrameModifier: HTMLModifier {
     /// The minimum width constraint.
-    var minWidth: LengthUnit? = nil
+    var minWidth: LengthUnit?
     /// The exact width constraint.
-    var width: LengthUnit? = nil
+    var width: LengthUnit?
     /// The maximum width constraint.
-    var maxWidth: LengthUnit? = nil
+    var maxWidth: LengthUnit?
     /// The minimum height constraint.
-    var minHeight: LengthUnit? = nil
+    var minHeight: LengthUnit?
     /// The exact height constraint.
-    var height: LengthUnit? = nil
+    var height: LengthUnit?
     /// The maximum height constraint.
-    var maxHeight: LengthUnit? = nil
+    var maxHeight: LengthUnit?
     /// The alignment within the frame.
-    var alignment: Alignment? = nil
-    
+    var alignment: Alignment?
+
     func body(content: Content) -> some HTML {
         FrameModifiedHTML(
             content: content,

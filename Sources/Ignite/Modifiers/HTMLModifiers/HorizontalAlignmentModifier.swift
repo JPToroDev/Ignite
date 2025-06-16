@@ -14,7 +14,7 @@ enum AlignmentType {
 private struct HorizontalAlignmentModifier: HTMLModifier {
     /// The alignment configuration to apply.
     var alignment: AlignmentType
-    
+
     func body(content: Content) -> some HTML {
         var content = content
            switch alignment {
@@ -51,4 +51,3 @@ public extension ElementProxy {
         style(alignment.itemAlignmentStyle)
     }
 }
-

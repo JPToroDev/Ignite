@@ -16,6 +16,13 @@ public struct InlineHTML<Content: InlineElement>: HTML {
     /// The underlying HTML content, unattributed.
     private var content: Content
 
+    /// The underlying HTML content, attributed.
+    private var attributedContent: Content {
+        var content = content
+        content.attributes.merge(attributes)
+        return content
+    }
+
     /// Creates a new `InlineHTML` instance that wraps the given HTML content.
     /// - Parameter content: The HTML content to wrap
     init(_ content: Content) {
@@ -25,33 +32,29 @@ public struct InlineHTML<Content: InlineElement>: HTML {
     /// Renders the wrapped HTML content using the given publishing context
     /// - Returns: The rendered HTML string
     public func render() -> Markup {
-        var content = content
-        content.attributes.merge(attributes)
-        return content.render()
+        attributedContent.render()
     }
 }
 
 extension InlineHTML: CardComponentConfigurable where Content: CardComponentConfigurable {
     func configuredAsCardComponent() -> CardComponent {
-        content.configuredAsCardComponent()
+        attributedContent.configuredAsCardComponent()
     }
 }
 
 extension InlineHTML: LinkProvider where Content: LinkProvider {
-    var url: String {
-        content.url
-    }
+    var url: String { content.url }
 }
 
 extension InlineHTML: NavigationElementRepresentable where Content: NavigationElementRepresentable {
     func renderAsNavigationElement() -> Markup {
-        content.renderAsNavigationElement()
+        attributedContent.renderAsNavigationElement()
     }
 }
 
 extension InlineHTML: FormElementRepresentable where Content: FormElementRepresentable {
     func renderAsFormElement(_ configuration: FormConfiguration) -> Markup {
-        content.renderAsFormElement(configuration)
+        attributedContent.renderAsFormElement(configuration)
     }
 }
 

@@ -29,26 +29,6 @@ struct ForegroundModifiedHTML<Content: HTML>: HTML {
     }
 
     func render() -> Markup {
-        content is any TextProvider ? renderTextProvider() : renderStandardElement()
-    }
-
-    private func renderTextProvider() -> Markup {
-        var content = content
-        content.attributes.merge(attributes)
-        return switch style {
-        case .none: content.render()
-        case .gradient(let gradient):
-            content.style(gradient.styles).render()
-        case .string(let string):
-            content.style(.color, string).render()
-        case .color(let color):
-            content.style(.color, color.description).render()
-        case .style(let foregroundStyle):
-            content.class(foregroundStyle.rawValue).render()
-        }
-    }
-
-    private func renderStandardElement() -> Markup {
         var content = content
         content.attributes.merge(attributes)
         return switch style {

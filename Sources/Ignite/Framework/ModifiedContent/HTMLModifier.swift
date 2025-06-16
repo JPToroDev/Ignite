@@ -10,10 +10,10 @@
 public protocol HTMLModifier {
     /// The type of HTML content this modifier produces.
     associatedtype Body: HTML
-    
+
     /// A proxy that provides access to the content being modified.
     typealias Content = ModifiedContentProxy<Self>
-    
+
     /// Returns the modified HTML content.
     /// - Parameter content: The content to modify.
     /// - Returns: The modified HTML content.

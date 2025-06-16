@@ -18,7 +18,7 @@ enum ForegroundStyleType {
 private struct ForegroundStyleModifier: HTMLModifier {
     /// The foreground style to apply.
     var style: ForegroundStyleType
-    
+
     /// Creates the modified HTML content with the specified foreground style.
     /// - Parameter content: The original HTML content to modify.
     /// - Returns: HTML content with the foreground style applied.

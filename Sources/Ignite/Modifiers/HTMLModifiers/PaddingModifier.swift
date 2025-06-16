@@ -11,7 +11,7 @@ private struct PaddingModifier: HTMLModifier {
     var padding: PaddingAmount
     /// The edges where padding should be applied.
     var edges: Edge
-    
+
     /// Applies the padding modification to the provided content.
     /// - Parameter content: The HTML content to modify.
     /// - Returns: The content with padding styles or classes applied.

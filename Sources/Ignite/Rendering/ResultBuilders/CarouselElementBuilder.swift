@@ -31,7 +31,9 @@ public struct CarouselElementBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content: CarouselElement>(_ content: repeat each Content) -> some CarouselElement {
+    public static func buildBlock<each Content: CarouselElement>(
+        _ content: repeat each Content
+    ) -> some CarouselElement {
         PackHTML(repeat each content)
     }
 }
@@ -44,9 +46,9 @@ public extension CarouselElementBuilder {
         }
         public var attributes = CoreAttributes()
         public var body: Never { fatalError() }
-        
+
         var content: C
-        
+
         public func render() -> Markup {
             content.render()
         }

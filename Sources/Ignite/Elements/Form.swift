@@ -70,20 +70,11 @@ public struct Form<Content: HTML>: HTML, NavigationElement {
     }
 
     public func render() -> Markup {
-        let items = content.subviews().map { item in
-            if configuration.labelStyle == .leading {
-                var item = item
-                item.attributes.append(classes: "mb-\(configuration.spacing.rawValue)")
-                return item
-            } else {
-                return item
-            }
-        }
-
         return Tag("form") {
-            ForEach(items) { item in
+            ForEach(content.subviews()) { item in
                 FormItem(item.wrapped)
                     .formConfiguration(configuration)
+                    .class(configuration.labelStyle == .leading ? "mb-\(configuration.spacing.rawValue)" : nil)
             }
         }
         .attributes(attributes)

@@ -16,7 +16,6 @@ public enum CardContentAlignment: CaseIterable, Sendable {
     case bottom
     case bottomTrailing
 
-
     enum TextAlignment: String, CaseIterable, Sendable {
         case start = "text-start"
         case center = "text-center"

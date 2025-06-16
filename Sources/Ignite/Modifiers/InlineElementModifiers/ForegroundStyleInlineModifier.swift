@@ -9,7 +9,7 @@
 private struct ForegroundStyleInlineModifier: InlineElementModifier {
     /// The foreground style to apply.
     var style: ForegroundStyleType
-    
+
     /// Creates the modified inline element with the specified foreground style.
     /// - Parameter content: The content to modify.
     /// - Returns: The modified inline element.

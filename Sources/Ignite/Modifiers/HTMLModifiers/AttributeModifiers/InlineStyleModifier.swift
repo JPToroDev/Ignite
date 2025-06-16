@@ -9,7 +9,7 @@
 private struct InlineStyleModifier: HTMLModifier {
     /// The inline styles to apply.
     var styles: [InlineStyle]
-    
+
     /// Applies the inline styles to the content.
     func body(content: Content) -> some HTML {
         var content = content

@@ -9,7 +9,7 @@
 private struct ClippedModifier: HTMLModifier {
     /// Whether content should be clipped to the element's bounds.
     var isClipped: Bool = true
-    
+
     /// Applies overflow styling to the content.
     /// - Parameter content: The HTML content to modify.
     /// - Returns: The content with overflow styling applied.

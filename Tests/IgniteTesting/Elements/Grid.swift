@@ -49,15 +49,15 @@ class GridTests: IgniteTestSuite {
         let element = Grid {
             Image("/images/photos/shades.jpg", description: "A pair of sunglasses.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
 
             Image("/images/photos/stack.jpg", description: "A door partly open.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
 
             Image("/images/photos/wind.jpg", description: "A windy day.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
         }
 
         let output = element.markupString()
@@ -82,19 +82,19 @@ class GridTests: IgniteTestSuite {
         let element = Grid {
             Image("/images/photos/shades.jpg", description: "A pair of sunglasses.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
 
             Image("/images/photos/stack.jpg", description: "A door partly open.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
 
             Image("/images/photos/rug.jpg", description: "A nice rug.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
 
             Image("/images/photos/car.jpg", description: "The window of a car.")
                 .resizable()
-                .width(4)
+                .gridCellColumns(4)
         }
 
         let output = element.markupString()
@@ -119,7 +119,7 @@ class GridTests: IgniteTestSuite {
 
     @Test("List with four elements of width 4, should wrap")
     func gridWithWrappingTwoColors() async throws {
-        let element = Grid {
+        let element = Grid(columns: 2) {
             Image("/images/photos/shades.jpg", description: "A pair of sunglasses.")
                 .resizable()
 
@@ -132,7 +132,6 @@ class GridTests: IgniteTestSuite {
             Image("/images/photos/car.jpg", description: "The window of a car.")
                 .resizable()
         }
-        .columns(2)
 
         let output = element.markupString()
 

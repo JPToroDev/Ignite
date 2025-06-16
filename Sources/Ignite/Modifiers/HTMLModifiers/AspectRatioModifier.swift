@@ -11,7 +11,7 @@ typealias AspectRatioAmount = Amount<Double, AspectRatio>
 struct AspectRatioModifer: HTMLModifier {
     /// The aspect ratio to apply to the element.
     var ratio: AspectRatioAmount
-    
+
     func body(content: Content) -> some HTML {
         var modified = content
         switch ratio {

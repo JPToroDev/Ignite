@@ -11,7 +11,7 @@ private struct MarginInlineModifier: InlineElementModifier {
     var margin: MarginAmount
     /// The edges where margin should be applied.
     var edges: Edge
-    
+
     func body(content: Content) -> some InlineElement {
         var modified = content
 

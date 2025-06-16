@@ -41,13 +41,13 @@ extension HTML {
     var publishingContext: PublishingContext {
         PublishingContext.shared
     }
-    
+
     /// Converts this element and its children into an HTML string with attributes.
     /// - Returns: A string containing the HTML markup
     func markupString() -> String {
         render().string
     }
-    
+
     /// The default status as a primitive element.
     var isPrimitive: Bool {
         Self.Body.self == Never.self

@@ -8,7 +8,7 @@
 /// A modifier that applies font styling to HTML content.
 struct FontModifier: HTMLModifier {
     var font: Font
-    
+
     /// Creates modified HTML content with the specified font styling.
     func body(content: Content) -> some HTML {
         Self.register(font: font)

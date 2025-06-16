@@ -114,7 +114,7 @@ public extension Transition {
 
     /// Creates an animation that slides content out to a specified edge.
     static func slideOut(to edge: Edge) -> Self {
-        let (property, to) = switch edge {
+        let (property, end) = switch edge {
         case .leading: ("translateX", "-100%")
         case .trailing: ("translateX", "100%")
         case .top: ("translateY", "-100%")
@@ -122,14 +122,14 @@ public extension Transition {
         default: ("translateX", "-100%")
         }
 
-        return Transition(data: [.init(.transform, from: "\(property)(0)", to: "\(property)(\(to))")])
+        return Transition(data: [.init(.transform, from: "\(property)(0)", to: "\(property)(\(end))")])
             .duration(0.35)
             .timing(.automatic)
     }
 
     /// Adds a slide-out effect to the current animation
     func slideOut(to edge: Edge) -> Self {
-        let (property, to) = switch edge {
+        let (property, end) = switch edge {
         case .leading: ("translateX", "-100%")
         case .trailing: ("translateX", "100%")
         case .top: ("translateY", "-100%")
@@ -137,7 +137,7 @@ public extension Transition {
         default: ("translateX", "-100%")
         }
 
-        return self.combined(with: [.init(.transform, from: "\(property)(0)", to: "\(property)(\(to))")])
+        return self.combined(with: [.init(.transform, from: "\(property)(0)", to: "\(property)(\(end))")])
     }
 
     /// Creates a rotation animation by specified angle.
@@ -155,6 +155,7 @@ public extension Transition {
         ])
     }
 
+    // swiftlint:disable identifier_name
     /// Creates a scale animation between two values.
     static func scale(from: Double = 0.8, to: Double = 1.0) -> Self {
         Transition(data: [.init(.transform, from: "scale(\(from))", to: "scale(\(to))")])
@@ -164,6 +165,7 @@ public extension Transition {
     func scale(from: Double = 0.8, to: Double = 1.0) -> Self {
         self.combined(with: [.init(.transform, from: "scale(\(from))", to: "scale(\(to))")])
     }
+    // swiftlint:enable identifier_name
 
     /// Creates a color transition animation.
     static func color(_ color: Color) -> Self {

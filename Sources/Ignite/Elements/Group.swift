@@ -17,7 +17,7 @@
 ///         structure. If you need a containing `div` element, use
 ///         ``Section`` instead.
 @MainActor
-public struct Group<Content>: Sendable {
+public struct Group<Content> {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -28,7 +28,7 @@ public struct Group<Content>: Sendable {
     var content: Content
 }
 
-extension Group: HTML, VariadicHTML where Content: HTML {
+extension Group: HTML, Sendable, VariadicHTML where Content: HTML {
     /// Creates a new group containing the given HTML content.
     /// - Parameter content: A closure that creates the HTML content.
     public init(@HTMLBuilder content: () -> Content) {
@@ -61,12 +61,5 @@ extension Group: ColumnProvider where Content: ColumnProvider {}
 extension Group: LinkProvider where Content: LinkProvider {
     var url: String {
         content.url
-    }
-}
-
-extension Group: TextProvider where Content: TextProvider {
-    var fontStyle: FontStyle {
-        get { content.fontStyle }
-        set { content.fontStyle = newValue }
     }
 }

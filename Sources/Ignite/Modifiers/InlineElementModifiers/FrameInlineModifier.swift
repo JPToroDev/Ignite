@@ -11,18 +11,18 @@
 /// including minimum, maximum, and exact dimensions.
 struct FrameInlineModifier: InlineElementModifier {
     /// The minimum width constraint.
-    var minWidth: LengthUnit? = nil
+    var minWidth: LengthUnit?
     /// The width constraint.
-    var width: LengthUnit? = nil
+    var width: LengthUnit?
     /// The maximum width constraint.
-    var maxWidth: LengthUnit? = nil
+    var maxWidth: LengthUnit?
     /// The minimum height constraint.
-    var minHeight: LengthUnit? = nil
+    var minHeight: LengthUnit?
     /// The height constraint.
-    var height: LengthUnit? = nil
+    var height: LengthUnit?
     /// The maximum height constraint.
-    var maxHeight: LengthUnit? = nil
-    
+    var maxHeight: LengthUnit?
+
     /// Applies frame constraints to the provided content.
     /// - Parameter content: The inline element to modify.
     /// - Returns: The modified inline element with frame constraints applied.

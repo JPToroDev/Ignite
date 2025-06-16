@@ -11,7 +11,7 @@ private struct EventInlineModifier: InlineElementModifier {
     var type: EventType
     /// The actions to execute when the event occurs.
     var actions: [Action]
-    
+
     /// Creates the modified inline element with event handling.
     /// - Parameter content: The content to modify.
     /// - Returns: The modified inline element with event attributes.

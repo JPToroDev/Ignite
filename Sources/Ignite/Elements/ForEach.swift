@@ -7,7 +7,7 @@
 
 /// A structure that creates HTML content by mapping over a sequence of data.
 @MainActor
-public struct ForEach<Data: Sequence, Content>: Sendable {
+public struct ForEach<Data: Sequence, Content> {
     /// The standard set of control attributes for HTML elements.
     public var attributes = CoreAttributes()
 
@@ -18,7 +18,7 @@ public struct ForEach<Data: Sequence, Content>: Sendable {
     var items: [Content]
 }
 
-extension ForEach: HTML, VariadicHTML where Content: HTML {
+extension ForEach: HTML, VariadicHTML, Sendable where Content: HTML {
     /// The content and behavior of this HTML.
     public var body: Never { fatalError() }
 
@@ -105,7 +105,7 @@ extension ForEach: CarouselElement where Content: CarouselElement {
         self.data = data
         self.items = data.map(content)
     }
-    
+
     /// Renders the ForEach content when this isn't part of a list.
     /// - Returns: The rendered HTML string.
     public func render() -> Markup {

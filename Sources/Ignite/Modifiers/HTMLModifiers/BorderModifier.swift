@@ -11,7 +11,7 @@ struct BorderModifier: HTMLModifier {
     var width: Double
     var style: BorderStyle
     var edges: Edge
-    
+
     /// Applies border styles to the content.
     func body(content: Content) -> some HTML {
         var modified = content

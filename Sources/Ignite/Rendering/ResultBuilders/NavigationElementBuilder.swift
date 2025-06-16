@@ -15,7 +15,9 @@ public struct NavigationElementBuilder {
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildExpression<Content: HTML>(_ content: Content) -> some NavigationElement where Content: NavigationElement {
+    public static func buildExpression<Content: HTML>(
+        _ content: Content
+    ) -> some NavigationElement where Content: NavigationElement {
         content
     }
 
@@ -36,21 +38,27 @@ public struct NavigationElementBuilder {
     /// Converts a single HTML element into a builder expression.
     /// - Parameter content: The HTML element to convert
     /// - Returns: The same HTML element, unchanged
-    public static func buildExpression<Content: NavigationElement>(_ content: Content) -> some NavigationElement where Content: InlineElement {
+    public static func buildExpression<Content: NavigationElement>(
+        _ content: Content
+    ) -> some NavigationElement where Content: InlineElement {
         InlineHTML(content)
     }
 
     /// Passes through a single HTML element unchanged.
     /// - Parameter content: The HTML element to pass through
     /// - Returns: The same HTML element
-    public static func buildBlock<Content: NavigationElement>(_ content: Content) -> some NavigationElement where Content: HTML {
+    public static func buildBlock<Content: NavigationElement>(
+        _ content: Content
+    ) -> some NavigationElement where Content: HTML {
         content
     }
 
     /// Passes through a single HTML element unchanged.
     /// - Parameter content: The HTML element to pass through
     /// - Returns: The same HTML element
-    public static func buildBlock<Content: NavigationElement>(_ content: Content) -> some NavigationElement where Content: InlineElement {
+    public static func buildBlock<Content: NavigationElement>(
+        _ content: Content
+    ) -> some NavigationElement where Content: InlineElement {
         InlineHTML(content)
     }
 
@@ -59,7 +67,9 @@ public struct NavigationElementBuilder {
     ///   - accumulated: The previous collection of HTML.
     ///   - next: The next piece of HTML to combine.
     /// - Returns: The combined HTML.
-    public static func buildBlock<each Content: NavigationElement>(_ content: repeat each Content) -> some NavigationElement {
+    public static func buildBlock<each Content: NavigationElement>(
+        _ content: repeat each Content
+    ) -> some NavigationElement {
         PackHTML(repeat each content)
     }
 }

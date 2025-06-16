@@ -11,7 +11,7 @@ private struct MarginModifier: HTMLModifier {
     var margin: MarginAmount
     /// The edges where the margin should be applied.
     var edges: Edge
-    
+
     /// Applies the margin styling to the content.
     /// - Parameter content: The HTML content to modify.
     /// - Returns: The content with margin styling applied.
