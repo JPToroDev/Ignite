@@ -103,7 +103,7 @@ extension PublishingContext {
             var selector: Selector = .class(variant.className)
             if site.hasMultipleThemes {
                 selector = .list(
-                    .attribute("data-ig-theme", value: theme.cssID).chaining(.class(variant.className)),
+                    .anyChild(.attribute("data-bs-theme", value: theme.cssID), .class(variant.className)),
                     .class(variant.className).chaining(.attribute("data-ig-theme", value: theme.cssID))
                 )
             }
