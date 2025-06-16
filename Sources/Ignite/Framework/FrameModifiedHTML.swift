@@ -88,6 +88,7 @@ struct FrameModifiedHTML<Content: HTML>: HTML {
                 .style(alignment.itemAlignmentRules)
                 .style(content is any ImageProvider ? dimensions : [])
         }
+        .attributes(attributes)
         .style(.display, "flex")
         .style(content is any ImageProvider ? .init(.flexDirection, value: "column") : nil)
         .style(.overflow, "hidden")
