@@ -175,8 +175,7 @@ extension PublishingContext {
         return breakpoints.map { minWidth in
             var selector: Selector = .class("container")
             if site.hasMultipleThemes {
-                selector = .attribute("data-ig-theme", value: theme.cssID)
-                           .chaining(.class("container"))
+                selector = .anyChild(.attribute("data-ig-theme", value: theme.cssID), .class("container"))
             }
             return MediaQuery(.breakpoint(.custom(minWidth))) {
                 Ruleset(selector) {
