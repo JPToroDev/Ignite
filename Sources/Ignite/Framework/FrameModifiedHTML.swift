@@ -78,6 +78,7 @@ struct FrameModifiedHTML<Content: HTML>: HTML {
         guard let alignment else {
             // Apply the frame to the modified element directly
             return content
+                .attributes(attributes)
                 .style(dimensions)
                 .render()
         }
